@@ -1,6 +1,9 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
 #include "SDL.h"
 #include "SDL_image.h"
 //#include "cursor.h"
@@ -34,5 +37,7 @@ extern void MapUpdate(Map * map);
 extern void MapDraw(Map * map, SDL_Surface* screen);
 extern void MapClean(Map * map);
 SDL_Surface* loadImage2lol(char* filename);
+extern void parseLayer (xmlDocPtr map, xmlNodePtr cur);
+extern void parseMap(char *mapname);
 
 #endif
