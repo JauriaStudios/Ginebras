@@ -19,8 +19,8 @@
 
 #define FRAMES_PER_SECOND 30
 
-int NUM_TILES_Y = (SCREEN_HEIGHT / TILE_SIZE) + 1;
 int NUM_TILES_X = (SCREEN_WIDTH / TILE_SIZE) + 1;
+int NUM_TILES_Y = (SCREEN_HEIGHT / TILE_SIZE) + 1;
 
 
 //char cursorDirection[6];
@@ -294,14 +294,7 @@ void HandleEvent(SDL_Event event, Character* character, Cursor* cursor)
 		case SDL_QUIT:
 			gameover = 1;
 			break;
-		/* handle the mouse */
-	/*	case SDL_MOUSEBUTTONDOWN:
-			if(character->rcDest.x == cursor->rcDest.x && character->rcDest.y == cursor->rcDest.y )
-				break;
-			else
-				CharacterSetDestination(character, cursor);		
-			break;
-		*/	
+
 		/* handle the keyboard */
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
@@ -334,7 +327,7 @@ void HandleEvent(SDL_Event event, Character* character, Cursor* cursor)
 						showGrid = 1;
 					break;
 				case SDLK_SPACE:
-					//printf("Mouse button %d pressed at (%d,%d)\n",event.button.button, event.button.x, event.button.y);
+					
 					if(character->rcDest.x == cursor->rcDest.x && character->rcDest.y == cursor->rcDest.y )
 						break;
 					else
@@ -344,6 +337,18 @@ void HandleEvent(SDL_Event event, Character* character, Cursor* cursor)
 				default:
 					break;
 			}
+
+		/* handle the mouse */
+
+		/*case SDL_MOUSEBUTTONDOWN:
+			printf("Mouse button %d pressed at (%d,%d)\n",event.button.button, event.button.x, event.button.y);
+			if(character->rcDest.x == cursor->rcDest.x && character->rcDest.y == cursor->rcDest.y )
+				break;
+			else
+				CharacterSetDestination(character, cursor);		
+			break;
+		*/	
+
 		break;
 	}
 }
