@@ -137,7 +137,7 @@ Cursor* CursorConstructor(int x0, int y0)
 	Cursor* cursor;
 	cursor = (Cursor *)malloc(sizeof(Cursor));
 	// Load sprites image
-	if ((cursor->sprite = loadImage("data/cursor.bmp")) == NULL)
+	if ((cursor->sprite = loadImage("data/cursor.png")) == NULL)
 		return NULL;
 	
 	// Set sprite initial position

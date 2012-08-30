@@ -4,7 +4,9 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
+
 #include "characters.h"
+#include "map.h"
 //#include "cursor.h"
 
 #define SCREEN_WIDTH  	800
@@ -100,16 +102,14 @@ int main(int argc, char** argv)
 {
 
 	// Variable initialization
-	int background[MAP_SIZE_X][MAP_SIZE_Y];
-	//int objects[MAP_SIZE_X][MAP_SIZE_Y];
-//int collisions[MAP_SIZE_X][MAP_SIZE_Y];
 
-	SDL_Surface *screen, *ground[MAP_SIZE_X][MAP_SIZE_Y], *grid;
-	SDL_Rect rcGrass, rcGrid;
+	SDL_Surface *screen, *grid;
+	SDL_Rect rcGrid;
 
 	Character *heroe, *squel, *topos;
 	Timer* timer;
 	Cursor* cursor;
+	Map* map;
 
 	int x, y;
 
@@ -124,30 +124,19 @@ int main(int argc, char** argv)
 	
 	// set keyboard repeat 
 	SDL_EnableKeyRepeat(70, 70);
-	
-	// load ground file
-	loadScenario("data/mapa.txt",background);
-	
+
+	// load background
+	map = MapConstructor();
+
+	MapLoad(map,"data/map.txt");
+
 	// Load grid
-	grid   = loadImage("data/grid.bmp");
-	
-	//load background images
-	for(x = 0; x < NUM_TILES_X; x++){
-		for(y = 0; y < NUM_TILES_Y; y++){
-			char buff[20];
-			
-			sprintf(buff, "data/%d.bmp",background[x][y]);
-			//printf("%s\n",buff);
-			
-		ground[x][y] = loadImage(buff);
-			//loadBackgroundImages(buff, i, j, ground);
-		}
-	}
+	grid   = loadImage("data/grid.png");
 
 	// Create a char
-	heroe = CharacterConstructor("data/heroe1.bmp", ORIENT_SOUTH, 3*SPRITE_SIZE, 4*SPRITE_SIZE);
-	squel = CharacterConstructor("data/esqueletico.bmp", ORIENT_EAST, 1*SPRITE_SIZE, 6*SPRITE_SIZE);
-	topos = CharacterConstructor("data/topos.bmp", ORIENT_WEST, 5*SPRITE_SIZE, SPRITE_SIZE);
+	heroe = CharacterConstructor("data/heroe1.png", ORIENT_SOUTH, 3*SPRITE_SIZE, 4*SPRITE_SIZE);
+	squel = CharacterConstructor("data/esqueletico.png", ORIENT_EAST, 1*SPRITE_SIZE, 6*SPRITE_SIZE);
+	topos = CharacterConstructor("data/topos.png", ORIENT_WEST, 5*SPRITE_SIZE, SPRITE_SIZE);
 
 	// Create a cursor
 	cursor = CursorConstructor(heroe->rcDest.x, heroe->rcDest.y);
@@ -175,20 +164,14 @@ int main(int argc, char** argv)
 		else
 			isCollide(&rcSprite);
 		*/
-		
+
 		// draw the background
-		for (x = 0; x < NUM_TILES_X; x++) {
-			for (y = 0; y < NUM_TILES_Y; y++) {
-				rcGrass.x = x * TILE_SIZE;
-				rcGrass.y = y * TILE_SIZE;
-				SDL_BlitSurface(ground[x][y], NULL, screen, &rcGrass);
-			}
-		}
+		MapDraw(map, screen);
 		
 		// draw the grid
 		if(showGrid){
-			for (x = 0; x < SCREEN_WIDTH / SPRITE_SIZE; x++) {
-				for (y = 0; y < SCREEN_HEIGHT / SPRITE_SIZE; y++) {
+			for (x = 0; x < NUM_TILES_X; x++) {
+				for (y = 0; y < NUM_TILES_Y; y++) {
 					rcGrid.x = x * SPRITE_SIZE;
 					rcGrid.y = y * SPRITE_SIZE;
 					SDL_BlitSurface(grid, NULL, screen, &rcGrid);
@@ -219,53 +202,14 @@ int main(int argc, char** argv)
 	}// end main while
 	
 	// clean up 
-	for (x = 0; x < NUM_TILES_X; x++) {
-		for (y = 0; y < NUM_TILES_Y; y++) {
-			SDL_FreeSurface(ground[x][y]);
-		}
-	}
+	MapClean(map);
 
 	SDL_Quit();
 	return 0;
 }
 
-/*
-void loadBackgroundImages(char *filename, int x, int y, SDL_Surface *ground[MAP_SIZE_X][MAP_SIZE_Y])
-{
-	SDL_Surface *temp;
-	// load ground
-	temp   = IMG_Load(filename);
-	ground[x][y] = SDL_DisplayFormat(temp);
-	SDL_FreeSurface(temp);
-}
-*/
-
-
-void loadScenario(char* filename, int background[MAP_SIZE_X][MAP_SIZE_Y])
-{
-	FILE* pInput;
-
-	char buf[BUFFER_SIZE];
-	
-	pInput = fopen(filename, "r");
-	int x = 0;
-	int y = 0;
-
-	while(fgets(buf, sizeof(buf), pInput) != NULL)
-	{
-		char *tok = strtok(buf, ",");
-		int max = MAP_SIZE_Y;
-		for(x = 0; x < max;x++){
-	 	        background[x][y]= atoi(tok);
-			tok = strtok(NULL, ",");
-		}
-		y++;
-	}
-	fclose (pInput);
-}
-
 /*void drawSprite(SDL_Surface* image, SDL_Surface* dest, int x, int y, int frame_dir, int frame_anim)
-{q
+{
 	//posicion
 	SDL_Rect  rcSrc, posicion;
 	posicion.x = x;

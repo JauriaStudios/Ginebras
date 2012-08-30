@@ -21,16 +21,16 @@
 LDFLAGS = `sdl-config --libs` -lSDL_image -lSDL_mixer -lz
 CCFLAGS = -O2 -Wall `sdl-config --cflags` -g
 #
-OBJS = 	src/main.o src/characters.o
+OBJS = 	src/main.o src/characters.o src/map.o
 #
-default:	lol
+default:	ginebras
 
 %.o:		%.c
 		gcc -c -o $@ $? ${CCFLAGS}
 
-lol:	${OBJS}
+ginebras:	${OBJS}
 		gcc -o $@ $+ ${LDFLAGS}
 
 clean:		
-		rm ${OBJS}
+		rm ${OBJS} ginebras
 
