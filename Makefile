@@ -18,8 +18,8 @@
 #   You should have received a copy of the GNU General Public License
 #   along with Meritous.  If not, see <http://www.gnu.org/licenses/>.
 #
-LDFLAGS = `sdl-config --libs` -lSDL_image -lSDL_mixer -lz `xml2-config --cflags --libs`
-CCFLAGS = -O2 -Wall `sdl-config --cflags` -g `xml2-config --cflags --libs`
+LDFLAGS = `sdl-config --libs` -lSDL_image -lSDL_mixer -lz `xml2-config --libs`
+CCFLAGS = -O2 -Wall `sdl-config --cflags` -g `xml2-config --cflags`
 #
 OBJS = 	src/main.o src/characters.o src/map.o 
 #
