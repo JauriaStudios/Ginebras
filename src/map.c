@@ -1,3 +1,5 @@
+
+
 #include "map.h"
 
 Map* MapConstructor()
@@ -19,6 +21,8 @@ Map* MapConstructor()
 void MapLoad(Map * map, char* file)
 {
 	char lineRead[1024];
+
+	parseMap("data/map.tmx");
 	
 	map -> pInput = fopen( file, "r");
 
@@ -95,4 +99,60 @@ SDL_Surface* loadImage2lol(char* filename)
  
     //devolver imagen final
     return image;
+}
+
+void parseLayer (xmlDocPtr map, xmlNodePtr cur)
+{
+
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"data"))) {
+		    key = xmlNodeListGetString(map, cur->xmlChildrenNode, 1);
+		    printf("layer: %s\n", key);
+		    xmlFree(key);
+ 	    }
+	cur = cur->next;
+	}
+    return;
+}
+
+void parseMap(char *mapname)
+{
+
+	xmlDocPtr map;
+	xmlNodePtr cur;
+
+	map = xmlParseFile(mapname);
+	
+	if (map == NULL ) {
+		fprintf(stderr,"Map not parsed successfully. \n");
+		return;
+	}
+	
+	cur = xmlDocGetRootElement(map);
+	
+	if (cur == NULL) {
+		fprintf(stderr,"empty map\n");
+		xmlFreeDoc(map);
+		return;
+	}
+	
+	if (xmlStrcmp(cur->name, (const xmlChar *) "map")) {
+		fprintf(stderr,"document of the wrong type, root node != story");
+		xmlFreeDoc(map);
+		return;
+	}
+	
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"layer"))){
+			parseLayer (map, cur);
+		}
+		 
+	cur = cur->next;
+	}
+	
+	xmlFreeDoc(map);
+	return;
 }
