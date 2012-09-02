@@ -5,10 +5,13 @@ Map* MapConstructor()
 	Map * map;
 	map = (Map *)malloc(sizeof(Map));
 
-	map -> rcGrassSrc.x = 0;
-	map -> rcGrassSrc.y = 0;
 	map -> rcGrassDest.x = 0;
 	map -> rcGrassDest.y = 0;
+
+	map -> rcGrassSrc.x = 0;
+	map -> rcGrassSrc.y = 0;
+	map -> rcGrassSrc.w = 32;
+	map -> rcGrassSrc.h = 32;
 
 	return map;
 }
@@ -54,7 +57,7 @@ void MapDraw(Map * map, SDL_Surface* screen)
 		for (y = 0; y < 40; y++) { //NUM_TILES_Y
 			map -> rcGrassDest.x = x * 32;
 			map -> rcGrassDest.y = y * 32;
-			SDL_BlitSurface(map->surfaceBackground[x][y], NULL, screen, &map -> rcGrassDest);
+			SDL_BlitSurface(map->surfaceBackground[x][y], &map->rcGrassSrc, screen, &map -> rcGrassDest);
 			
 		}
 	}
