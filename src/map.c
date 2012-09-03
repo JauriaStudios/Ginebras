@@ -1,19 +1,20 @@
-
-
 #include "map.h"
 
 Map* MapConstructor()
 {
 	Map * map;
 	map = (Map *)malloc(sizeof(Map));
-
+	
 	map -> rcGrassDest.x = 0;
 	map -> rcGrassDest.y = 0;
-
+	
 	map -> rcGrassSrc.x = 0;
 	map -> rcGrassSrc.y = 0;
 	map -> rcGrassSrc.w = 32;
 	map -> rcGrassSrc.h = 32;
+
+	map -> scroll_x = 0;
+	map -> scroll_y = 0;
 
 	return map;
 }
@@ -21,14 +22,14 @@ Map* MapConstructor()
 void MapLoad(Map * map, char* file)
 {
 	char lineRead[1024];
-
+	
 	parseMap("data/map.tmx");
 	
 	map -> pInput = fopen( file, "r");
-
+	
 	int x = 0;
 	int y = 0;
-
+	
 	while(fgets(lineRead, sizeof(lineRead), map -> pInput) != NULL)
 	{
 		char *tok = strtok(lineRead, ",");
@@ -47,9 +48,33 @@ void MapLoad(Map * map, char* file)
 }
 
 
-void MapUpdate(Map * map)
+void MapUpdate(Map * map,int x ,int y)
 {
-	printf("lol");
+	if ((x <= 64) && (y <= 64)){
+		map -> scroll_x = map -> scroll_x + 3;
+		map -> scroll_y = map -> scroll_y + 3;
+	}
+	else if ((x <= 64) && (y >= 500)){
+		map -> scroll_x = map -> scroll_x + 3;
+		map -> scroll_y = map -> scroll_y - 3;
+	}
+	else if ((y >= 540) && (x >= 700)){
+		map -> scroll_x = map -> scroll_x - 3;
+		map -> scroll_y = map -> scroll_y - 3;
+	}
+	else if ((y <= 64) && (x >= 700)){
+		map -> scroll_x = map -> scroll_x - 3;
+		map -> scroll_y = map -> scroll_y + 3;
+	}
+	else if (x <= 64)
+		map -> scroll_x = map -> scroll_x + 3;
+	else if (x >= 700)
+		map -> scroll_x = map -> scroll_x - 3;
+	else if (y <= 64)
+		map -> scroll_y = map -> scroll_y + 3;
+	else if (y >= 500)
+		map -> scroll_y = map -> scroll_y - 3;
+
 }
 
 void MapDraw(Map * map, SDL_Surface* screen)
@@ -59,8 +84,8 @@ void MapDraw(Map * map, SDL_Surface* screen)
 
 	for (x = 0; x < 40; x++) { //NUM_TILES_X
 		for (y = 0; y < 40; y++) { //NUM_TILES_Y
-			map -> rcGrassDest.x = x * 32;
-			map -> rcGrassDest.y = y * 32;
+			map -> rcGrassDest.x = x * 32 + map -> scroll_x;
+			map -> rcGrassDest.y = y * 32 + map -> scroll_y;
 			SDL_BlitSurface(map->surfaceBackground[x][y], &map->rcGrassSrc, screen, &map -> rcGrassDest);
 			
 		}
@@ -114,45 +139,45 @@ void parseLayer (xmlDocPtr map, xmlNodePtr cur)
  	    }
 	cur = cur->next;
 	}
-    return;
+	return;
 }
 
 void parseMap(char *mapname)
 {
 
-	xmlDocPtr map;
+	xmlDocPtr doc;
 	xmlNodePtr cur;
 
-	map = xmlParseFile(mapname);
+	doc = xmlParseFile(mapname);
 	
-	if (map == NULL ) {
+	if (doc == NULL ) {
 		fprintf(stderr,"Map not parsed successfully. \n");
 		return;
 	}
 	
-	cur = xmlDocGetRootElement(map);
+	cur = xmlDocGetRootElement(doc);
 	
 	if (cur == NULL) {
 		fprintf(stderr,"empty map\n");
-		xmlFreeDoc(map);
+		xmlFreeDoc(doc);
 		return;
 	}
 	
 	if (xmlStrcmp(cur->name, (const xmlChar *) "map")) {
 		fprintf(stderr,"document of the wrong type, root node != story");
-		xmlFreeDoc(map);
+		xmlFreeDoc(doc);
 		return;
 	}
 	
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"layer"))){
-			parseLayer (map, cur);
+			parseLayer (doc, cur);
 		}
-		 
+	
 	cur = cur->next;
 	}
 	
-	xmlFreeDoc(map);
+	xmlFreeDoc(doc);
 	return;
 }

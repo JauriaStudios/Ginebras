@@ -30,12 +30,6 @@ int NUM_TILES_Y = (SCREEN_HEIGHT / TILE_SIZE) + 1;
 
 SDL_Rect rcCursor;
 
-//void loadBackgroundImages(char *filename, int x, int y, SDL_Surface *ground[MAP_SIZE_X][MAP_SIZE_Y]);
-
-void loadScenario(char *filename,int background[][MAP_SIZE_Y]);
-
-//void drawSprite(SDL_Surface* image, SDL_Surface* dest, int x, int y, int frame_dir, int frame_anim);
-
 void HandleEvent(SDL_Event event, Character* character, Cursor* cursor);
 
 void moveCursor(char *cursorDirection);
@@ -166,6 +160,7 @@ int main(int argc, char** argv)
 			isCollide(&rcSprite);
 		*/
 
+		MapUpdate(map, cursor->rcDest.x, cursor->rcDest.y);
 		// draw the background
 		MapDraw(map, screen);
 		
@@ -190,11 +185,11 @@ int main(int argc, char** argv)
 		CharacterDraw(topos, screen);
 
 		// draw the cursor
-		CursorDraw(cursor, screen);		
+		CursorDraw(cursor, screen);	
+		//SDL_Flip(screen);//doble buffer	
 		
 		// update the screen 
 		SDL_UpdateRect(screen, 0, 0, 0, 0);
-
 		// Cap the frame rate
 		if( timer->startTicks < 1000 / FRAMES_PER_SECOND ){
             SDL_Delay( ( 1000 / FRAMES_PER_SECOND ) - timer->startTicks );
@@ -209,29 +204,6 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-/*void drawSprite(SDL_Surface* image, SDL_Surface* dest, int x, int y, int frame_dir, int frame_anim)
-{
-	//posicion
-	SDL_Rect  rcSrc, posicion;
-	posicion.x = x;
-	posicion.y = y;
-
-	// 
-	frame_anim = frame_anim * 64;
-	frame_dir = frame_dir * 64;
-
-	// Coordenadas de la imagen fuente
-	rcSrc.x = frame_anim;
-	rcSrc.y = frame_dir;
-	
-	// Tamaño imagen fuente
-	rcSrc.w = SPRITE_SIZE;
-	rcSrc.h = SPRITE_SIZE;
-
-	//escribir imagen en destino, posicion (x,y)
-	SDL_BlitSurface(image, &rcSrc, dest, &posicion);
-}
-*/
 void HandleEvent(SDL_Event event, Character* character, Cursor* cursor)
 {
 	switch (event.type) {
