@@ -33,7 +33,7 @@ void MapLoad(Map * map, char* file)
 	while(fgets(lineRead, sizeof(lineRead), map -> pInput) != NULL)
 	{
 		char *tok = strtok(lineRead, ",");
-		int max = 40;
+		int max = MAP_SIZE_X;
 		for(x = 0; x < max;x++){
 			char bgTileName[20];
 			
@@ -82,10 +82,10 @@ void MapDraw(Map * map, SDL_Surface* screen)
 	int x = 0;
 	int y = 0;
 
-	for (x = 0; x < 40; x++) { //NUM_TILES_X
-		for (y = 0; y < 40; y++) { //NUM_TILES_Y
-			map -> rcGrassDest.x = x * 32 + map -> scroll_x;
-			map -> rcGrassDest.y = y * 32 + map -> scroll_y;
+	for (x = 0; x < MAP_SIZE_X; x++) {
+		for (y = 0; y < MAP_SIZE_Y; y++) {
+			map -> rcGrassDest.x = x * TILE_SIZE + map -> scroll_x;
+			map -> rcGrassDest.y = y * TILE_SIZE + map -> scroll_y;
 			SDL_BlitSurface(map->surfaceBackground[x][y], &map->rcGrassSrc, screen, &map -> rcGrassDest);
 			
 		}
@@ -97,8 +97,8 @@ void MapClean(Map * map)
 	int x = 0;
 	int y = 0;
 
-	for (x = 0; x < 40; x++) { //NUM_TILES_X
-		for (y = 0; y < 40; y++) { //NUM_TILES_Y
+	for (x = 0; x < MAP_SIZE_X; x++) {
+		for (y = 0; y < MAP_SIZE_Y; y++) {
 			SDL_FreeSurface(map->surfaceBackground[x][y]);
 		}
 	}

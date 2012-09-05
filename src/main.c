@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
@@ -15,10 +15,7 @@
 
 #define TILE_SIZE	32
 
-#define BUFFER_SIZE 1024
 
-#define MAP_SIZE_X 40
-#define MAP_SIZE_Y 40
 
 #define FRAMES_PER_SECOND 30
 

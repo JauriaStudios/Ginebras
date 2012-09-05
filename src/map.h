@@ -6,7 +6,26 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
+
 //#include "cursor.h"
+
+#ifndef SCREEN_WIDTH
+#define SCREEN_WIDTH  	800
+#endif
+
+#ifndef SCREEN_HEIGHT
+#define SCREEN_HEIGHT 	600
+#endif
+
+#define BUFFER_SIZE 1024
+
+#define MAP_SIZE_X 40
+#define MAP_SIZE_Y 40
+
+#ifndef TILE_SIZE
+#define TILE_SIZE 32
+
+#endif
 
 /*****************************************************
  ******* STRUCTS *************************************
@@ -14,16 +33,14 @@
 
 typedef struct Map{	
 
-	SDL_Surface*	surfaceBackground[40][40];
-	SDL_Rect	rcGrassSrc;
-	SDL_Rect	rcGrassDest;
+	SDL_Surface*	surfaceBackground[MAP_SIZE_X][MAP_SIZE_Y];
+	SDL_Rect	rcGrassSrc, rcGrassDest;
 	
-	int scroll_x;
-	int scroll_y;
+	int scroll_x,scroll_y;
 	
 	FILE* pInput;
 
-	int background[40][40];
+	int background[MAP_SIZE_X][MAP_SIZE_Y];
 	//int objects[MAP_SIZE_X][MAP_SIZE_Y];
 	//int collisions[MAP_SIZE_X][MAP_SIZE_Y];
 	
