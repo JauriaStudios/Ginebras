@@ -16,64 +16,91 @@ Map* MapConstructor()
 	map -> scroll_x = 0;
 	map -> scroll_y = 0;
 
+	map -> scrollVel = 5;
+
+	map -> mapWidth = MAP_SIZE_X * TILE_SIZE + SCREEN_WIDTH;
+	map -> mapHeight = MAP_SIZE_Y * TILE_SIZE + SCREEN_HEIGHT;
+
+	map -> layer = NULL;
+
 	return map;
 }
 
 void MapLoad(Map * map, char* file)
 {
-	char lineRead[1024];
+	map -> layer = parseMap("data/map.tmx");
 	
-	parseMap("data/map.tmx");
-	
-	map -> pInput = fopen( file, "r");
+	map -> tileSet = loadImage2lol("data/mountain_landscape_19.png");
 	
 	int x = 0;
 	int y = 0;
 	
-	while(fgets(lineRead, sizeof(lineRead), map -> pInput) != NULL)
-	{
-		char *tok = strtok(lineRead, ",");
-		int max = MAP_SIZE_X;
-		for(x = 0; x < max;x++){
+	char rowsDelimiter[]="\n";
+	char colsDelimiter[]=",";
+	
+	char *tileRows = strtok((char*)map->layer, rowsDelimiter);
+	
+	char *lines[1024]; 
+	
+	for (x = 0; x < MAP_SIZE_X; x++) {
+		lines[x] = tileRows;
+		//printf("%s\n",lines[x]);
+		tileRows = strtok(NULL, rowsDelimiter);
+	}
+	
+	for (x = 0; x < MAP_SIZE_X; x++) {
+		char *tileCols = strtok(lines[x], colsDelimiter);
+		for (y = 0; y < MAP_SIZE_Y; y++) {
+			
 			char bgTileName[20];
 			
-			sprintf(bgTileName, "data/%d.bmp",atoi(tok));
-	 	        map -> background[x][y]= atoi(tok);
-			map -> surfaceBackground[x][y] = loadImage2lol(bgTileName);
-			tok = strtok(NULL, ",");
+			sprintf(bgTileName, "data/%s.bmp",tileCols);
+	 	        map -> background[y][x]= atoi(tileCols);
+			map -> surfaceBackground[y][x] = loadImage2lol(bgTileName);
+			tileCols = strtok(NULL, colsDelimiter);
 		}
-		y++;
 	}
-	fclose (map -> pInput);
 }
 
 
-void MapUpdate(Map * map,int x ,int y)
+void MapUpdate(Map * map,SDL_Rect cursorCoords)
 {
+	int x = 0;
+	int y = 0;
+
+	x = cursorCoords.x;
+	y = cursorCoords.y;
+
+
 	if ((x <= 64) && (y <= 64)){
-		map -> scroll_x = map -> scroll_x + 3;
-		map -> scroll_y = map -> scroll_y + 3;
+		map -> scroll_x += map -> scrollVel;
+		map -> scroll_y += map -> scrollVel;
 	}
 	else if ((x <= 64) && (y >= 500)){
-		map -> scroll_x = map -> scroll_x + 3;
-		map -> scroll_y = map -> scroll_y - 3;
+		map -> scroll_x += map -> scrollVel;
+		map -> scroll_y -= map -> scrollVel;
 	}
-	else if ((y >= 540) && (x >= 700)){
-		map -> scroll_x = map -> scroll_x - 3;
-		map -> scroll_y = map -> scroll_y - 3;
+	else if ((y >= 500) && (x >= 650)){
+		map -> scroll_x -= map -> scrollVel;
+		map -> scroll_y -= map -> scrollVel;
 	}
-	else if ((y <= 64) && (x >= 700)){
-		map -> scroll_x = map -> scroll_x - 3;
-		map -> scroll_y = map -> scroll_y + 3;
+	else if ((y <= 64) && (x >= 650)){
+		map -> scroll_x -= map -> scrollVel;
+		map -> scroll_y += map -> scrollVel;
 	}
-	else if (x <= 64)
-		map -> scroll_x = map -> scroll_x + 3;
-	else if (x >= 700)
-		map -> scroll_x = map -> scroll_x - 3;
-	else if (y <= 64)
-		map -> scroll_y = map -> scroll_y + 3;
-	else if (y >= 500)
-		map -> scroll_y = map -> scroll_y - 3;
+	else if (x <= 64){
+		map -> scroll_x += map -> scrollVel;
+	}
+	else if (x >= 650){
+		map -> scroll_x -= map -> scrollVel;
+	}
+	else if (y <= 64){
+		map -> scroll_y += map -> scrollVel;
+	}
+	else if (y >= 500){
+		map -> scroll_y -= map -> scrollVel;
+	}
+	else{}
 
 }
 
@@ -86,7 +113,7 @@ void MapDraw(Map * map, SDL_Surface* screen)
 		for (y = 0; y < MAP_SIZE_Y; y++) {
 			map -> rcGrassDest.x = x * TILE_SIZE + map -> scroll_x;
 			map -> rcGrassDest.y = y * TILE_SIZE + map -> scroll_y;
-			SDL_BlitSurface(map->surfaceBackground[x][y], &map->rcGrassSrc, screen, &map -> rcGrassDest);
+			SDL_BlitSurface(map->surfaceBackground[x][y], &map -> rcGrassSrc, screen, &map -> rcGrassDest);
 			
 		}
 	}
@@ -102,6 +129,8 @@ void MapClean(Map * map)
 			SDL_FreeSurface(map->surfaceBackground[x][y]);
 		}
 	}
+	SDL_FreeSurface(map->tileSet);
+	xmlFree(map -> layer);
 }
 
 SDL_Surface* loadImage2lol(char* filename)
@@ -126,33 +155,35 @@ SDL_Surface* loadImage2lol(char* filename)
     return image;
 }
 
-void parseLayer (xmlDocPtr map, xmlNodePtr cur)
+xmlChar* parseLayer (xmlDocPtr map, xmlNodePtr cur)
 {
-
 	xmlChar *key;
+	xmlChar* tmp = NULL;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"data"))) {
-		    key = xmlNodeListGetString(map, cur->xmlChildrenNode, 1);
-		    printf("layer: %s\n", key);
-		    xmlFree(key);
- 	    }
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"data"))) {
+			key = xmlNodeListGetString(map, cur->xmlChildrenNode, 1);
+			tmp = key; 
+			//printf("layer: %s\n", tmp);   
+		    	//xmlFree(key);
+ 		}
 	cur = cur->next;
 	}
-	return;
+	return tmp;
 }
 
-void parseMap(char *mapname)
+xmlChar* parseMap(char *mapname)
 {
 
 	xmlDocPtr doc;
 	xmlNodePtr cur;
+	xmlChar * tmp = NULL;
 
 	doc = xmlParseFile(mapname);
 	
 	if (doc == NULL ) {
 		fprintf(stderr,"Map not parsed successfully. \n");
-		return;
+		return NULL;
 	}
 	
 	cur = xmlDocGetRootElement(doc);
@@ -160,24 +191,25 @@ void parseMap(char *mapname)
 	if (cur == NULL) {
 		fprintf(stderr,"empty map\n");
 		xmlFreeDoc(doc);
-		return;
+		return NULL;
 	}
 	
 	if (xmlStrcmp(cur->name, (const xmlChar *) "map")) {
 		fprintf(stderr,"document of the wrong type, root node != story");
 		xmlFreeDoc(doc);
-		return;
+		return NULL;
 	}
 	
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"layer"))){
-			parseLayer (doc, cur);
+			tmp = parseLayer (doc, cur);
+			//printf("%s", tmp);
 		}
 	
 	cur = cur->next;
 	}
 	
-	xmlFreeDoc(doc);
-	return;
+	//xmlFreeDoc(tmp);
+	return tmp;
 }

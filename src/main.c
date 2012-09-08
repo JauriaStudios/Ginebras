@@ -156,8 +156,13 @@ int main(int argc, char** argv)
 		else
 			isCollide(&rcSprite);
 		*/
+		// update events
+		
+		MapUpdate(map, cursor -> rcDest);
+		
+		// fill screen black
+		SDL_FillRect(screen, NULL, 0);
 
-		MapUpdate(map, cursor->rcDest.x, cursor->rcDest.y);
 		// draw the background
 		MapDraw(map, screen);
 		

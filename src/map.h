@@ -34,11 +34,12 @@
 typedef struct Map{	
 
 	SDL_Surface*	surfaceBackground[MAP_SIZE_X][MAP_SIZE_Y];
+	SDL_Surface*	tileSet;
 	SDL_Rect	rcGrassSrc, rcGrassDest;
 	
-	int scroll_x,scroll_y;
-	
-	FILE* pInput;
+	int scroll_x,scroll_y, scrollVel, mapWidth, mapHeight;
+
+	xmlChar* layer;
 
 	int background[MAP_SIZE_X][MAP_SIZE_Y];
 	//int objects[MAP_SIZE_X][MAP_SIZE_Y];
@@ -53,13 +54,13 @@ typedef struct Map{
 
 extern Map* MapConstructor();
 extern void MapLoad(Map * map, char* file);
-extern void MapUpdate(Map * map,int x, int y);
+extern void MapUpdate(Map * map, SDL_Rect);
 extern void MapDraw(Map * map, SDL_Surface* screen);
 extern void MapClean(Map * map);
 
 SDL_Surface* loadImage2lol(char* filename);
 
-extern void parseLayer (xmlDocPtr map, xmlNodePtr cur);
-extern void parseMap(char *mapname);
+extern xmlChar* parseLayer (xmlDocPtr map, xmlNodePtr cur);
+extern xmlChar* parseMap(char *mapname);
 
 #endif
