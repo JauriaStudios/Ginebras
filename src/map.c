@@ -1,5 +1,8 @@
 #include "map.h"
 
+static xmlChar* parseLayer (xmlDocPtr map, xmlNodePtr cur);
+static xmlChar* parseMap(char *mapname);
+
 Map* MapConstructor()
 {
 	Map * map;
@@ -28,9 +31,9 @@ Map* MapConstructor()
 
 void MapLoad(Map * map, char* file)
 {
-	map -> layer = parseMap("data/map.tmx");
+	map -> layer = parseMap(file);
 	
-	map -> tileSet = loadImage2lol("data/mountain_landscape_19.png");
+	map -> tileSet = loadImage("data/mountain_landscape_19.png");
 	
 	int x = 0;
 	int y = 0;
@@ -55,22 +58,21 @@ void MapLoad(Map * map, char* file)
 			char bgTileName[20];
 			
 			sprintf(bgTileName, "data/%s.bmp",tileCols);
-	 	        map -> background[y][x]= atoi(tileCols);
-			map -> surfaceBackground[y][x] = loadImage2lol(bgTileName);
+	 	    map -> background[y][x]= atoi(tileCols);
+			map -> surfaceBackground[y][x] = loadImage(bgTileName);
 			tileCols = strtok(NULL, colsDelimiter);
 		}
 	}
 }
 
 
-void MapUpdate(Map * map,SDL_Rect cursorCoords)
+void MapUpdate(Map * map, SDL_Rect cursorCoords)
 {
 	int x = 0;
 	int y = 0;
 
 	x = cursorCoords.x;
 	y = cursorCoords.y;
-
 
 	if ((x <= 64) && (y <= 64)){
 		map -> scroll_x += map -> scrollVel;
@@ -119,7 +121,7 @@ void MapDraw(Map * map, SDL_Surface* screen)
 	}
 }
 
-void MapClean(Map * map)
+void MapDestructor(Map * map)
 {
 	int x = 0;
 	int y = 0;
@@ -131,28 +133,6 @@ void MapClean(Map * map)
 	}
 	SDL_FreeSurface(map->tileSet);
 	xmlFree(map -> layer);
-}
-
-SDL_Surface* loadImage2lol(char* filename)
-{
-    SDL_Surface* temp = NULL;
-    SDL_Surface* image = NULL;
- 
-    //cargar imagen temporal
-    temp = IMG_Load(filename);
-    if(temp == NULL ) return NULL;
- 
-    //cambiar formato y liberar imagen temp
-    image = SDL_DisplayFormat(temp);
-    SDL_FreeSurface(temp);
-    if(image == NULL) return NULL;
- 
-    //elegimos como color el 'rosa magico' y lo hacemos color clave
-    Uint32 colorKey = SDL_MapRGB(image->format, 0xFF, 0, 0xFF);
-    SDL_SetColorKey(image, SDL_SRCCOLORKEY, colorKey);
- 
-    //devolver imagen final
-    return image;
 }
 
 xmlChar* parseLayer (xmlDocPtr map, xmlNodePtr cur)

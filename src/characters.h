@@ -1,26 +1,29 @@
 #ifndef _CHARACTER_H_
 #define _CHARACTER_H_
 
+#include <math.h>
+#include "list.h"
+
 #include "SDL.h"
 #include "SDL_image.h"
-//#include "cursor.h"
+#include "cursor.h"
+#include "gameUtilities.h"
 
-#define SPRITE_SIZE   	64
+#define NUM_SKIP_FRAMES 5
 
-/*****************************************************
- ******* STRUCTS *************************************
- *****************************************************/
-typedef enum Orientation {
-	ORIENT_NORTH,
-	ORIENT_WEST,
-	ORIENT_SOUTH,
-	ORIENT_EAST,
-}Orientation;
-
+/**********************************************************
+ ******* STRUCTS 
+ **********************************************************/
 typedef struct DestinationPoint{
 	int x;
 	int y;
 } DestinationPoint;
+
+typedef enum Player {
+	PLAYER1,
+	PLAYER2,
+	IA,
+} Player;
 
 typedef struct Character{
 
@@ -30,38 +33,34 @@ typedef struct Character{
 	DestinationPoint destinationPoint;
 	int velocity;
 
+	int player;
+	struct list_head list;
+	struct list_head listSort;
+
 	// move
 	unsigned moving;
 	int moveSteps;
 	int actualStep;
 	int* moveY;
 	int* moveX;
-	Orientation moveOrient;
+	int moveOrient;
 	int moveState; // 1, 2 ... 8 ; 0 stop   
+	// Anti speed
+	int skipFrames;
+
+	// Turn
+	int iniciative;
+	int check;
 
 } Character;
 
-typedef struct Cursor{
-
-	SDL_Surface* sprite;
-	SDL_Rect	 rcSrc;
-	SDL_Rect     rcDest; 
-
-} Cursor;
-
-/*****************************************************
- ******* METHODS *************************************
- *****************************************************/
-extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0);
+/**********************************************************
+ ******* METHODS 
+ **********************************************************/
+extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative);
+extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor);
 extern void CharacterMove(Character *character);
 extern void CharacterDraw(Character* character, SDL_Surface* screen);
 
-extern Cursor* CursorConstructor(int x0, int y0);
-extern void CursorDraw(Cursor* cursor, SDL_Surface* screen);
-extern void CursorMove(Cursor* cursor, Orientation orientation);
-
-SDL_Surface *loadImage(char *filename);
-
-#endif
-
+#endif //_CHARACTER_H_

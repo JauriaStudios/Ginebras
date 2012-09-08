@@ -21,7 +21,7 @@
 LDFLAGS = `sdl-config --libs` -lSDL_image -lSDL_mixer -lz `xml2-config --libs`
 CCFLAGS = -O2 -Wall `sdl-config --cflags` -g `xml2-config --cflags`
 #
-OBJS = 	src/main.o src/characters.o src/map.o 
+OBJS = 	src/main.o src/cursor.o src/characters.o src/timer.o src/structsGames.o src/gameUtilities.o src/map.o
 #
 default:	ginebras
 
@@ -32,5 +32,5 @@ ginebras:	${OBJS}
 		gcc -o $@ $+ ${LDFLAGS}
 
 clean:		
-		rm ${OBJS} ginebras
+		rm ${OBJS}
 

@@ -1,6 +1,6 @@
 #include "characters.h"
 
-Character* CharacterConstructor(char* file, Orientation or, int x0, int y0)
+Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative)
 {
 	Character* character;
 	character = (Character *)malloc(sizeof(Character));
@@ -19,7 +19,7 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0)
 	character->rcSrc.h = SPRITE_SIZE;
 	
 	// Set initial velocity
-	character->velocity = 3;
+	character->velocity = 2;
 
 	// Set initial destination point
 	character->destinationPoint.x = x0;
@@ -28,9 +28,26 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0)
 	// Set initial state
 	character->moving = 0;
 	character->actualStep = 0;
-	character->moveSteps = 0;
+	character->moveSteps  = 0;
+
+	// Set linked list
+	INIT_LIST_HEAD(&character->list);
+	INIT_LIST_HEAD(&character->listSort);
+
+	// Set initial turn variables
+	character->check = 0;
+	character->iniciative = iniciative;
 
 	return character;
+}
+
+void CharacterDestructor(Character *character)
+{
+	// Free character image
+	SDL_FreeSurface(character->sprite);
+
+	// Free character
+	free(character);
 }
 
 void CharacterSetDestination(Character* character, Cursor* cursor)
@@ -40,9 +57,11 @@ void CharacterSetDestination(Character* character, Cursor* cursor)
 	int stepsX, stepsY;
 	
 	// Set status move
-	character->moving = 1;
+	character->moving     = 1;
 	character->actualStep = 0;
-	character->moveState = 1;
+	character->moveState  = 1;
+	character->moveSteps  = 0;
+	character->skipFrames = 0;
 
 	// Set destination point
 	character->destinationPoint.x = cursor->rcDest.x;
@@ -66,12 +85,8 @@ void CharacterSetDestination(Character* character, Cursor* cursor)
 	//printf("STEPS X: %d\n", stepsX);
 	stepsY = abs( dy ) / character->velocity;
 	//printf("STEPS Y: %d\n", stepsY);
-
-	if(stepsX > stepsY){
-		character->moveSteps = stepsX;
-	}else{
-		character->moveSteps = stepsY;
-	}
+	
+	character->moveSteps = ceil(sqrt( (stepsX*stepsX) + (stepsY*stepsY) ));
 	
 	// Set orientation movement
 	if( (dy < 0) && (stepsY > stepsX) )
@@ -109,7 +124,7 @@ void CharacterSetDestination(Character* character, Cursor* cursor)
 
 void CharacterMove(Character *character)
 {
-	// Set the coordenates
+	// Set the coordenates, if character is moving
 	if( character->actualStep < character->moveSteps ){
 		character->rcDest.x = character->moveX[character->actualStep];
 		character->rcDest.y = character->moveY[character->actualStep];
@@ -117,10 +132,14 @@ void CharacterMove(Character *character)
 
 		// Animation
 		character->rcSrc.y = character->moveOrient * SPRITE_SIZE;
-		if (character->moveState == 8)
-			character->moveState = 1;
-		else
-			character->moveState++;
+		if(character->skipFrames == NUM_SKIP_FRAMES) {
+			if (character->moveState == 8)
+				character->moveState = 1;
+			else
+				character->moveState++;
+			character->skipFrames = 0;
+		}else
+			character->skipFrames++;
 	}else
 		character->moveState = 0;
 	character->rcSrc.x = character->moveState * SPRITE_SIZE;
@@ -129,68 +148,4 @@ void CharacterMove(Character *character)
 void CharacterDraw(Character* character, SDL_Surface* screen)
 {
 	SDL_BlitSurface(character->sprite, &character->rcSrc, screen, &character->rcDest);
-}
-
-
-Cursor* CursorConstructor(int x0, int y0)
-{
-	Cursor* cursor;
-	cursor = (Cursor *)malloc(sizeof(Cursor));
-	// Load sprites image
-	if ((cursor->sprite = loadImage("data/cursor.png")) == NULL)
-		return NULL;
-	
-	// Set sprite initial position
-	cursor->rcDest.x = x0;
-	cursor->rcDest.y = y0;	
-
-	return cursor;
-}
-
-void CursorDraw(Cursor* cursor, SDL_Surface* screen)
-{
-	SDL_BlitSurface(cursor->sprite, NULL, screen, &cursor->rcDest);
-}
-
-void CursorMove(Cursor* cursor, Orientation orientation)
-{
-	switch (orientation) {
-		case ORIENT_WEST:
-			cursor->rcDest.x = cursor->rcDest.x - SPRITE_SIZE; 
-			break;
-		case ORIENT_EAST:
-			cursor->rcDest.x = cursor->rcDest.x + SPRITE_SIZE;
-			break;
-		case ORIENT_SOUTH:
-			cursor->rcDest.y = cursor->rcDest.y + SPRITE_SIZE;
-			break;
-		case ORIENT_NORTH:
-			cursor->rcDest.y = cursor->rcDest.y - SPRITE_SIZE;
-			break;
-		default:
-			break;
-	}
-
-}
-
-SDL_Surface* loadImage(char* filename)
-{
-    SDL_Surface* temp = NULL;
-    SDL_Surface* image = NULL;
- 
-    //cargar imagen temporal
-    temp = IMG_Load(filename);
-    if(temp == NULL ) return NULL;
- 
-    //cambiar formato y liberar imagen temp
-    image = SDL_DisplayFormat(temp);
-    SDL_FreeSurface(temp);
-    if(image == NULL) return NULL;
- 
-    //elegimos como color el 'rosa magico' y lo hacemos color clave
-    Uint32 colorKey = SDL_MapRGB(image->format, 0xFF, 0, 0xFF);
-    SDL_SetColorKey(image, SDL_SRCCOLORKEY, colorKey);
- 
-    //devolver imagen final
-    return image;
 }

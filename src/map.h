@@ -6,6 +6,7 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
+#include "gameUtilities.h"
 
 //#include "cursor.h"
 
@@ -27,17 +28,16 @@
 
 #endif
 
-/*****************************************************
- ******* STRUCTS *************************************
- *****************************************************/
-
+/**********************************************************
+ *** STRUCTS
+ **********************************************************/
 typedef struct Map{	
 
 	SDL_Surface*	surfaceBackground[MAP_SIZE_X][MAP_SIZE_Y];
 	SDL_Surface*	tileSet;
-	SDL_Rect	rcGrassSrc, rcGrassDest;
+	SDL_Rect		rcGrassSrc, rcGrassDest;
 	
-	int scroll_x,scroll_y, scrollVel, mapWidth, mapHeight;
+	int scroll_x, scroll_y, scrollVel, mapWidth, mapHeight;
 
 	xmlChar* layer;
 
@@ -48,19 +48,13 @@ typedef struct Map{
 } Map;
 
 
-/*****************************************************
- ******* METHODS *************************************
- *****************************************************/
-
+/**********************************************************
+ *** METHODS
+ **********************************************************/
 extern Map* MapConstructor();
 extern void MapLoad(Map * map, char* file);
-extern void MapUpdate(Map * map, SDL_Rect);
+extern void MapUpdate(Map * map, SDL_Rect cursorCoords);
 extern void MapDraw(Map * map, SDL_Surface* screen);
-extern void MapClean(Map * map);
-
-SDL_Surface* loadImage2lol(char* filename);
-
-extern xmlChar* parseLayer (xmlDocPtr map, xmlNodePtr cur);
-extern xmlChar* parseMap(char *mapname);
+extern void MapDestructor(Map * map);
 
 #endif
