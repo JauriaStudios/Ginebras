@@ -38,8 +38,8 @@ void MapLoad(Map * map, char* file)
 	int x = 0;
 	int y = 0;
 	
-	char rowsDelimiter[]="\n";
-	char colsDelimiter[]=",";
+	char *rowsDelimiter = "\n";
+	char *colsDelimiter = ",";
 	
 	char *tileRows = strtok((char*)map->layer, rowsDelimiter);
 	
