@@ -34,35 +34,37 @@ void MapLoad(Map * map, char* file)
 	map -> layer = parseMap(file);
 	
 	map -> tileSet = loadImage("data/mountain_landscape_19.png");
-	
-	int x = 0;
-	int y = 0;
-	
+
+
+	char *str1, *str2, *token, *subtoken;
+        char *saveptr1, *saveptr2;
+
 	char *rowsDelimiter = "\n";
 	char *colsDelimiter = ",";
-	
-	char *tileRows = strtok((char*)map->layer, rowsDelimiter);
-	
-	char *lines[1024]; 
-	
-	for (x = 0; x < MAP_SIZE_X; x++) {
-		lines[x] = tileRows;
-		//printf("%s\n",lines[x]);
-		tileRows = strtok(NULL, rowsDelimiter);
-	}
-	
-	for (x = 0; x < MAP_SIZE_X; x++) {
-		char *tileCols = strtok(lines[x], colsDelimiter);
-		for (y = 0; y < MAP_SIZE_Y; y++) {
-			
+
+        int i;
+	int j;
+
+        for (i = 0, str1 = (char *)map->layer; ; i++, str1 = NULL) {
+		token = strtok_r(str1, rowsDelimiter, &saveptr1);
+                if (token == NULL)
+                	break;
+		//printf("Load Row %d\n",i);
+              	for (j = 0, str2 = token; ; j++, str2 = NULL) {
+                	subtoken = strtok_r(str2, colsDelimiter, &saveptr2);
+                	if (subtoken == NULL)
+                       		break;
+
+                   	//printf("|\t%s.bmp\t|", subtoken);
+
 			char bgTileName[20];
 			
-			sprintf(bgTileName, "data/%s.bmp",tileCols);
-	 	    map -> background[y][x]= atoi(tileCols);
-			map -> surfaceBackground[y][x] = loadImage(bgTileName);
-			tileCols = strtok(NULL, colsDelimiter);
-		}
-	}
+			sprintf(bgTileName, "data/%s.bmp",subtoken);
+	 	    	map -> background[j][i]= atoi(subtoken);
+			map -> surfaceBackground[j][i] = loadImage(bgTileName);
+
+               	}
+        }
 }
 
 
