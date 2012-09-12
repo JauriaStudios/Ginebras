@@ -36,7 +36,7 @@ typedef struct Map{
 	SDL_Surface*	surfaceBackground[MAP_SIZE_X][MAP_SIZE_Y];
 	SDL_Surface*	tileSet;
 	SDL_Rect		rcGrassSrc, rcGrassDest;
-	
+	int numLayers;
 	int scroll_x, scroll_y, scrollVel, mapWidth, mapHeight;
 
 	xmlChar* layer;
