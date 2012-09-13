@@ -7,7 +7,7 @@
 #include "characters.h"
 #include "timer.h"
 #include "cursor.h"
-#include "structsGames.h"
+#include "game.h"
 #include "gameUtilities.h"
 #include "map.h"
 

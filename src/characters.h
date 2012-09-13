@@ -12,7 +12,7 @@
 #define NUM_SKIP_FRAMES 5
 
 /**********************************************************
- ******* STRUCTS 
+ **** STRUCTS 
  **********************************************************/
 typedef struct DestinationPoint{
 	int x;
@@ -55,7 +55,7 @@ typedef struct Character{
 } Character;
 
 /**********************************************************
- ******* METHODS 
+ **** METHODS 
  **********************************************************/
 extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative);
 extern void CharacterDestructor(Character *character);
