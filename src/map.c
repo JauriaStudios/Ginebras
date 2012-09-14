@@ -1,8 +1,8 @@
 #include "map.h"
 
-static xmlChar* parseLayer (xmlDocPtr map, xmlNodePtr cur);
-static void getReference(xmlDocPtr map, xmlNodePtr cur);
-static xmlChar* parseMap(char *mapname);
+static xmlChar* parseLayer(xmlDocPtr map, xmlNodePtr cur);
+//static void MapGetReference(Map * map, xmlDocPtr map, xmlNodePtr cur);
+//static xmlChar* parseMap(char *mapname);
 
 Map* MapConstructor()
 {
@@ -33,7 +33,7 @@ Map* MapConstructor()
 
 void MapLoad(Map * map, char* file)
 {
-	map->layer = parseMap(file);
+	MapParseMap(map, file);
 	
 	map->tileSet = loadImage("data/mountain_landscape_19.png");
 
@@ -158,67 +158,35 @@ xmlChar* parseLayer (xmlDocPtr map, xmlNodePtr cur)
 	return tmp;
 }
 
-void getReference (xmlDocPtr doc, xmlNodePtr cur) 
+void MapGetReference (Map * map, xmlDocPtr doc, xmlNodePtr cur) 
 {
 //	printf("# Get Reference\n");
 
-	xmlChar *tileSetName;
-	xmlChar *tileSetWidth;
-	xmlChar *tileSetHeight;
 
-
-	xmlChar *firstGid;
-	
-	xmlChar *mapWidth;
-	xmlChar *mapHeight;
-	xmlChar *layerName;
-	
-	cur = cur->xmlChildrenNode;
+	//cur = cur->xmlChildrenNode;
 	
 	while (cur != NULL) {
 		
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"layer"))) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"image"))) {
 		
-			layerName = xmlGetProp(cur, (xmlChar*)"name");
-			mapWidth = xmlGetProp(cur, (xmlChar*)"width");
-			mapHeight = xmlGetProp(cur, (xmlChar*)"height");
+			map->layerName = (char)xmlGetProp(cur, (xmlChar*)"source");
+			map->tileSetWidth = (int)xmlGetProp(cur, (xmlChar*)"width");
+			map->tileSetHeight = (int)xmlGetProp(cur, (xmlChar*)"height");
 			
-			printf("layer: %s\n", layerName);
-			printf("width: %s\n", mapWidth);
-			printf("height: %s\n", mapHeight);
+			printf("layer: %d\n", map->layerName);
+			printf("width: %d\n", map->tileSetWidth);
+			printf("height: %d\n", map->tileSetHeight);
 
-			xmlFree(layerName);
-			xmlFree(mapWidth);
-			xmlFree(mapHeight);
+			xmlFree(&map->layerName);
+			xmlFree(&map->tileSetWidth);
+			xmlFree(&map->tileSetHeight);
 
-		}
-			
-		else if ((!xmlStrcmp(cur->name, (const xmlChar *)"image"))) {
-		
-			tileSetName = xmlGetProp(cur, (xmlChar*)"source");
-			tileSetWidth = xmlGetProp(cur, (xmlChar*)"width");
-			tileSetHeight = xmlGetProp(cur, (xmlChar*)"height");
-
-			printf("tileset name: %s\n", tileSetName);
-			printf("tileset width: %s\n", tileSetWidth);
-			printf("tileset height: %s\n", tileSetHeight);
-
-			xmlFree(tileSetName);
-			xmlFree(tileSetWidth);
-			xmlFree(tileSetHeight);
-
-		}
-		else if ((!xmlStrcmp(cur->name, (const xmlChar *)"tileset"))) {
-
-			firstGid = xmlGetProp(cur, (xmlChar*)"firstgid");
-			printf("firstgid: %s\n", firstGid);
-			xmlFree(firstGid);
 		}
 	cur = cur->next;
 	}
 }
 
-xmlChar* parseMap(char *mapname)
+void MapParseMap(Map* map, char *mapname)
 {
 //	printf("# Parse Map\n");
 	xmlDocPtr doc;
@@ -229,7 +197,7 @@ xmlChar* parseMap(char *mapname)
 	
 	if (doc == NULL ) {
 		fprintf(stderr,"Map not parsed successfully. \n");
-		return NULL;
+		//return NULL;
 	}
 	
 	cur = xmlDocGetRootElement(doc);
@@ -237,13 +205,13 @@ xmlChar* parseMap(char *mapname)
 	if (cur == NULL) {
 		fprintf(stderr,"empty map\n");
 		xmlFreeDoc(doc);
-		return NULL;
+		//return NULL;
 	}
 	
 	if (xmlStrcmp(cur->name, (const xmlChar *) "map")) {
 		fprintf(stderr,"document of the wrong type, root node != map");
 		xmlFreeDoc(doc);
-		return NULL;
+		//return NULL;
 	}
 	
 
@@ -253,16 +221,16 @@ xmlChar* parseMap(char *mapname)
 
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"tileset"))){
-			getReference(doc, cur);
+			MapGetReference(map, doc, cur);
 		}
-		else if ((!xmlStrcmp(cur->name, (const xmlChar *)"layer"))){
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"layer"))){
 			tmp = parseLayer (doc, cur);
 			//printf("%s", tmp);
 		}
 	
 	cur = cur->next;
 	}
+	map->layer = tmp;
 	
 	//xmlFreeDoc(tmp);
-	return tmp;
 }
