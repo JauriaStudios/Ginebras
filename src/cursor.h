@@ -17,5 +17,6 @@ extern Cursor* CursorConstructor(int x0, int y0);
 extern void CursorDestructor(Cursor *this);
 extern void CursorDraw(Cursor* cursor, SDL_Surface* screen);
 extern void CursorMove(Cursor* cursor, Orientation orientation);
+extern void CursorSetPosition(Cursor *cursor, int x, int y);
 
 #endif // _CURSOR_H_

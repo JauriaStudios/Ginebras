@@ -51,3 +51,9 @@ void CursorMove(Cursor* cursor, Orientation orientation)
 	}
 
 }
+
+void CursorSetPosition(Cursor *cursor, int x, int y)
+{
+	cursor->rcDest.x = x;
+	cursor->rcDest.y = y;
+}

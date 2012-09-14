@@ -13,6 +13,6 @@ typedef enum Orientation {
 	ORIENT_EAST,
 }Orientation;
 
-SDL_Surface *loadImage(char *filename);
+extern SDL_Surface* loadImage(char *filename);
 
 #endif // _GAMES_UTILITIES_H_

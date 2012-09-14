@@ -19,12 +19,6 @@ typedef struct DestinationPoint{
 	int y;
 } DestinationPoint;
 
-typedef enum Player {
-	PLAYER1,
-	PLAYER2,
-	IA,
-} Player;
-
 typedef struct Character{
 
 	SDL_Surface* sprite;
@@ -33,7 +27,6 @@ typedef struct Character{
 	DestinationPoint destinationPoint;
 	int velocity;
 
-	int player;
 	struct list_head list;
 	struct list_head listSort;
 
