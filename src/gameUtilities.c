@@ -10,7 +10,7 @@ SDL_Surface* loadImage(char* filename)
     if(temp == NULL ) return NULL;
  
     //cambiar formato y liberar imagen temp
-    image = SDL_DisplayFormat(temp);
+    image = SDL_DisplayFormatAlpha(temp);
     SDL_FreeSurface(temp);
     if(image == NULL) return NULL;
  
