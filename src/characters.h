@@ -22,6 +22,7 @@ typedef struct DestinationPoint{
 typedef struct Character{
 
 	SDL_Surface* sprite;
+	SDL_Surface* spriteSlash;
 	SDL_Rect	 rcSrc;
 	SDL_Rect     rcDest;
 	DestinationPoint destinationPoint;
@@ -45,6 +46,10 @@ typedef struct Character{
 	int iniciative;
 	int check;
 
+	// Attack
+	int attacking;
+	int moveState; // 1, 2 ... 5 ; 0 stop 
+
 } Character;
 
 /**********************************************************
@@ -55,5 +60,6 @@ extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor);
 extern void CharacterMove(Character *character);
 extern void CharacterDraw(Character* character, SDL_Surface* screen);
+extern void CharacterAttack(Character* character);
 
 #endif //_CHARACTER_H_

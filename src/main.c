@@ -17,7 +17,7 @@
 #define FRAMES_PER_SECOND 	10
 
 static void HandleEvent(SDL_Event event, Game *game, Cursor *cursor);
-extern Character** vectorCharsGen(int option);
+static Character** vectorCharsGen(int option);
 
 int modeCursor = 0;
 int gameover   = 0;
@@ -114,6 +114,9 @@ int main(int argc, char **argv)
 		// Draw Characters
 		GameDrawCharacters(game, screen);
 
+		// Attack character
+		//CharacterAttack(game->);		
+
 		// Draw the cursor
 		CursorDraw(cursor, screen);		
 
@@ -188,16 +191,17 @@ void HandleEvent(SDL_Event event, Game *game, Cursor* cursor)
 				default:
 					break;
 			}
-		/* handle the mouse */
-		/*case SDL_MOUSEBUTTONDOWN:
+		/*
+		//handle the mouse
+		case SDL_MOUSEBUTTONDOWN:
 			printf("Mouse button %d pressed at (%d,%d)\n",event.button.button, event.button.x, event.button.y);
-			if(character->rcDest.x == cursor->rcDest.x && character->rcDest.y == cursor->rcDest.y )
+			if(game->actualCharacter->rcDest.x == cursor->rcDest.x && game->actualCharacter->rcDest.y == cursor->rcDest.y )
 				break;
 			else
-				CharacterSetDestination(character, cursor);		
+				CharacterSetDestination(game->actualCharacter, cursor);		
 			break;
 		*/
-
+		default:
 			break;
 	}
 }
@@ -213,56 +217,56 @@ Character** vectorCharsGen(int option)
 
 	if(option == 1){
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/heroe1.png", ORIENT_SOUTH, 5*SPRITE_SIZE, 4*SPRITE_SIZE, 7))) {
+		if( !(character = CharacterConstructor("data/heroe1", ORIENT_SOUTH, 5*SPRITE_SIZE, 4*SPRITE_SIZE, 7))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/esqueletico.png", ORIENT_SOUTH, 2*SPRITE_SIZE, 4*SPRITE_SIZE, 6))){
+		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_SOUTH, 2*SPRITE_SIZE, 4*SPRITE_SIZE, 6))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos.png", ORIENT_SOUTH, 3*SPRITE_SIZE, 4*SPRITE_SIZE, 5))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 3*SPRITE_SIZE, 4*SPRITE_SIZE, 5))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos.png", ORIENT_SOUTH, 4*SPRITE_SIZE, 4*SPRITE_SIZE, 2))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 4*SPRITE_SIZE, 4*SPRITE_SIZE, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[3] = character;
 	}else {
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/heroe1.png", ORIENT_NORTH, 5*SPRITE_SIZE, 7*SPRITE_SIZE, 7))) {
+		if( !(character = CharacterConstructor("data/heroe1", ORIENT_NORTH, 5*SPRITE_SIZE, 7*SPRITE_SIZE, 7))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/esqueletico.png", ORIENT_NORTH, 2*SPRITE_SIZE, 7*SPRITE_SIZE, 6))){
+		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_NORTH, 2*SPRITE_SIZE, 7*SPRITE_SIZE, 6))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos.png", ORIENT_NORTH, 3*SPRITE_SIZE, 7*SPRITE_SIZE, 5))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 3*SPRITE_SIZE, 7*SPRITE_SIZE, 5))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos.png", ORIENT_NORTH, 4*SPRITE_SIZE, 7*SPRITE_SIZE, 2))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 4*SPRITE_SIZE, 7*SPRITE_SIZE, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}

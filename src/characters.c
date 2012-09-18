@@ -4,8 +4,13 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 {
 	Character* character;
 	character = (Character *)malloc(sizeof(Character));
-	// Load sprites image
-	if ((character->sprite = loadImage(file)) == NULL)
+	
+	// Load sprites movement image
+	if ((character->sprite = loadImage(strcat(file, ".png"))) == NULL)
+		return NULL;
+	
+	// Load sprites slash image
+	if ((character->sprite = loadImage(strcat(file, "Slash.png"))) == NULL)
 		return NULL;
 	
 	// Set sprite initial position
@@ -37,6 +42,9 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	// Set initial turn variables
 	character->check = 0;
 	character->iniciative = iniciative;
+
+	// Set initial attack variables
+	character->attackState = 0;
 
 	return character;
 }
@@ -148,4 +156,19 @@ void CharacterMove(Character *character)
 void CharacterDraw(Character* character, SDL_Surface* screen)
 {
 	SDL_BlitSurface(character->sprite, &character->rcSrc, screen, &character->rcDest);
+}
+
+void CharacterAttack(Character *character)
+{
+	if(character->skipFrames == NUM_SKIP_FRAMES) {
+		if (character->attackStateState == 5)
+			character->attackState = 1;
+		else
+			character->attackState++;
+		character->skipFrames = 0;
+	}else
+		character->skipFrames++;
+
+	character->rcSrc.x = character->moveState * SPRITE_SIZE;
+
 }
