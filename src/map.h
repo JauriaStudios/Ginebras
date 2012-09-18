@@ -40,8 +40,11 @@ typedef struct Map{
 	xmlChar* layer;
 
 	// tileset
-	char		tileSetName, tileSetImage;
-	int		tileSetWidth, tileSetHeight, tileWidth, tileHeight;
+	char		*tileSetName, *tileSetImage;
+	char		*tileSetWidth, *tileSetHeight, *tileWidth, *tileHeight;
+	char		*firstgid;
+	int		numTileSet;
+
 	
 	char		layerName;
 	int		numLayers;

@@ -2,7 +2,8 @@
 
 static xmlChar* parseLayer(xmlDocPtr map, xmlNodePtr cur);
 //static void MapGetReference(Map * map, xmlDocPtr map, xmlNodePtr cur);
-//static xmlChar* parseMap(char *mapname);
+void MapParseMap(Map* map, char *mapname);
+
 
 Map* MapConstructor()
 {
@@ -17,6 +18,8 @@ Map* MapConstructor()
 	map->rcGrassSrc.w = 32;
 	map->rcGrassSrc.h = 32;
 
+	map->numTileSet = 0;
+	
 	map->numLayers = 0;
 	map->scroll_x = 0;
 	map->scroll_y = 0;
@@ -161,28 +164,44 @@ xmlChar* parseLayer (xmlDocPtr map, xmlNodePtr cur)
 void MapGetReference (Map * map, xmlDocPtr doc, xmlNodePtr cur) 
 {
 //	printf("# Get Reference\n");
+	
+	// tileset
+	xmlChar* tileSetName;
+	//xmlChar* tileSetImage;
+	xmlChar* tileSetWidth;
+	xmlChar* tileSetHeight;
+	xmlChar* firstgid;
 
-
+	
 	//cur = cur->xmlChildrenNode;
 	
 	while (cur != NULL) {
 		
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"image"))) {
-		
-			map->layerName = (char)xmlGetProp(cur, (xmlChar*)"source");
-			map->tileSetWidth = (int)xmlGetProp(cur, (xmlChar*)"width");
-			map->tileSetHeight = (int)xmlGetProp(cur, (xmlChar*)"height");
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"tileset"))) {
+			map->numTileSet += 1;
+			printf("Loading TileSet Nº %d\n", map->numTileSet);
+			tileSetName = xmlGetProp(cur, (xmlChar*)"name");
+			firstgid = xmlGetProp(cur, (xmlChar*)"firstgid");
+			tileSetWidth = xmlGetProp(cur, (xmlChar*)"tilewidth");
+			tileSetHeight = xmlGetProp(cur, (xmlChar*)"tileheight");
 			
-			printf("layer: %d\n", map->layerName);
-			printf("width: %d\n", map->tileSetWidth);
-			printf("height: %d\n", map->tileSetHeight);
+			map->tileSetName = (char *)tileSetName;
+			map->firstgid = (char *)firstgid;
+			map->tileSetWidth = (char *)tileSetWidth;
+			map->tileSetHeight = (char *)tileSetHeight;
 
-			xmlFree(&map->layerName);
-			xmlFree(&map->tileSetWidth);
-			xmlFree(&map->tileSetHeight);
+			//xmlFree(tileSetName);
+			//xmlFree(tileSetWidth);
+			//xmlFree(tileSetHeight);
+
+			printf("tileset name: %s\n", map->tileSetName);
+			printf("tileset first gid: %s\n", map->firstgid);
+
+			printf("tileset width: %s\n", map->tileSetWidth);
+			printf("tileset height: %s\n", map->tileSetHeight);
 
 		}
-	cur = cur->next;
+		cur = cur->next;
 	}
 }
 
