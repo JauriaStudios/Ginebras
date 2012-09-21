@@ -9,6 +9,7 @@
 #include "SDL_image.h"
 #include "cursor.h"
 #include "gameUtilities.h"
+#include "area.h"
 
 #define NUM_SKIP_FRAMES 5
 
@@ -34,6 +35,8 @@ typedef struct Character{
 	struct list_head listSort;
 
 	// move
+	Area *moveArea;
+	int movement;
 	unsigned moving;
 	int moveSteps;
 	int actualStep;
@@ -59,7 +62,7 @@ typedef struct Character{
 /**********************************************************
  **** METHODS 
  **********************************************************/
-extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative);
+extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement);
 extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor);
 extern void CharacterMove(Character *character);

@@ -1,6 +1,6 @@
 #include "characters.h"
 
-Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative)
+Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement)
 {
 	Character* character;
 	character = (Character *)malloc(sizeof(Character));
@@ -10,22 +10,29 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	strcpy(spriteMove, file); 
 	strcat(spriteMove, ".png");
 	// Load sprites movement image
-	if ((character->sprite = loadImage(spriteMove)) == NULL){
-		printf("Character constructor ERROR: couldn't load character sprite");
+	if (!(character->sprite = loadImage(spriteMove))){
+		printf("Character constructor ERROR: couldn't load character sprite\n");
 		return NULL;
 	}
 	
 	strcpy(spriteSlash, file); 
 	strcat(spriteSlash, "Slash.png");
 	// Load sprites slash image
-	if ((character->spriteSlash = loadImage(spriteSlash)) == NULL){
-		printf("Character constructor ERROR: couldn't load character slash sprite");
+	if (!(character->spriteSlash = loadImage(spriteSlash))){
+		printf("Character constructor ERROR: couldn't load character slash sprite\n");
 		return NULL;
 	}
 
+	// Set movement
+	character->movement = movement;
+	if (!(character->moveArea = AreaConstructor(x0, y0, movement))){
+		printf("Character constructor ERROR: couldn't create movement area\n");
+		return NULL;
+	}
+	
 	// Set sprite initial position
 	character->rcDest.x = x0;
-	character->rcDest.y = y0;	
+	character->rcDest.y = y0;
 
 	// Set initial animation sprite frame
 	character->rcSrc.x = 0;
@@ -70,7 +77,10 @@ void CharacterDestructor(Character *character)
 {
 	// Free character image
 	SDL_FreeSurface(character->sprite);
-
+	
+	// Free movement area
+	AreaDestructor(character->moveArea);
+	
 	// Free character
 	free(character);
 }

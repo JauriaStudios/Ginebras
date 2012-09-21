@@ -2,4 +2,5 @@
 *.o
 *~
 *.swp
+/documentacion_grafico
 ginebras

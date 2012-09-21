@@ -68,4 +68,3 @@ extern void MapDraw(Map * map, SDL_Surface* screen);
 extern void MapDestructor(Map * map);
 
 #endif
-
