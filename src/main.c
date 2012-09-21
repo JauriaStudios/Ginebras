@@ -27,8 +27,8 @@ int main(int argc, char **argv)
 {
 	// Variable initialization
 
-	SDL_Surface *screen, *grid;
-	SDL_Rect rcGrid;
+	SDL_Surface *screen, *grid, *area, *selector;
+	SDL_Rect rcGrid, rcArea, rcSelector;
 	SDL_Event event;	
 
 	Game *game;
@@ -57,7 +57,13 @@ int main(int argc, char **argv)
 	MapLoad(map, "data/map.tmx");
 
 	// Load grid
-	grid  = loadImage("data/grid.png");
+	grid = loadImage("data/Grid.png");
+
+	// Load area
+	area = loadImage("data/Peana5.png");
+
+	// Load selector
+	selector = loadImage("data/Selector.png");
 
 	// Generate character vector (provisional sólo para desarrollo)
 	vectorChar1 = vectorCharsGen(1);
@@ -98,27 +104,40 @@ int main(int argc, char **argv)
 
 		// draw the grid
 		if(showGrid){
-			for (x = 0; x < SCREEN_WIDTH / SPRITE_SIZE; x++) {
-				for (y = 0; y < SCREEN_HEIGHT / SPRITE_SIZE; y++) {
-					rcGrid.x = x * SPRITE_SIZE;
-					rcGrid.y = y * SPRITE_SIZE;
+			for (x = 0; x < SCREEN_WIDTH / (SPRITE_SIZE/2); x++) {
+				for (y = 0; y < SCREEN_HEIGHT / (SPRITE_SIZE/2); y++) {
+					rcGrid.x = x * SPRITE_SIZE/2;
+					rcGrid.y = y * SPRITE_SIZE/2;
 					SDL_BlitSurface(grid, NULL, screen, &rcGrid);
 				}
 			}
 			
 		}
-	
+
+		// Draw the cursor
+		CursorDraw(cursor, screen);	
+		
+		// Draw tha area
+		rcArea.x = game->actualCharacter->rcDest.x - (4*32+16);
+		rcArea.y = game->actualCharacter->rcDest.y - (4*32);
+		SDL_BlitSurface(area, NULL, screen, &rcArea);	
+				
 		// Move characters
-		GameMoveCharacters(game);
+		CharacterMove(game->actualCharacter);
+	
+		// Attack character
+		CharacterAttack(game->actualCharacter);
 
 		// Draw Characters
 		GameDrawCharacters(game, screen);
+		
+		// Draw tha area
+		rcSelector.x = game->actualCharacter->rcDest.x + 16;
+		rcSelector.y = game->actualCharacter->rcDest.y - 16;
+		SDL_BlitSurface(selector, NULL, screen, &rcSelector);
 
-		// Attack character
-		//CharacterAttack(game->);		
-
-		// Draw the cursor
-		CursorDraw(cursor, screen);		
+		// Draw actual character
+		CharacterDraw(game->actualCharacter, screen);		
 
 		// Update the screen 
 		SDL_UpdateRect(screen, 0, 0, 0, 0);
@@ -188,6 +207,9 @@ void HandleEvent(SDL_Event event, Game *game, Cursor* cursor)
 				case SDLK_p:
 					GameActionChar(game, cursor);
 					break;
+				case SDLK_a:
+					CharacterSetAttack(game->actualCharacter);
+					break;
 				default:
 					break;
 			}
@@ -217,56 +239,56 @@ Character** vectorCharsGen(int option)
 
 	if(option == 1){
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/heroe1", ORIENT_SOUTH, 5*SPRITE_SIZE, 4*SPRITE_SIZE, 7))) {
+		if( !(character = CharacterConstructor("data/heroe1", ORIENT_SOUTH, 5*SPRITE_SIZE-(16), 4*SPRITE_SIZE, 7))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_SOUTH, 2*SPRITE_SIZE, 4*SPRITE_SIZE, 6))){
+		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_SOUTH, 2*SPRITE_SIZE-(16), 4*SPRITE_SIZE, 6))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 3*SPRITE_SIZE, 4*SPRITE_SIZE, 5))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 3*SPRITE_SIZE-(16), 4*SPRITE_SIZE, 5))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 4*SPRITE_SIZE, 4*SPRITE_SIZE, 2))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 4*SPRITE_SIZE-(16), 4*SPRITE_SIZE, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[3] = character;
 	}else {
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/heroe1", ORIENT_NORTH, 5*SPRITE_SIZE, 7*SPRITE_SIZE, 7))) {
+		if( !(character = CharacterConstructor("data/heroe1", ORIENT_NORTH, 5*SPRITE_SIZE-(16), 7*SPRITE_SIZE, 7))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_NORTH, 2*SPRITE_SIZE, 7*SPRITE_SIZE, 6))){
+		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_NORTH, 2*SPRITE_SIZE-(16), 7*SPRITE_SIZE, 6))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 3*SPRITE_SIZE, 7*SPRITE_SIZE, 5))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 3*SPRITE_SIZE-(16), 7*SPRITE_SIZE, 5))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 4*SPRITE_SIZE, 7*SPRITE_SIZE, 2))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 4*SPRITE_SIZE-(16), 7*SPRITE_SIZE, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}

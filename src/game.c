@@ -103,7 +103,6 @@ void GameActionChar(Game *game, Cursor *cursor)
 	Character* tmp;
 	int endTurn = 1;
 	list_for_each_entry(tmp, &game->listCharacters, list){
-		printf("iniciative: %d\n", tmp->iniciative);
 		if(!tmp->check)
 			endTurn = 0;
 	}

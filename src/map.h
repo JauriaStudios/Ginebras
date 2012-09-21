@@ -40,8 +40,11 @@ typedef struct Map{
 	xmlChar* layer;
 
 	// tileset
-	char		tileSetName, tileSetImage;
-	int		tileSetWidth, tileSetHeight, tileWidth, tileHeight;
+	char		*tileSetName, *tileSetImage;
+	char		*tileSetWidth, *tileSetHeight, *tileWidth, *tileHeight;
+	char		*firstgid;
+	int		numTileSet;
+
 	
 	char		layerName;
 	int		numLayers;
@@ -65,3 +68,4 @@ extern void MapDraw(Map * map, SDL_Surface* screen);
 extern void MapDestructor(Map * map);
 
 #endif
+

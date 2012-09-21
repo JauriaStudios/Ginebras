@@ -2,6 +2,7 @@
 #define _CHARACTER_H_
 
 #include <math.h>
+#include <string.h>
 #include "list.h"
 
 #include "SDL.h"
@@ -23,8 +24,9 @@ typedef struct Character{
 
 	SDL_Surface* sprite;
 	SDL_Surface* spriteSlash;
-	SDL_Rect	 rcSrc;
+	SDL_Rect	 rcSrc, rcSrcAttack;
 	SDL_Rect     rcDest;
+	
 	DestinationPoint destinationPoint;
 	int velocity;
 
@@ -47,8 +49,10 @@ typedef struct Character{
 	int check;
 
 	// Attack
+	int attackSteps;
+	int actualAttackStep;
 	int attacking;
-	int moveState; // 1, 2 ... 5 ; 0 stop 
+	int attackState; // 1, 2 ... 5 ; 0 stop 
 
 } Character;
 
@@ -60,6 +64,7 @@ extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor);
 extern void CharacterMove(Character *character);
 extern void CharacterDraw(Character* character, SDL_Surface* screen);
+extern void CharacterSetAttack(Character *character);
 extern void CharacterAttack(Character* character);
 
 #endif //_CHARACTER_H_

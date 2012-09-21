@@ -7,12 +7,12 @@ Cursor* CursorConstructor(int x0, int y0)
 	Cursor* cursor;
 	cursor = (Cursor *)malloc(sizeof(Cursor));
 	// Load sprites image
-	if ((cursor->sprite = loadImage("data/cursor.png")) == NULL)
+	if ((cursor->sprite = loadImage("data/Cursor.png")) == NULL)
 		return NULL;
 	
 	// Set sprite initial position
-	cursor->rcDest.x = x0;
-	cursor->rcDest.y = y0;	
+	cursor->rcDest.x = x0 + 16;
+	cursor->rcDest.y = y0 + 32;	
 
 	return cursor;
 }
@@ -35,16 +35,16 @@ void CursorMove(Cursor* cursor, Orientation orientation)
 {
 	switch (orientation) {
 		case ORIENT_WEST:
-			cursor->rcDest.x = cursor->rcDest.x - SPRITE_SIZE; 
+			cursor->rcDest.x = cursor->rcDest.x - (SPRITE_SIZE/2); 
 			break;
 		case ORIENT_EAST:
-			cursor->rcDest.x = cursor->rcDest.x + SPRITE_SIZE;
+			cursor->rcDest.x = cursor->rcDest.x + (SPRITE_SIZE/2);
 			break;
 		case ORIENT_SOUTH:
-			cursor->rcDest.y = cursor->rcDest.y + SPRITE_SIZE;
+			cursor->rcDest.y = cursor->rcDest.y + (SPRITE_SIZE/2);
 			break;
 		case ORIENT_NORTH:
-			cursor->rcDest.y = cursor->rcDest.y - SPRITE_SIZE;
+			cursor->rcDest.y = cursor->rcDest.y - (SPRITE_SIZE/2);
 			break;
 		default:
 			break;
@@ -54,6 +54,6 @@ void CursorMove(Cursor* cursor, Orientation orientation)
 
 void CursorSetPosition(Cursor *cursor, int x, int y)
 {
-	cursor->rcDest.x = x;
-	cursor->rcDest.y = y;
+	cursor->rcDest.x = x + 16;
+	cursor->rcDest.y = y + 32;
 }

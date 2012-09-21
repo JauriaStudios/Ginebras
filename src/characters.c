@@ -4,15 +4,25 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 {
 	Character* character;
 	character = (Character *)malloc(sizeof(Character));
-	
+	char spriteMove[75];
+	char spriteSlash[75];
+
+	strcpy(spriteMove, file); 
+	strcat(spriteMove, ".png");
 	// Load sprites movement image
-	if ((character->sprite = loadImage(strcat(file, ".png"))) == NULL)
+	if ((character->sprite = loadImage(spriteMove)) == NULL){
+		printf("Character constructor ERROR: couldn't load character sprite");
 		return NULL;
+	}
 	
+	strcpy(spriteSlash, file); 
+	strcat(spriteSlash, "Slash.png");
 	// Load sprites slash image
-	if ((character->sprite = loadImage(strcat(file, "Slash.png"))) == NULL)
+	if ((character->spriteSlash = loadImage(spriteSlash)) == NULL){
+		printf("Character constructor ERROR: couldn't load character slash sprite");
 		return NULL;
-	
+	}
+
 	// Set sprite initial position
 	character->rcDest.x = x0;
 	character->rcDest.y = y0;	
@@ -44,7 +54,14 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	character->iniciative = iniciative;
 
 	// Set initial attack variables
+	character->rcSrcAttack.x = 0;
+	character->rcSrcAttack.y = or * SPRITE_SIZE;
+	character->rcSrcAttack.w = SPRITE_SIZE;
+	character->rcSrcAttack.h = SPRITE_SIZE;
+	
 	character->attackState = 0;
+	character->attacking = 0;
+	character->actualAttackStep = 0;
 
 	return character;
 }
@@ -72,8 +89,8 @@ void CharacterSetDestination(Character* character, Cursor* cursor)
 	character->skipFrames = 0;
 
 	// Set destination point
-	character->destinationPoint.x = cursor->rcDest.x;
-	character->destinationPoint.y = cursor->rcDest.y;
+	character->destinationPoint.x = cursor->rcDest.x - 16;
+	character->destinationPoint.y = cursor->rcDest.y - 32;
 	
 	//  Slope of the line
 	dx = character->destinationPoint.x - character->rcDest.x;
@@ -116,19 +133,17 @@ void CharacterSetDestination(Character* character, Cursor* cursor)
 			character->moveX[i] = character->rcDest.x + ( (i *  dx ) / character->moveSteps ) ;			
 			character->moveY[i] = m*character->moveX[i] + b; 
 		}
-		character->moveX[character->moveSteps-1] = cursor->rcDest.x;
-		character->moveY[character->moveSteps-1] = cursor->rcDest.y;
+		character->moveX[character->moveSteps-1] = cursor->rcDest.x - 16;
+		character->moveY[character->moveSteps-1] = cursor->rcDest.y - 32;
 	}else{
 		for(i=0; i < character->moveSteps-1; i++){
 			character->moveX[i] = character->rcDest.x;			
 			character->moveY[i] = character->rcDest.y + ( (i *  dy ) / character->moveSteps ) ;	
 		}
-		character->moveX[character->moveSteps-1] = cursor->rcDest.x;
-		character->moveY[character->moveSteps-1] = cursor->rcDest.y;
+		character->moveX[character->moveSteps-1] = cursor->rcDest.x - 16;
+		character->moveY[character->moveSteps-1] = cursor->rcDest.y - 32;
 	}
 }
-
-
 
 void CharacterMove(Character *character)
 {
@@ -148,27 +163,54 @@ void CharacterMove(Character *character)
 			character->skipFrames = 0;
 		}else
 			character->skipFrames++;
-	}else
+	}else{
 		character->moveState = 0;
+		character->moving = 0;
+	}
 	character->rcSrc.x = character->moveState * SPRITE_SIZE;
 }
 
 void CharacterDraw(Character* character, SDL_Surface* screen)
 {
-	SDL_BlitSurface(character->sprite, &character->rcSrc, screen, &character->rcDest);
+	if(character->moving)
+		SDL_BlitSurface(character->sprite, &character->rcSrc, screen, &character->rcDest);
+	else if(character->attacking)
+		SDL_BlitSurface(character->spriteSlash, &character->rcSrcAttack, screen, &character->rcDest);
+	else
+		SDL_BlitSurface(character->sprite, &character->rcSrc, screen, &character->rcDest);	
+}
+
+void CharacterSetAttack(Character *character)
+{
+	// Set status attack
+	character->attacking  		= 1;
+	character->actualAttackStep = 0;
+	character->attackState  	= 1;
+	character->attackSteps  	= 4;
+	character->skipFrames 		= 0;
+
 }
 
 void CharacterAttack(Character *character)
 {
-	if(character->skipFrames == NUM_SKIP_FRAMES) {
-		if (character->attackStateState == 5)
-			character->attackState = 1;
-		else
-			character->attackState++;
-		character->skipFrames = 0;
-	}else
-		character->skipFrames++;
-
-	character->rcSrc.x = character->moveState * SPRITE_SIZE;
-
+	
+	if( character->actualAttackStep < character->attackSteps ){
+		character->rcSrcAttack.y = character->moveOrient * SPRITE_SIZE;
+		if(character->skipFrames == NUM_SKIP_FRAMES) {
+			if (character->attackState == 5)
+				character->attackState = 1;
+			else{
+				character->attackState++;
+				character->actualAttackStep++;
+			}
+			character->skipFrames = 0;
+		}else{
+			character->skipFrames++;
+		}
+	}else{
+		character->attackState = 0;
+		character->attacking = 0;
+	}
+	character->rcSrcAttack.x = character->attackState * SPRITE_SIZE;
+	
 }
