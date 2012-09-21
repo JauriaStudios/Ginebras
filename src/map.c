@@ -2,7 +2,7 @@
 
 static xmlChar* parseLayer(xmlDocPtr map, xmlNodePtr cur);
 //static void MapGetReference(Map * map, xmlDocPtr map, xmlNodePtr cur);
-void MapParseMap(Map* map, char *mapname);
+static void MapParseMap(Map* map, char *mapname);
 
 
 Map* MapConstructor()
@@ -37,6 +37,7 @@ Map* MapConstructor()
 
 void MapLoad(Map * map, char* file)
 {
+	// fills xml layer data
 	MapParseMap(map, file);
 	
 	map->tileSet = loadImage("data/mountain_landscape_19.png");

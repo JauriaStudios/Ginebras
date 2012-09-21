@@ -33,24 +33,25 @@
  **********************************************************/
 typedef struct Map{	
 
-	SDL_Surface*	surfaceBackground[MAP_SIZE_X][MAP_SIZE_Y];
-	SDL_Surface*	tileSet;
-	SDL_Rect	rcGrassSrc, rcGrassDest;
+	SDL_Surface* surfaceBackground[MAP_SIZE_X][MAP_SIZE_Y];
+	SDL_Surface* tileSet;
+	SDL_Rect     rcGrassSrc, rcGrassDest;
 	
 	xmlChar* layer;
 
-	// tileset
-	char		*tileSetName, *tileSetImage;
-	char		*tileSetWidth, *tileSetHeight, *tileWidth, *tileHeight;
-	char		*firstgid;
-	int		numTileSet;
+	// Tileset
+	char *tileSetName, *tileSetImage;
+	char *tileSetWidth, *tileSetHeight, *tileWidth, *tileHeight;
+	char *firstgid;
+	int  numTileSet;
 
+	// Layer properties
+	char layerName;
+	int  numLayers;
 	
-	char		layerName;
-	int		numLayers;
-	
-	int		scroll_x, scroll_y, scrollVel, mapWidth, mapHeight;
+	int scroll_x, scroll_y, scrollVel, mapWidth, mapHeight;
 
+	// Layers data
 	int background[MAP_SIZE_X][MAP_SIZE_Y];
 	//int objects[MAP_SIZE_X][MAP_SIZE_Y];
 	//int collisions[MAP_SIZE_X][MAP_SIZE_Y];
@@ -62,9 +63,9 @@ typedef struct Map{
  *** METHODS
  **********************************************************/
 extern Map* MapConstructor();
+extern void MapDestructor(Map * map);
 extern void MapLoad(Map * map, char* file);
 extern void MapUpdate(Map * map, SDL_Rect cursorCoords);
 extern void MapDraw(Map * map, SDL_Surface* screen);
-extern void MapDestructor(Map * map);
 
 #endif
