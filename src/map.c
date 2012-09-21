@@ -195,7 +195,7 @@ void MapGetReference (Map * map, xmlDocPtr doc, xmlNodePtr cur)
 	xmlChar* tileSetHeight;
 	xmlChar* firstgid;
 
-
+	
 	//cur = cur->xmlChildrenNode;
 	
 	while (cur != NULL) {
