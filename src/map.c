@@ -21,6 +21,7 @@ Map* MapConstructor()
 	map->numTileSet = 0;
 	
 	map->numLayers = 0;
+	
 	map->scroll_x = 0;
 	map->scroll_y = 0;
 
@@ -40,7 +41,7 @@ void MapLoad(Map * map, char* file)
 	
 	map->tileSet = loadImage("data/mountain_landscape_19.png");
 
-
+	// parse csv data
 	char *str1, *str2, *token, *subtoken;
         char *saveptr1, *saveptr2;
 
@@ -81,36 +82,58 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 	x = cursorCoords.x;
 	y = cursorCoords.y;
 
+	
+	//printf("SCROLL X = %d || SCROLL Y = %d\n", map->scroll_x, map->scroll_y);
+	
+	// scroll diagonal superior izq.
 	if ((x <= 64) && (y <= 64)){
-		map -> scroll_x += map -> scrollVel;
-		map -> scroll_y += map -> scrollVel;
+		if (map->scroll_x <= 64) // scroll limit
+			map->scroll_x += map->scrollVel;
+		if (map->scroll_y <= 64) // scroll limit
+			map->scroll_y += map->scrollVel;
 	}
-	else if ((x <= 64) && (y >= 500)){
-		map -> scroll_x += map -> scrollVel;
-		map -> scroll_y -= map -> scrollVel;
-	}
-	else if ((y >= 500) && (x >= 650)){
-		map -> scroll_x -= map -> scrollVel;
-		map -> scroll_y -= map -> scrollVel;
-	}
+	// scroll diagonal superior der.
 	else if ((y <= 64) && (x >= 650)){
-		map -> scroll_x -= map -> scrollVel;
-		map -> scroll_y += map -> scrollVel;
+		if (map->scroll_x >= -550) // scroll limit
+			map->scroll_x -= map->scrollVel;
+		if (map->scroll_y <= 64) // scroll limit
+			map->scroll_y += map->scrollVel;
 	}
-	else if (x <= 64){
-		map -> scroll_x += map -> scrollVel;
+	// scroll diagonal inferior izq.
+	else if ((x <= 64) && (y >= 500)){
+		if (map->scroll_x <= 64) // scroll limit
+			map->scroll_x += map->scrollVel;
+		if (map->scroll_y >= -750) // scroll limit
+			map->scroll_y -= map->scrollVel;
 	}
+	// scroll diagonal inferior der.
+	else if ((y >= 500) && (x >= 650)){
+		if (map->scroll_x >= -550)
+			map->scroll_x -= map->scrollVel;
+		if (map->scroll_y >= -750)
+			map->scroll_y -= map->scrollVel;
+	}
+	// scroll izq.
+	else if (x <= 64) {
+		if (map->scroll_x <= 64) // scroll limit
+			map->scroll_x += map->scrollVel;
+	}
+	// scroll der.
 	else if (x >= 650){
-		map -> scroll_x -= map -> scrollVel;
+		if (map->scroll_x >= -550) // scroll limit
+			map->scroll_x -= map->scrollVel;
 	}
+	// scroll up
 	else if (y <= 64){
-		map -> scroll_y += map -> scrollVel;
+		if (map->scroll_y <= 64 )// scroll limit
+			map->scroll_y += map->scrollVel;
 	}
+	//scroll down
 	else if (y >= 500){
-		map -> scroll_y -= map -> scrollVel;
+		if (map->scroll_y >= -750) // scroll limit
+			map->scroll_y -= map->scrollVel;
 	}
 	else{}
-
 }
 
 void MapDraw(Map * map, SDL_Surface* screen)
