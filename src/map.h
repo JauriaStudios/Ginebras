@@ -6,6 +6,7 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
+#include "list.h"
 #include "gameUtilities.h"
 
 //#include "cursor.h"
@@ -46,6 +47,8 @@ typedef struct Map{
 	int  numTileSet;
 
 	// Layer properties
+	struct list_head listLayer;
+	struct list_head listTileSet;
 	char layerName;
 	int  numLayers;
 	
@@ -64,7 +67,7 @@ typedef struct Map{
  **********************************************************/
 extern Map* MapConstructor();
 extern void MapDestructor(Map * map);
-extern void MapLoad(Map * map, char* file);
+extern void MapLoad(Map * map, char* file, SDL_Surface *screen);
 extern void MapUpdate(Map * map, SDL_Rect cursorCoords);
 extern void MapDraw(Map * map, SDL_Surface* screen);
 

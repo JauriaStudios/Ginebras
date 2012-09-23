@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	
 	// Load background
 	map = MapConstructor();
-	MapLoad(map, "data/map.tmx");
+	MapLoad(map, "data/map.tmx", screen);
 
 	// Load grid
 	grid = loadImage("data/Grid.png");

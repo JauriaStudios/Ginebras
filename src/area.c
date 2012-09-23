@@ -20,15 +20,13 @@ Area* AreaConstructor(int x0, int y0, int radius)
 	strcat(areaName, radiusChar);
 	strcat(areaName, ".png");
 
-	printf("name peana: %s\n", areaName);
-
 	// Load sprites image
 	if (!(this->sprite = loadImage(areaName))){
 		printf("ERROR area: couldn't load %s image\n", areaName);
 		return NULL;		
 	}
 	
-	// Set sprite initial position	WARNING: radius dependent
+	// Set sprite initial position
 	this->rcDest.x = x0 - ((radius-1)*32+16);
 	this->rcDest.y = y0 - ((radius-1)*32);
 	
@@ -51,7 +49,6 @@ void AreaDraw(Area* this, SDL_Surface* screen)
 
 void AreaSetPosition(Area *this, int x, int y)
 {
-	// WARNING this is radius dependent
 	this->rcDest.x = x - ((this->radius-1)*32+16);
 	this->rcDest.y = y - ((this->radius-1)*32);
 }
