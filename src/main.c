@@ -54,8 +54,8 @@ int main(int argc, char **argv)
 	SDL_EnableKeyRepeat(70, 70);
 	
 	// Load background
-	map = MapConstructor();
-	MapLoad(map, "data/map.tmx", screen);
+	map = MapConstructor(screen);
+	MapLoad(map, "data/Town.tmx", screen);
 
 	// Load grid
 	grid = loadImage("data/Grid.png");
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 		MapUpdate(map, cursor->rcDest);
 
 		// Fill screen black
-		SDL_FillRect(screen, NULL, 0);
+		SDL_FillRect(screen, NULL, 0x0);
 
 		// Draw background
 		MapDraw(map, screen);

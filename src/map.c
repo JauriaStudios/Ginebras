@@ -19,21 +19,19 @@ static Layer *LayerConstructor(xmlChar *xmlchar, int numTileswidth, int numTiles
 {
 	// Variable definition section
 	Layer *this; 
-	SDL_Surface *tmp;	
 	
 	// Alloc memory
 	this = (Layer*)malloc(sizeof(Layer));
 
-	// create a new surface
-	tmp = SDL_CreateRGBSurface(SDL_SWSURFACE,40*32,40*32, screen->format->BitsPerPixel,
+	// Create layer surface
+	this->imageLayer = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, 40*32, 40*32, screen->format->BitsPerPixel,
 											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
 											screen->format->Amask);
 
-	SDL_SetAlpha(tmp, SDL_SRCALPHA, 127);
-	this->imageLayer = SDL_DisplayFormatAlpha(tmp);
-
-	SDL_FreeSurface(tmp); 
-
+	Uint32 colorKey = SDL_MapRGB(this->imageLayer->format, 0xFF, 0, 0xFF);
+	SDL_FillRect(this->imageLayer, NULL, 0xFF00FF);
+	SDL_SetColorKey(this->imageLayer, SDL_SRCCOLORKEY, colorKey);
+	
 	//SDL_FillRect(this->imageLayer, NULL, 0x225511);
 	this->width = numTileswidth;
 	this->height = numTilesheight;
@@ -54,14 +52,18 @@ typedef struct TileSet{
 } TileSet;
 
 
-Map* MapConstructor()
+Map* MapConstructor(SDL_Surface *screen)
 {
 	// Variable definition section
 	Map * map;
 
 	// Alloc map
 	map = (Map *)malloc(sizeof(Map));
-	
+
+	// 
+	map->surface = SDL_CreateRGBSurface(SDL_SWSURFACE,40*32,40*32, screen->format->BitsPerPixel,
+											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
+											screen->format->Amask);	
 	// set initial coord.
 	map->rcGrassDest.x = 0;
 	map->rcGrassDest.y = 0;
@@ -95,7 +97,8 @@ TileSet* getTile(int tileNum, Map *map)
 	TileSet *tileset, *previus = NULL;
 	int numTilesWidth;
 	int column, row;
-
+	int offset;
+	
 	// List tileset
 	list_for_each_entry(tileset, &map->listTileSet, list){
 		//printf("tileset: %s, %d\n",tileset->tileSetName, tileset->firstgid);
@@ -103,8 +106,9 @@ TileSet* getTile(int tileNum, Map *map)
 caca:
 			//printf("	I'm the tileset: %s\n",previus->tileSetName);
 			numTilesWidth = (int)(previus->width/previus->tileWidth);
-			column = (int)(floor((double)(tileNum/numTilesWidth)));
-			row = tileNum%numTilesWidth;
+			offset = tileNum - previus->firstgid;
+			row = (int)(floor((double)(offset/numTilesWidth)));
+			column = offset%numTilesWidth;
 			previus->rcSrc.x = column * previus->tileWidth;
 			previus->rcSrc.y = row * previus->tileHeight;
 			previus->rcSrc.w = previus->tileWidth;
@@ -124,38 +128,25 @@ void LayerGetSurface(Layer *layer, Map *map, SDL_Surface *screen)
 {
 	int i, j;
 	TileSet *tileSet;
-
-	SDL_Surface *alpha;
-	SDL_Rect rcDest;
-	alpha = SDL_CreateRGBSurface(SDL_SWSURFACE, 32, 32, screen->format->BitsPerPixel,
-											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
-											screen->format->Amask);
-
-	SDL_SetAlpha(alpha, SDL_SRCALPHA, 255);
-
+printf("***********************************\n");	
 	// Search the tile set 
 	for(i = 0; i < layer->height; i++){
 		for(j = 0; j < layer->width; j++){
-			printf("(%d,%d)=%d", j, i, layer->data[j][i]);
+			//printf("%d ", layer->data[j][i]);
 			if(layer->data[j][i]){
 				tileSet = getTile(layer->data[j][i], map);
-				//printf("tilesetname: %s\n", tileSet->tileSetName);
+				printf("tilesetname: %s\n", tileSet->tileSetName);
 				tileSet->rcDest.x = j * 32;
-				tileSet->rcDest.y = i * 32;
-				//printf("fuente(%d, %d)\n", tileSet->rcSrc.x, tileSet->rcSrc.y);
+				tileSet->rcDest.y = i * 32; 
+				printf("(%d, %d) ", tileSet->rcSrc.x, tileSet->rcSrc.y);
 				//printf("destino(%d, %d)\n", j*32, i*32 );
-				//SDL_BlitSurface(tileSet->surface, &tileSet->rcSrc, screen, &tileSet->rcDest);
 				SDL_BlitSurface(tileSet->surface, &tileSet->rcSrc, layer->imageLayer, &tileSet->rcDest);
-			} else{
-				rcDest.x = j * 32;
-				rcDest.y = i * 32;
-				SDL_BlitSurface(alpha, NULL, layer->imageLayer, &rcDest);
-			}
+			} 
 		}
 		printf("\n");
 	}
-	// Update the screen 
-	//SDL_UpdateRect(layer->imageLayer, 0, 0, 0, 0);	
+	
+printf("***********************************\n");
 }
 
 void MapLoad(Map * map, char* file, SDL_Surface *screen)
@@ -174,6 +165,8 @@ void MapLoad(Map * map, char* file, SDL_Surface *screen)
 
     int i;
 	int j;
+	
+	//SDL_Rect rcSrc, rcDest;
 	
 	// for all list parse xmlChars  
 	list_for_each_entry(tmpLayer, &map->listLayer, list){
@@ -198,8 +191,23 @@ void MapLoad(Map * map, char* file, SDL_Surface *screen)
 		printf("DEBUG: INIT_LAYER GET SURFACE\n");
 		LayerGetSurface(tmpLayer, map, screen);
 	}
+	/*
+	// Load all layers
+	list_for_each_entry(tmpLayer, &map->listLayer, list){
+		for(i = 0; i < 40; i++){
+			for(j = 0; j < 40; j++){
+				if(tmpLayer->data[j][i]){
+					rcSrc.x  = j * 32;
+					rcSrc.y  = i * 32;
+					rcDest.x = j * 32;
+					rcDest.y = i * 32;
+					SDL_BlitSurface(tmpLayer->imageLayer, &rcSrc, map->surface, &rcDest);		
+				}
+			}
+		}
+	}
+	*/
 }
-
 
 void MapUpdate(Map * map, SDL_Rect cursorCoords)
 {

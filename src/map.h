@@ -37,6 +37,9 @@ typedef struct Map{
 	SDL_Surface* surfaceBackground[MAP_SIZE_X][MAP_SIZE_Y];
 	SDL_Surface* tileSet;
 	SDL_Rect     rcGrassSrc, rcGrassDest;
+
+	// Map surface
+	SDL_Surface *surface;
 	
 	xmlChar* layer;
 
@@ -65,7 +68,7 @@ typedef struct Map{
 /**********************************************************
  *** METHODS
  **********************************************************/
-extern Map* MapConstructor();
+extern Map* MapConstructor(SDL_Surface *screen);
 extern void MapDestructor(Map * map);
 extern void MapLoad(Map * map, char* file, SDL_Surface *screen);
 extern void MapUpdate(Map * map, SDL_Rect cursorCoords);
