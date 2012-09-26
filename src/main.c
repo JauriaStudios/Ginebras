@@ -12,6 +12,7 @@
 #include "map.h"
 #include "player.h"
 #include "area.h"
+#include "textbox.h"
 
 #define SCREEN_WIDTH  		800
 #define SCREEN_HEIGHT 		600
@@ -36,7 +37,7 @@ int main(int argc, char **argv)
 	Map *map;
 	Timer *timer;
 	Cursor *cursor;
-
+	Textbox *textbox;
 	// Only for developement
 	Character **vectorChar1, **vectorChar2;
 
@@ -62,7 +63,10 @@ int main(int argc, char **argv)
 
 	// Load selector
 	selector = loadImage("data/Selector.png");
-
+	
+	// Load Textbox
+	textbox = TextboxConstructor(screen);
+		
 	// Generate character vector (provisional sólo para desarrollo)
 	vectorChar1 = vectorCharsGen(1);
 	vectorChar2 = vectorCharsGen(2);
@@ -133,6 +137,9 @@ int main(int argc, char **argv)
 
 		// Draw actual character
 		CharacterDraw(game->actualCharacter, screen);		
+
+		// Draw Text Boxes
+		TextboxDraw(textbox, screen);
 
 		// Update the screen 
 		SDL_UpdateRect(screen, 0, 0, 0, 0);
