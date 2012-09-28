@@ -70,4 +70,4 @@ extern void MapLoad(Map * map, char* file, SDL_Surface *screen);
 extern void MapUpdate(Map * map, SDL_Rect cursorCoords);
 extern void MapDraw(Map *map, SDL_Surface* screen);
 
-#endif
+#endif // _MAP_H_

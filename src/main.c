@@ -12,6 +12,7 @@
 #include "map.h"
 #include "player.h"
 #include "area.h"
+#include "textbox.h"
 
 #define FRAMES_PER_SECOND 	10
 
@@ -34,7 +35,7 @@ int main(int argc, char **argv)
 	Map *map;
 	Timer *timer;
 	Cursor *cursor;
-
+	Textbox *textbox;
 	// Only for developement
 	Character **vectorChar1, **vectorChar2;
 
@@ -60,7 +61,10 @@ int main(int argc, char **argv)
 
 	// Load selector
 	selector = loadImage("data/Selector.png");
-
+	
+	// Load Textbox
+	textbox = TextboxConstructor(screen);
+		
 	// Generate character vector (provisional sólo para desarrollo)
 	vectorChar1 = vectorCharsGen(1);
 	vectorChar2 = vectorCharsGen(2);
@@ -131,6 +135,9 @@ int main(int argc, char **argv)
 
 		// Draw background
 		MapDraw(map, screen);
+
+		// Draw Text Boxes
+		TextboxDraw(textbox, screen);
 
 		// Update the screen 
 		SDL_UpdateRect(screen, 0, 0, 0, 0);
