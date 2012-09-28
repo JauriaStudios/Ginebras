@@ -85,13 +85,13 @@ int GameMoveCharacters(Game *game)
 	return 0;
 }
 
-int GameDrawCharacters(Game *game, SDL_Surface* screen)
+int GameDrawCharacters(Game *game, SDL_Surface *screen, Map *map)
 {
 	// Variable definition section
 	Character* tmp;
 
 	list_for_each_entry(tmp, &game->listCharacters, list){
-		CharacterDraw(tmp, screen);
+		CharacterDraw(tmp, screen, map);
 	}
 	
 	return 0;

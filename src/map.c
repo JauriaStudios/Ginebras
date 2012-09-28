@@ -6,6 +6,7 @@ static xmlChar* parseLayer(xmlDocPtr map, xmlNodePtr cur);
 static void MapParseMap(Map* map, char *mapname, SDL_Surface *screen);
 
 typedef struct Layer{
+	char *name;
 	xmlChar *csvLayer;
 	SDL_Surface* surfaceLayer[MAP_SIZE_X][MAP_SIZE_Y];
 	SDL_Surface* imageLayer;
@@ -15,7 +16,7 @@ typedef struct Layer{
 	struct list_head list;
 } Layer;
 
-static Layer *LayerConstructor(xmlChar *xmlchar, int numTileswidth, int numTilesheight, SDL_Surface *screen)
+static Layer *LayerConstructor(xmlChar *xmlchar, int numTileswidth, int numTilesheight, char *name,SDL_Surface *screen)
 {
 	// Variable definition section
 	Layer *this; 
@@ -26,14 +27,14 @@ static Layer *LayerConstructor(xmlChar *xmlchar, int numTileswidth, int numTiles
 	// Create layer surface
 	this->imageLayer = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, 40*32, 40*32, screen->format->BitsPerPixel,
 											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
-											screen->format->Amask);
-
-	Uint32 colorKey = SDL_MapRGB(this->imageLayer->format, 0xFF, 0, 0xFF);
+											0x00000000);
+	
+	Uint32 colorKey = SDL_MapRGB(this->imageLayer->format, 0xFF, 0x0, 0xFF);
 	SDL_FillRect(this->imageLayer, NULL, 0xFF00FF);
 	SDL_SetColorKey(this->imageLayer, SDL_SRCCOLORKEY, colorKey);
-	
-	//SDL_FillRect(this->imageLayer, NULL, 0x225511);
-	this->width = numTileswidth;
+
+	this->name   = name;
+	this->width  = numTileswidth;
 	this->height = numTilesheight;
 	INIT_LIST_HEAD(&this->list);
 	this->csvLayer = xmlchar;
@@ -60,11 +61,33 @@ Map* MapConstructor(SDL_Surface *screen)
 	// Alloc map
 	map = (Map *)malloc(sizeof(Map));
 
-	// 
-	map->surface = SDL_CreateRGBSurface(SDL_SWSURFACE,40*32,40*32, screen->format->BitsPerPixel,
+	// Create two main layers: back, front 
+	map->surfaceBack = SDL_CreateRGBSurface(SDL_SWSURFACE,40*32,40*32, screen->format->BitsPerPixel,
 											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
-											screen->format->Amask);	
-	// set initial coord.
+											screen->format->Amask);
+	
+	Uint32 colorKey = SDL_MapRGB(map->surfaceBack->format, 0xFF, 0x0, 0xFF);
+	SDL_FillRect(map->surfaceBack, NULL, 0xFF00FF);
+	SDL_SetColorKey(map->surfaceBack, SDL_SRCCOLORKEY, colorKey);
+
+	map->surfaceFront = SDL_CreateRGBSurface(SDL_SWSURFACE,40*32,40*32, screen->format->BitsPerPixel,
+											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
+											screen->format->Amask);
+
+	Uint32 colorKey2 = SDL_MapRGB(map->surfaceFront->format, 0xFF, 0x0, 0xFF);
+	SDL_FillRect(map->surfaceFront, NULL, 0xFF00FF);
+	SDL_SetColorKey(map->surfaceFront, SDL_SRCCOLORKEY, colorKey2);
+
+	// Create refresh layer
+	map->surfaceRefresh = SDL_CreateRGBSurface(SDL_SWSURFACE,40*32,40*32, screen->format->BitsPerPixel,
+											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
+											screen->format->Amask);
+	
+	Uint32 colorKey3 = SDL_MapRGB(map->surfaceRefresh->format, 0xFF, 0x0, 0xFF);
+	SDL_FillRect(map->surfaceRefresh, NULL, 0xFF00FF);
+	SDL_SetColorKey(map->surfaceRefresh, SDL_SRCCOLORKEY, colorKey3);
+
+	// set initial coord
 	map->rcGrassDest.x = 0;
 	map->rcGrassDest.y = 0;
 	
@@ -78,7 +101,7 @@ Map* MapConstructor(SDL_Surface *screen)
 	map->numLayers = 0;
 	map->scroll_x = 0;
 	map->scroll_y = 0;
-	map->scrollVel = 5;
+	map->scrollVel = 32;
 	map->mapWidth = MAP_SIZE_X * TILE_SIZE + SCREEN_WIDTH;
 	map->mapHeight = MAP_SIZE_Y * TILE_SIZE + SCREEN_HEIGHT;
 
@@ -128,25 +151,26 @@ void LayerGetSurface(Layer *layer, Map *map, SDL_Surface *screen)
 {
 	int i, j;
 	TileSet *tileSet;
-printf("***********************************\n");	
+
 	// Search the tile set 
 	for(i = 0; i < layer->height; i++){
 		for(j = 0; j < layer->width; j++){
 			//printf("%d ", layer->data[j][i]);
 			if(layer->data[j][i]){
 				tileSet = getTile(layer->data[j][i], map);
-				printf("tilesetname: %s\n", tileSet->tileSetName);
+				//printf("tilesetname: %s\n", tileSet->tileSetName);
 				tileSet->rcDest.x = j * 32;
 				tileSet->rcDest.y = i * 32; 
-				printf("(%d, %d) ", tileSet->rcSrc.x, tileSet->rcSrc.y);
+				//printf("(%d, %d) ", tileSet->rcSrc.x, tileSet->rcSrc.y);
 				//printf("destino(%d, %d)\n", j*32, i*32 );
 				SDL_BlitSurface(tileSet->surface, &tileSet->rcSrc, layer->imageLayer, &tileSet->rcDest);
-			} 
+			}else{
+				
+			}
 		}
-		printf("\n");
+		//printf("\n");
 	}
 	
-printf("***********************************\n");
 }
 
 void MapLoad(Map * map, char* file, SDL_Surface *screen)
@@ -188,38 +212,34 @@ void MapLoad(Map * map, char* file, SDL_Surface *screen)
 				//tmpLayer->surfaceLayer[j][i] = loadImage(bgTileName);
 			}
 		}
-		printf("DEBUG: INIT_LAYER GET SURFACE\n");
+		
 		LayerGetSurface(tmpLayer, map, screen);
 	}
-	/*
-	// Load all layers
+	
+	// Load main layers
 	list_for_each_entry(tmpLayer, &map->listLayer, list){
-		for(i = 0; i < 40; i++){
-			for(j = 0; j < 40; j++){
-				if(tmpLayer->data[j][i]){
-					rcSrc.x  = j * 32;
-					rcSrc.y  = i * 32;
-					rcDest.x = j * 32;
-					rcDest.y = i * 32;
-					SDL_BlitSurface(tmpLayer->imageLayer, &rcSrc, map->surface, &rcDest);		
-				}
-			}
+		if(!strcmp(tmpLayer->name, "Colisiones")){
+			SDL_BlitSurface(tmpLayer->imageLayer, NULL, map->surfaceFront, NULL);		
+		}else{
+			printf("NAME LAYER: %s\n", tmpLayer->name);
+			SDL_BlitSurface(tmpLayer->imageLayer, NULL, map->surfaceBack, NULL);			
+			SDL_BlitSurface(tmpLayer->imageLayer, NULL, map->surfaceRefresh, NULL);
 		}
 	}
-	*/
+	
 }
 
 void MapUpdate(Map * map, SDL_Rect cursorCoords)
 {
-	int x = 0;
-	int y = 0;
+	int x;
+	int y;
 
 	x = cursorCoords.x;
 	y = cursorCoords.y;
 
 	
 	//printf("SCROLL X = %d || SCROLL Y = %d\n", map->scroll_x, map->scroll_y);
-	
+/*
 	// scroll diagonal superior izq.
 	if ((x <= 64) && (y <= 64)){
 		if (map->scroll_x <= 64) // scroll limit
@@ -248,78 +268,72 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 		if (map->scroll_y >= -750)
 			map->scroll_y -= map->scrollVel;
 	}
+*/
 	// scroll izq.
-	else if (x <= 64) {
+	if (x <= 64+30 - map->scroll_x) {
 		if (map->scroll_x <= 64) // scroll limit
 			map->scroll_x += map->scrollVel;
 	}
+
 	// scroll der.
-	else if (x >= 650){
+	else if (x >= 650+30 - map->scroll_x){
 		if (map->scroll_x >= -550) // scroll limit
 			map->scroll_x -= map->scrollVel;
 	}
 	// scroll up
-	else if (y <= 64){
+	else if (y <= 64 - map->scroll_y){
 		if (map->scroll_y <= 64 )// scroll limit
 			map->scroll_y += map->scrollVel;
 	}
 	//scroll down
-	else if (y >= 500){
+	else if (y >= 500 - map->scroll_y){
 		if (map->scroll_y >= -750) // scroll limit
 			map->scroll_y -= map->scrollVel;
 	}
 	else{}
+
 }
 
-void MapDraw(Map * map, SDL_Surface* screen)
+void MapDraw(Map *map, SDL_Surface* screen)
 {
-	Layer *tmpLayer;
-	//int x = 0;
-	//int y = 0;
+	//Layer *tmpLayer;
+	SDL_Rect rcDest;
+	//SDL_Rect rcSrc;
 
-	list_for_each_entry(tmpLayer, &map->listLayer, list){
-		/*
-		for (x = 0; x < MAP_SIZE_X; x++) {
-			for (y = 0; y < MAP_SIZE_Y; y++) {
-				tmpLayer->rcDest.x = x * TILE_SIZE + map->scroll_x;
-				tmpLayer->rcDest.y = y * TILE_SIZE + map->scroll_y;
-				SDL_BlitSurface(tmpLayer->surface, NULL, screen, &tmpLayer->rcDest);
-			}
-		}
-		*/
-		tmpLayer->rcDest.x = map->scroll_x;
-		tmpLayer->rcDest.y = map->scroll_y;
-		
-		//SDL_FillRect(tmpLayer->imageLayer, NULL, 255);
-		SDL_BlitSurface(tmpLayer->imageLayer, NULL, screen, &tmpLayer->rcDest);
-		//SDL_UpdateRect(screen, 0, 0, 0, 0);
-		//SDL_UpdateRect(tmpLayer->imageLayer, 0, 0, 0, 0);
+	// Set initial animation sprite frame
+	/*
+	rcSrc.x = map->scroll_x;
+	rcSrc.y = map->scroll_y;
+	rcSrc.w = SCREEN_WIDTH;
+	rcSrc.h = SCREEN_HEIGHT;
+	*/
 
-		
-	}
+	rcDest.x = map->scroll_x;
+	rcDest.y = map->scroll_y;
+
+/*
+	rcDest.x = 650;
+	rcDest.y = -1000;
+*/
+
+	//SDL_BlitSurface(map->surfaceFront, NULL, screen, &rcDest);
+	SDL_BlitSurface(map->surfaceBack, NULL, screen, &rcDest);
+	SDL_BlitSurface(map->surfaceRefresh, NULL, map->surfaceBack, NULL);
 }
 
 void MapDestructor(Map * map)
 {
-	int x = 0;
-	int y = 0;
-
-	for (x = 0; x < MAP_SIZE_X; x++) {
-		for (y = 0; y < MAP_SIZE_Y; y++) {
-			SDL_FreeSurface(map->surfaceBackground[x][y]);
-		}
-	}
-	SDL_FreeSurface(map->tileSet);
-	xmlFree(map->layer);
+	//SDL_FreeSurface(map->tileSet);
+	//xmlFree(map->layer);
 }
 
 xmlChar* parseLayer (xmlDocPtr map, xmlNodePtr cur)
 {
-//	printf("# Parse Layer\n");
-
+	// Variable definition section
 	xmlChar *key;
 	xmlChar* tmp = NULL;
 	cur = cur->xmlChildrenNode;
+
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"data"))) {
 			key = xmlNodeListGetString(map, cur->xmlChildrenNode, 1);
@@ -439,7 +453,7 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 		}
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *)"layer"))){
 			tmp = parseLayer (doc, cur);
-			layer = LayerConstructor(tmp,atoi((char*)xmlGetProp(cur, (xmlChar*)"width")),atoi((char*)xmlGetProp(cur, (xmlChar*)"height")), screen);
+			layer = LayerConstructor(tmp,atoi((char*)xmlGetProp(cur, (xmlChar*)"width")),atoi((char*)xmlGetProp(cur, (xmlChar*)"height")), (char*)xmlGetProp(cur, (xmlChar*)"name"), screen);
 			list_add_tail(&layer->list, &map->listLayer);
 			//printf("%s", tmp);
 		}

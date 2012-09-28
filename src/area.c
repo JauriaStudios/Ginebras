@@ -42,9 +42,9 @@ void AreaDestructor(Area *this)
 	free(this);
 }
 
-void AreaDraw(Area* this, SDL_Surface* screen)
+void AreaDraw(Area* this, SDL_Surface* screen, Map *map)
 {
-	SDL_BlitSurface(this->sprite, NULL, screen, &this->rcDest);	
+	SDL_BlitSurface(this->sprite, NULL, map->surfaceBack, &this->rcDest);	
 }
 
 void AreaSetPosition(Area *this, int x, int y)

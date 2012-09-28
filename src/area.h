@@ -5,16 +5,15 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "gameUtilities.h"
+#include "map.h"
 
 /**********************************************************
  **** STRUCTS 
  **********************************************************/
 typedef struct Area{
-
 	SDL_Surface* sprite;
 	SDL_Rect     rcDest;
 	int 		 radius;
-
 } Area;
 
 /**********************************************************
@@ -22,6 +21,6 @@ typedef struct Area{
  **********************************************************/
 extern Area* AreaConstructor(int x0, int y0, int radius);
 extern void AreaDestructor(Area *this);
-extern void AreaDraw(Area *this, SDL_Surface* screen);
+extern void AreaDraw(Area *this, SDL_Surface* screen, Map *map);
 extern void AreaSetPosition(Area *this, int x, int y);
 #endif // _AREA_H_

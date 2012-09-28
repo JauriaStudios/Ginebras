@@ -90,32 +90,29 @@ int main(int argc, char **argv)
 		if (SDL_PollEvent(&event)) {
 			HandleEvent(event, game, cursor);
 		}
-	
+				
 		// Map update
 		MapUpdate(map, cursor->rcDest);
 
 		// Fill screen black
 		SDL_FillRect(screen, NULL, 0x0);
 
-		// Draw background
-		MapDraw(map, screen);
-
 		// draw the grid
 		if(showGrid){
-			for (x = 0; x < SCREEN_WIDTH / (SPRITE_SIZE/2); x++) {
-				for (y = 0; y < SCREEN_HEIGHT / (SPRITE_SIZE/2); y++) {
+			for (x = 0; x < (MAP_SIZE_X * TILE_SIZE) / (SPRITE_SIZE/2); x++) {
+				for (y = 0; y < (MAP_SIZE_Y * TILE_SIZE) / (SPRITE_SIZE/2); y++) {
 					rcGrid.x = x * SPRITE_SIZE/2;
 					rcGrid.y = y * SPRITE_SIZE/2;
-					SDL_BlitSurface(grid, NULL, screen, &rcGrid);
+					SDL_BlitSurface(grid, NULL, map->surfaceBack, &rcGrid);
 				}
 			}
 		}
 
 		// Draw area
-		AreaDraw(game->actualCharacter->moveArea, screen);		
+		AreaDraw(game->actualCharacter->moveArea, screen, map);		
 
 		// Draw cursor
-		CursorDraw(cursor, screen);	
+		CursorDraw(cursor, screen, map);	
 
 		// Move characters
 		CharacterMove(game->actualCharacter);
@@ -124,18 +121,22 @@ int main(int argc, char **argv)
 		CharacterAttack(game->actualCharacter);
 
 		// Draw Characters
-		GameDrawCharacters(game, screen);
+		GameDrawCharacters(game, screen, map);
 		
 		// Draw selector
 		rcSelector.x = game->actualCharacter->rcDest.x + 16;
 		rcSelector.y = game->actualCharacter->rcDest.y - 16;
-		SDL_BlitSurface(selector, NULL, screen, &rcSelector);
+		SDL_BlitSurface(selector, NULL, map->surfaceBack, &rcSelector);
 
 		// Draw actual character
-		CharacterDraw(game->actualCharacter, screen);		
+		CharacterDraw(game->actualCharacter, screen, map);		
+
+		// Draw background
+		MapDraw(map, screen);
 
 		// Update the screen 
 		SDL_UpdateRect(screen, 0, 0, 0, 0);
+		//SDL_UpdateRect(map->surfaceBack, 0, 0, 0, 0);
 
 		// Cap the frame rate
 		if( timer->startTicks < 1000 / FRAMES_PER_SECOND ){

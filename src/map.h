@@ -1,6 +1,8 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
+#include <string.h>
+
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 
@@ -39,8 +41,10 @@ typedef struct Map{
 	SDL_Rect     rcGrassSrc, rcGrassDest;
 
 	// Map surface
-	SDL_Surface *surface;
-	
+	SDL_Surface *surfaceBack;
+	SDL_Surface *surfaceFront;
+	SDL_Surface *surfaceRefresh;
+
 	xmlChar* layer;
 
 	// Tileset
@@ -64,7 +68,6 @@ typedef struct Map{
 	
 } Map;
 
-
 /**********************************************************
  *** METHODS
  **********************************************************/
@@ -72,6 +75,6 @@ extern Map* MapConstructor(SDL_Surface *screen);
 extern void MapDestructor(Map * map);
 extern void MapLoad(Map * map, char* file, SDL_Surface *screen);
 extern void MapUpdate(Map * map, SDL_Rect cursorCoords);
-extern void MapDraw(Map * map, SDL_Surface* screen);
+extern void MapDraw(Map *map, SDL_Surface* screen);
 
 #endif

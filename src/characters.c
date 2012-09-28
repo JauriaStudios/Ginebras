@@ -41,7 +41,7 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	character->rcSrc.h = SPRITE_SIZE;
 	
 	// Set initial velocity
-	character->velocity = 2;
+	character->velocity = 4;
 
 	// Set initial destination point
 	character->destinationPoint.x = x0;
@@ -180,14 +180,14 @@ void CharacterMove(Character *character)
 	character->rcSrc.x = character->moveState * SPRITE_SIZE;
 }
 
-void CharacterDraw(Character* character, SDL_Surface* screen)
+void CharacterDraw(Character* character, SDL_Surface* screen, Map *map)
 {
 	if(character->moving)
-		SDL_BlitSurface(character->sprite, &character->rcSrc, screen, &character->rcDest);
+		SDL_BlitSurface(character->sprite, &character->rcSrc, map->surfaceBack, &character->rcDest);
 	else if(character->attacking)
-		SDL_BlitSurface(character->spriteSlash, &character->rcSrcAttack, screen, &character->rcDest);
+		SDL_BlitSurface(character->spriteSlash, &character->rcSrcAttack, map->surfaceBack, &character->rcDest);
 	else
-		SDL_BlitSurface(character->sprite, &character->rcSrc, screen, &character->rcDest);	
+		SDL_BlitSurface(character->sprite, &character->rcSrc, map->surfaceBack, &character->rcDest);	
 }
 
 void CharacterSetAttack(Character *character)

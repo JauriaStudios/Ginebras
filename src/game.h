@@ -16,7 +16,7 @@ typedef struct Game {
 
 extern Game* GameConstructor(Player *player1, Player *player2);
 extern int GameMoveCharacters(Game *game);
-extern int GameDrawCharacters(Game *game, SDL_Surface *screen);
+extern int GameDrawCharacters(Game *game, SDL_Surface *screen, Map *map);
 extern void GameDestructor(Game *game);
 extern void GameActionChar(Game *game, Cursor *cursor);
 

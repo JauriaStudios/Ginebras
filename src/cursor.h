@@ -4,6 +4,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "gameUtilities.h"
+#include "map.h"
 
 typedef struct Cursor{
 
@@ -15,7 +16,7 @@ typedef struct Cursor{
 
 extern Cursor* CursorConstructor(int x0, int y0);
 extern void CursorDestructor(Cursor *this);
-extern void CursorDraw(Cursor* cursor, SDL_Surface* screen);
+extern void CursorDraw(Cursor* cursor, SDL_Surface* screen, Map *map);
 extern void CursorMove(Cursor* cursor, Orientation orientation);
 extern void CursorSetPosition(Cursor *cursor, int x, int y);
 
