@@ -13,23 +13,16 @@
 
 //#include "cursor.h"
 
-#ifndef SCREEN_WIDTH
 #define SCREEN_WIDTH  	800
-#endif
-
-#ifndef SCREEN_HEIGHT
 #define SCREEN_HEIGHT 	600
-#endif
 
 #define BUFFER_SIZE 1024
 
 #define MAP_SIZE_X 40
 #define MAP_SIZE_Y 40
 
-#ifndef TILE_SIZE
 #define TILE_SIZE 32
 
-#endif
 
 /**********************************************************
  *** STRUCTS

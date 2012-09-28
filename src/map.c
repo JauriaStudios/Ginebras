@@ -125,8 +125,10 @@ TileSet* getTile(int tileNum, Map *map)
 	// List tileset
 	list_for_each_entry(tileset, &map->listTileSet, list){
 		//printf("tileset: %s, %d\n",tileset->tileSetName, tileset->firstgid);
-		if((tileNum <= tileset->firstgid)){
+		if((tileNum < tileset->firstgid)){
 caca:
+			// CHAPUZA ALERT!! parche que soluciona rapido la omision del primer tile
+				
 			//printf("	I'm the tileset: %s\n",previus->tileSetName);
 			numTilesWidth = (int)(previus->width/previus->tileWidth);
 			offset = tileNum - previus->firstgid;
@@ -158,7 +160,7 @@ void LayerGetSurface(Layer *layer, Map *map, SDL_Surface *screen)
 			//printf("%d ", layer->data[j][i]);
 			if(layer->data[j][i]){
 				tileSet = getTile(layer->data[j][i], map);
-				//printf("tilesetname: %s\n", tileSet->tileSetName);
+				printf("tilesetname: %s ", tileSet->tileSetName);
 				tileSet->rcDest.x = j * 32;
 				tileSet->rcDest.y = i * 32; 
 				//printf("(%d, %d) ", tileSet->rcSrc.x, tileSet->rcSrc.y);
@@ -212,7 +214,7 @@ void MapLoad(Map * map, char* file, SDL_Surface *screen)
 				//tmpLayer->surfaceLayer[j][i] = loadImage(bgTileName);
 			}
 		}
-		
+		printf("\n********************layer: %s*********************\n", tmpLayer->name);	
 		LayerGetSurface(tmpLayer, map, screen);
 	}
 	
@@ -239,7 +241,7 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 
 	
 	//printf("SCROLL X = %d || SCROLL Y = %d\n", map->scroll_x, map->scroll_y);
-/*
+/*	
 	// scroll diagonal superior izq.
 	if ((x <= 64) && (y <= 64)){
 		if (map->scroll_x <= 64) // scroll limit
@@ -274,7 +276,6 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 		if (map->scroll_x <= 64) // scroll limit
 			map->scroll_x += map->scrollVel;
 	}
-
 	// scroll der.
 	else if (x >= 650+30 - map->scroll_x){
 		if (map->scroll_x >= -550) // scroll limit

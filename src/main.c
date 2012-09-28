@@ -13,8 +13,6 @@
 #include "player.h"
 #include "area.h"
 
-#define SCREEN_WIDTH  		800
-#define SCREEN_HEIGHT 		600
 #define FRAMES_PER_SECOND 	10
 
 static void HandleEvent(SDL_Event event, Game *game, Cursor *cursor);
@@ -55,7 +53,7 @@ int main(int argc, char **argv)
 	
 	// Load background
 	map = MapConstructor(screen);
-	MapLoad(map, "data/Town.tmx", screen);
+	MapLoad(map, "data/Newmap.tmx", screen);
 
 	// Load grid
 	grid = loadImage("data/Grid.png");
