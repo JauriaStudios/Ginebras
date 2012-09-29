@@ -1,6 +1,6 @@
 #include "textbox.h"
 
-TTF_Font* loadfont(char* file, int ptsize)
+TTF_Font* loadFont(char* file, int ptsize)
 {
 	TTF_Font* tmpfont;
 	tmpfont = TTF_OpenFont(file, ptsize);
@@ -11,32 +11,13 @@ TTF_Font* loadfont(char* file, int ptsize)
 	return tmpfont;
 }
 
-int DrawText(SDL_Surface* screen, TTF_Font* font, const char* text)
-{
-    SDL_Color color = {0,0,0};
-    SDL_Surface *text_surface;
-
-    text_surface = TTF_RenderText_Solid(font, text, color);
-    if (text_surface != NULL)
-    {	
-        SDL_BlitSurface(text_surface, NULL, screen, NULL);
-        SDL_FreeSurface(text_surface);
-        return 1;
-    }
-    else
-    {
-        // report error
-        return 0;
-    }
-} 
-
 Textbox *TextboxConstructor(SDL_Surface *screen)
 {
-	printf("Constructor:\n");
+	//printf("Constructor:\n");
 	// Variable definition section
-
+	
 	Textbox * textbox;
-
+	
 	// Alloc map
 	textbox = (Textbox *)malloc(sizeof(Textbox));
 	
@@ -48,28 +29,31 @@ Textbox *TextboxConstructor(SDL_Surface *screen)
 	
 	textbox->font = NULL;
 
+	TextboxLoad(textbox);
+
 	textbox->textColor.r = 255;
 	textbox->textColor.g = 255;
 	textbox->textColor.b = 255;
-
-
-
-	//textbox->font = loadfont("data/font/STIX.otf", 16);
-	textbox->font = loadfont("data/font/STIX.otf", 40);
-
- 	
+	
+	textbox->textMsg = "Ginebras";
+	
+	//textbox->font = loadfont("data/font/STIX.otf", 16); 	
 	//Setup the location on the screen to blit to
-	textbox->rcDest.x = 5;
-	textbox->rcDest.y = 5;
-	textbox->rcDest.w = 100;
-	textbox->rcDest.h= 50;
- 
+	textbox->rcText.x = 40;
+	textbox->rcText.y = 30;
+
+	textbox->rcBox.x = 15;
+	textbox->rcBox.y = 10;
+ 	
 	return textbox;
 }
 
 void TextboxLoad(Textbox * textbox)
 {
-	printf("LOAD");
+	//printf("LOAD");
+	textbox->font = loadFont("data/font/ChronoTrigger.ttf",30);
+	textbox->background = loadImage("data/window.png");
+	
 }
 
 void TextboxUpdate(Textbox * textbox)
@@ -77,27 +61,32 @@ void TextboxUpdate(Textbox * textbox)
 	printf("UPDATE");
 }
 
-
-void TextboxDraw(Textbox * textbox, SDL_Surface* screen)
+int TextboxDraw(Textbox * textbox, SDL_Surface* screen)
 {
-	//printf("DRAW");
-	//Blit text_surface surface to the screen surface
-	DrawText(screen, textbox->font, "LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL");
+	textbox->message = TTF_RenderText_Solid(textbox->font, textbox->textMsg, textbox->textColor);
+	
+	if (textbox->message != NULL) {	
+		SDL_BlitSurface(textbox->message , NULL, textbox->background, &textbox->rcBox);
+		SDL_BlitSurface(textbox->background , NULL, screen, &textbox->rcText);
+		SDL_FreeSurface(textbox->message);
+		return 1;
+	}
+	else {
+		// report error
+		return 0;
+	}
 }
+
 void TextboxDestructor(Textbox * textbox)
 {
-	printf("Destructor");
-	// close sdl ttf
-
+	//printf("Destructor");
+	
 	//Free the text_surface surface
 	SDL_FreeSurface(textbox->message);
-
-
-
-	//Free the surfaces SDL_FreeSurface( background );
-//	SDL_FreeSurface( message );
-	//Close the font that was used TTF_CloseFont( font );
-	//Quit SDL_ttf TTF_Quit();
-	//Quit SDL SDL_Quit();
+	
+	//Close the font that was used
+	TTF_CloseFont(textbox->font);
+	TTF_Quit();
+	SDL_Quit();
 }
 
