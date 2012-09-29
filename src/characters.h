@@ -12,7 +12,8 @@
 #include "area.h"
 #include "map.h"
 
-#define NUM_SKIP_FRAMES 5
+#define NUM_SKIP_FRAMES  5
+#define COLLISIONS_DEPTH 10
 
 /**********************************************************
  **** STRUCTS 
@@ -65,7 +66,7 @@ typedef struct Character{
  **********************************************************/
 extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos);
 extern void CharacterDestructor(Character *character);
-extern void CharacterSetDestination(Character* character, Cursor* cursor);
+extern void CharacterSetDestination(Character* character, Cursor* cursor, Map *map);
 extern void CharacterMove(Character *character, Map *map);
 extern void CharacterDraw(Character* character, SDL_Surface* screen, Map *map);
 extern void CharacterSetAttack(Character *character);

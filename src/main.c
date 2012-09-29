@@ -16,7 +16,7 @@
 
 #define FRAMES_PER_SECOND 	10
 
-static void HandleEvent(SDL_Event event, Game *game, Cursor *cursor);
+static void HandleEvent(SDL_Event event, Game *game, Cursor *cursor, Map *map);
 static Character** vectorCharsGen(int option, int **pos, Map *map);
 
 int modeCursor = 0;
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 
 		// look for an event 
 		if (SDL_PollEvent(&event)) {
-			HandleEvent(event, game, cursor);
+			HandleEvent(event, game, cursor, map);
 		}
 				
 		// Map update
@@ -128,13 +128,13 @@ int main(int argc, char **argv)
 		// Draw Characters
 		GameDrawCharacters(game, screen, map);
 		
+		// Draw actual character
+		CharacterDraw(game->actualCharacter, screen, map);		
+
 		// Draw selector
 		rcSelector.x = game->actualCharacter->rcDest.x + 16;
 		rcSelector.y = game->actualCharacter->rcDest.y - 16;
 		SDL_BlitSurface(selector, NULL, map->surfaceBack, &rcSelector);
-
-		// Draw actual character
-		CharacterDraw(game->actualCharacter, screen, map);		
 
 		// Draw background
 		MapDraw(map, screen);
@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void HandleEvent(SDL_Event event, Game *game, Cursor* cursor)
+void HandleEvent(SDL_Event event, Game *game, Cursor* cursor, Map *map)
 {
 	switch (event.type) {
 		/* close button clicked */
@@ -206,7 +206,7 @@ void HandleEvent(SDL_Event event, Game *game, Cursor* cursor)
 					if(game->actualCharacter->rcDest.x +16 == cursor->rcDest.x && game->actualCharacter->rcDest.y +32 == cursor->rcDest.y )
 						break;
 					else
-						CharacterSetDestination(game->actualCharacter, cursor);		
+						CharacterSetDestination(game->actualCharacter, cursor, map);		
 					break;
 				case SDLK_p:
 					GameActionChar(game, cursor);

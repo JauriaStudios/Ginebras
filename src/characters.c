@@ -91,11 +91,12 @@ void CharacterDestructor(Character *character)
 	free(character);
 }
 
-void CharacterSetDestination(Character* character, Cursor* cursor)
+void CharacterSetDestination(Character* character, Cursor* cursor, Map *map)
 {
 	float m, b; 
 	int i, dx, dy;
 	int stepsX, stepsY;
+	int coordX, coordY;
 	
 	// Set status move
 	character->moving     = 1;
@@ -103,6 +104,10 @@ void CharacterSetDestination(Character* character, Cursor* cursor)
 	character->moveState  = 1;
 	character->moveSteps  = 0;
 	character->skipFrames = 0;
+	
+	// Set to 0 character position
+	GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
+	map->charPosition[coordY][coordX] = 0;
 
 	// Set destination point
 	character->destinationPoint.x = cursor->rcDest.x - 16;
@@ -165,6 +170,7 @@ void CharacterMove(Character *character, Map *map)
 {
 	int coordNwX, coordNwY, coordNeX, coordNeY, coordSwX, coordSwY, coordSeX, coordSeY;
 	int firstX, firstY;
+	int coordX, coordY;
 	
 	// Set the coordenates, if character is moving
 	if( character->actualStep < character->moveSteps ){
@@ -172,10 +178,10 @@ void CharacterMove(Character *character, Map *map)
 		// Check collition
 		printf("(%d, %d)\n", 11, 12);
 		GetCoor(character->moveX[0]+16+16, character->moveY[0]+32+16, &firstX, &firstY);
-		GetCoor(character->moveX[character->actualStep]+16+1, character->moveY[character->actualStep]+32+1, &coordNwX, &coordNwY);
-		GetCoor(character->moveX[character->actualStep]+16+32-1, character->moveY[character->actualStep]+32+1, &coordNeX, &coordNeY);
-		GetCoor(character->moveX[character->actualStep]+16+1, character->moveY[character->actualStep]+32+32-1, &coordSwX, &coordSwY);
-		GetCoor(character->moveX[character->actualStep]+16+32-1, character->moveY[character->actualStep]+32+32-1, &coordSeX, &coordSeY);
+		GetCoor(character->moveX[character->actualStep]+16+COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+COLLISIONS_DEPTH, &coordNwX, &coordNwY);
+		GetCoor(character->moveX[character->actualStep]+16+32-COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+COLLISIONS_DEPTH, &coordNeX, &coordNeY);
+		GetCoor(character->moveX[character->actualStep]+16+COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+32-COLLISIONS_DEPTH, &coordSwX, &coordSwY);
+		GetCoor(character->moveX[character->actualStep]+16+32-COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+32-COLLISIONS_DEPTH, &coordSeX, &coordSeY);
 
 		//printf("(%d, %d) charpos: %d ", coordX, coordY, map->charPosition[coordY][coordX]);
 		//printf("(%d, %d) collision: %d\n", coordX, coordY, map->colisions[coordY][coordX]);
@@ -209,6 +215,11 @@ void CharacterMove(Character *character, Map *map)
 fin:
 		character->moveState = 0;
 		character->moving = 0;
+		// Set to 0 character position
+		GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
+		map->charPosition[coordY][coordX] = 1;
+		//character->rcDest.x = (TILE_SIZE * coordX)-16;
+		//character->rcDest.y = (TILE_SIZE * coordY)-32;
 		//free(character->moveX);
 		//free(character->moveY);
 	}
@@ -239,7 +250,7 @@ void CharacterSetAttack(Character *character)
 void CharacterAttack(Character *character)
 {
 	
-	if( character->actualAttackStep < character->attackSteps ){
+	if( (character->actualAttackStep < character->attackSteps) && character->attacking){
 		character->rcSrcAttack.y = character->moveOrient * SPRITE_SIZE;
 		if(character->skipFrames == NUM_SKIP_FRAMES) {
 			if (character->attackState == 5)
