@@ -197,7 +197,7 @@ void CharacterMove(Character *character, Map *map)
 		// Animation
 		character->rcSrc.y = character->moveOrient * SPRITE_SIZE;
 		printf("%d \n", character->skipFrames);
-		if(character->skipFrames == NUM_SKIP_FRAMES) {
+		if(character->skipFrames >= NUM_SKIP_FRAMES) {
 			if (character->moveState == 8)
 				character->moveState = 1;
 			else
