@@ -327,18 +327,17 @@ void MapDraw(Map *map, SDL_Surface* screen)
 	//SDL_Rect rcSrc;
 
 	// Set initial animation sprite frame
-	/*
-	rcSrc.x = map->scroll_x;
-	rcSrc.y = map->scroll_y;
+/*	
+	rcSrc.x = 0;
+	rcSrc.y = 0;
 	rcSrc.w = SCREEN_WIDTH;
 	rcSrc.h = SCREEN_HEIGHT;
-	*/
+*/	
 
 	rcBack.x = map->scroll_x;
 	rcBack.y = map->scroll_y;
 	rcFront.x = map->scroll_x;
 	rcFront.y = map->scroll_y;
-
 /*
 	rcDest.x = 650;
 	rcDest.y = -1000;

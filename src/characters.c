@@ -1,5 +1,12 @@
 #include "characters.h"
 
+typedef enum OrientCollision {
+	NORTH_WEST,
+	NORTH_EAST,
+	SOUTH_WEST,
+	SOUTH_EAST,
+}OrientCollision;
+
 Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos)
 {
 	Character* character;
@@ -46,7 +53,7 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	pos[coordY][coordX] = 1;
 	
 	// Set initial velocity
-	character->velocity = 4;
+	character->velocity = 5;
 
 	// Set initial destination point
 	character->destinationPoint.x = x0;
@@ -104,6 +111,7 @@ void CharacterSetDestination(Character* character, Cursor* cursor, Map *map)
 	character->moveState  = 1;
 	character->moveSteps  = 0;
 	character->skipFrames = 0;
+	character->collision  = 0;
 	
 	// Set to 0 character position
 	GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
@@ -188,11 +196,14 @@ void CharacterMove(Character *character, Map *map)
 
 		// Check collision and skip first coordenate
 		if(((map->charPosition[coordNwY][coordNwX] || map->colisions[coordNwY][coordNwX]) || 
-		    (map->charPosition[coordNeY][coordNeX] || map->colisions[coordNeY][coordNeX]) ||
-		    (map->charPosition[coordSwY][coordSwX] || map->colisions[coordSwY][coordSwX]) ||																			 (map->charPosition[coordSeY][coordSeX] || map->colisions[coordSeY][coordSeX])) && 
-		    (!map->charPosition[firstY][firstX])){
-
+		    	(map->charPosition[coordNeY][coordNeX] || map->colisions[coordNeY][coordNeX]) ||
+		    	(map->charPosition[coordSwY][coordSwX] || map->colisions[coordSwY][coordSwX]) ||																			 (map->charPosition[coordSeY][coordSeX] || map->colisions[coordSeY][coordSeX])) && 
+		    	(!map->charPosition[firstY][firstX])){
+			
 			character->actualStep = character->moveSteps;
+			
+			character->collision = 1;
+
 			goto fin; 
 		}else{
 			character->rcDest.x = character->moveX[character->actualStep];
@@ -215,11 +226,11 @@ void CharacterMove(Character *character, Map *map)
 fin:
 		character->moveState = 0;
 		character->moving = 0;
+		
 		// Set to 0 character position
 		GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
+
 		map->charPosition[coordY][coordX] = 1;
-		//character->rcDest.x = (TILE_SIZE * coordX)-16;
-		//character->rcDest.y = (TILE_SIZE * coordY)-32;
 		//free(character->moveX);
 		//free(character->moveY);
 	}

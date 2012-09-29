@@ -13,7 +13,7 @@
 #include "map.h"
 
 #define NUM_SKIP_FRAMES  5
-#define COLLISIONS_DEPTH 10
+#define COLLISIONS_DEPTH 1
 
 /**********************************************************
  **** STRUCTS 
@@ -57,7 +57,13 @@ typedef struct Character{
 	int attackSteps;
 	int actualAttackStep;
 	int attacking;
-	int attackState; // 1, 2 ... 5 ; 0 stop 
+	int attackState; // 1, 2 ... 5 ; 0 stop
+
+	// Collisions
+	int collisionX;
+	int collisionY;
+	int orientCol;
+	int collision;
 
 } Character;
 
