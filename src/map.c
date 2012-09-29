@@ -57,6 +57,7 @@ Map* MapConstructor(SDL_Surface *screen)
 {
 	// Variable definition section
 	Map * map;
+	int i, j;
 
 	// Alloc map
 	map = (Map *)malloc(sizeof(Map));
@@ -112,6 +113,15 @@ Map* MapConstructor(SDL_Surface *screen)
 	// Init tileset
 	INIT_LIST_HEAD(&map->listTileSet);
 
+	// Init char position
+	map->charPosition = (int **)malloc(sizeof(int*) * MAP_SIZE_X);
+	for(i = 0; i < MAP_SIZE_X; i++)
+		map->charPosition[i] = (int *)malloc(sizeof(int) * MAP_SIZE_Y);
+
+	for(i = 0; i < MAP_SIZE_X; i++)
+		for(j = 0; j < MAP_SIZE_Y; j++)
+			map->charPosition[i][j] = 0;
+
 	return map;
 }
 
@@ -127,8 +137,6 @@ TileSet* getTile(int tileNum, Map *map)
 		//printf("tileset: %s, %d\n",tileset->tileSetName, tileset->firstgid);
 		if((tileNum < tileset->firstgid)){
 caca:
-			// CHAPUZA ALERT!! parche que soluciona rapido la omision del primer tile
-				
 			//printf("	I'm the tileset: %s\n",previus->tileSetName);
 			numTilesWidth = (int)(previus->width/previus->tileWidth);
 			offset = tileNum - previus->firstgid;
@@ -160,7 +168,7 @@ void LayerGetSurface(Layer *layer, Map *map, SDL_Surface *screen)
 			//printf("%d ", layer->data[j][i]);
 			if(layer->data[j][i]){
 				tileSet = getTile(layer->data[j][i], map);
-				printf("tilesetname: %s ", tileSet->tileSetName);
+				//printf("tilesetname: %s ", tileSet->tileSetName);
 				tileSet->rcDest.x = j * 32;
 				tileSet->rcDest.y = i * 32; 
 				//printf("(%d, %d) ", tileSet->rcSrc.x, tileSet->rcSrc.y);
@@ -185,6 +193,7 @@ void MapLoad(Map * map, char* file, SDL_Surface *screen)
 	// parse csv data
 	char *str1, *str2, *token, *subtoken;
     char *saveptr1, *saveptr2;
+	char nameLayer[50], pos[10];
 
 	char *rowsDelimiter = "\n";
 	char *colsDelimiter = ",";
@@ -214,19 +223,35 @@ void MapLoad(Map * map, char* file, SDL_Surface *screen)
 				//tmpLayer->surfaceLayer[j][i] = loadImage(bgTileName);
 			}
 		}
-		printf("\n********************layer: %s*********************\n", tmpLayer->name);	
+		printf("\n********************layer: %s*********************\n", tmpLayer->name);
+		
+		// Save data colisions in map
+		if(!strcmp(tmpLayer->name, "Colisiones")){
+			for(i=0; i<40; i++){
+				for(j=0; j<40; j++){
+					map->colisions[i][j] = tmpLayer->data[j][i];
+					printf("%d ", map->colisions[i][j]);
+				}
+			printf("\n");
+			}
+		}
+
 		LayerGetSurface(tmpLayer, map, screen);
 	}
 	
 	// Load main layers
 	list_for_each_entry(tmpLayer, &map->listLayer, list){
-		if(!strcmp(tmpLayer->name, "Colisiones")){
+		sscanf(tmpLayer->name, "%s %s", nameLayer, pos);
+		
+		if(!strcmp(pos, "front")){
+			printf("NAME LAYER FRONT: %s\n", nameLayer);
 			SDL_BlitSurface(tmpLayer->imageLayer, NULL, map->surfaceFront, NULL);		
 		}else{
-			printf("NAME LAYER: %s\n", tmpLayer->name);
+			printf("NAME LAYER BACK: %s\n", nameLayer);
 			SDL_BlitSurface(tmpLayer->imageLayer, NULL, map->surfaceBack, NULL);			
 			SDL_BlitSurface(tmpLayer->imageLayer, NULL, map->surfaceRefresh, NULL);
 		}
+
 	}
 	
 }
@@ -298,7 +323,7 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 void MapDraw(Map *map, SDL_Surface* screen)
 {
 	//Layer *tmpLayer;
-	SDL_Rect rcDest;
+	SDL_Rect rcFront, rcBack;
 	//SDL_Rect rcSrc;
 
 	// Set initial animation sprite frame
@@ -309,8 +334,10 @@ void MapDraw(Map *map, SDL_Surface* screen)
 	rcSrc.h = SCREEN_HEIGHT;
 	*/
 
-	rcDest.x = map->scroll_x;
-	rcDest.y = map->scroll_y;
+	rcBack.x = map->scroll_x;
+	rcBack.y = map->scroll_y;
+	rcFront.x = map->scroll_x;
+	rcFront.y = map->scroll_y;
 
 /*
 	rcDest.x = 650;
@@ -318,7 +345,9 @@ void MapDraw(Map *map, SDL_Surface* screen)
 */
 
 	//SDL_BlitSurface(map->surfaceFront, NULL, screen, &rcDest);
-	SDL_BlitSurface(map->surfaceBack, NULL, screen, &rcDest);
+	SDL_BlitSurface(map->surfaceBack, NULL, screen, &rcBack);
+	SDL_BlitSurface(map->surfaceFront, NULL, screen, &rcFront);
+	
 	SDL_BlitSurface(map->surfaceRefresh, NULL, map->surfaceBack, NULL);
 }
 

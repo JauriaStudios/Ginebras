@@ -73,13 +73,13 @@ void GameDestructor(Game *game)
 
 }
 
-int GameMoveCharacters(Game *game)
+int GameMoveCharacters(Game *game, Map *map)
 {
 	// Variable definition section
 	Character* tmp;
 
 	list_for_each_entry(tmp, &game->listCharacters, list){
-		CharacterMove(tmp);
+		CharacterMove(tmp, map);
 	}
 	
 	return 0;
