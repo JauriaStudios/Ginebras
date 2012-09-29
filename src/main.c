@@ -96,6 +96,9 @@ int main(int argc, char **argv)
 		// Map update
 		MapUpdate(map, cursor->rcDest);
 
+		// Update Window
+		TextboxUpdate(textbox, map->scroll_x, map->scroll_y);
+		
 		// Fill screen black
 		SDL_FillRect(screen, NULL, 0x0);
 

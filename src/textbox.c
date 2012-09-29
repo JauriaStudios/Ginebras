@@ -28,6 +28,7 @@ Textbox *TextboxConstructor(SDL_Surface *screen)
 	}
 	
 	textbox->font = NULL;
+	textbox->fontMono = NULL;
 
 	TextboxLoad(textbox);
 
@@ -42,23 +43,35 @@ Textbox *TextboxConstructor(SDL_Surface *screen)
 	textbox->rcText.x = 40;
 	textbox->rcText.y = 30;
 
-	textbox->rcBox.x = 15;
-	textbox->rcBox.y = 10;
+	textbox->rcBox.x = 60;
+	textbox->rcBox.y = 50;
  	
 	return textbox;
 }
 
 void TextboxLoad(Textbox * textbox)
 {
-	//printf("LOAD");
-	textbox->font = loadFont("data/font/ChronoTrigger.ttf",30);
+			//printf("LOAD");
+	// load Fonts
+	textbox->font = loadFont("data/font/ChronoTrigger.ttf",20);
+	textbox->fontMono = loadFont("data/font/ChronoTriggerMonospaced.ttf",30);
+	// load Images
+
 	textbox->background = loadImage("data/window.png");
 	
 }
 
-void TextboxUpdate(Textbox * textbox)
+void TextboxUpdate(Textbox * textbox, int scrollX, int scrollY)
 {
-	printf("UPDATE");
+	char *tmpMsg;
+	tmpMsg = (char *)malloc(sizeof(char)*50);
+	
+
+	//printf("UPDATE");
+	
+	sprintf(tmpMsg,"X:%d  Y:%d", scrollX, scrollY);
+	//printf("%s", tmpMsg);	
+	textbox->textMsg = tmpMsg;
 }
 
 int TextboxDraw(Textbox * textbox, SDL_Surface* screen)
@@ -66,8 +79,8 @@ int TextboxDraw(Textbox * textbox, SDL_Surface* screen)
 	textbox->message = TTF_RenderText_Solid(textbox->font, textbox->textMsg, textbox->textColor);
 	
 	if (textbox->message != NULL) {	
-		SDL_BlitSurface(textbox->message , NULL, textbox->background, &textbox->rcBox);
 		SDL_BlitSurface(textbox->background , NULL, screen, &textbox->rcText);
+		SDL_BlitSurface(textbox->message , NULL, screen, &textbox->rcBox);
 		SDL_FreeSurface(textbox->message);
 		return 1;
 	}
