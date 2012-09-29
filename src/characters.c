@@ -193,7 +193,7 @@ void CharacterMove(Character *character, Map *map)
 		    (!map->charPosition[firstY][firstX])){
 
 			character->actualStep = character->moveSteps;
-			goto fin;
+			goto fin; 
 		}else{
 			character->rcDest.x = character->moveX[character->actualStep];
 			character->rcDest.y = character->moveY[character->actualStep];
