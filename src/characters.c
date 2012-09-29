@@ -1,11 +1,12 @@
 #include "characters.h"
 
-Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement)
+Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos)
 {
 	Character* character;
 	character = (Character *)malloc(sizeof(Character));
 	char spriteMove[75];
 	char spriteSlash[75];
+	int coordX, coordY;
 
 	strcpy(spriteMove, file); 
 	strcat(spriteMove, ".png");
@@ -40,6 +41,10 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	character->rcSrc.w = SPRITE_SIZE;
 	character->rcSrc.h = SPRITE_SIZE;
 	
+	// Set initial character position
+	GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
+	pos[coordY][coordX] = 1;
+	
 	// Set initial velocity
 	character->velocity = 4;
 
@@ -51,6 +56,7 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	character->moving = 0;
 	character->actualStep = 0;
 	character->moveSteps  = 0;
+	character->moveState = 0;
 
 	// Set linked list
 	INIT_LIST_HEAD(&character->list);
@@ -155,16 +161,42 @@ void CharacterSetDestination(Character* character, Cursor* cursor)
 	}
 }
 
-void CharacterMove(Character *character)
+void CharacterMove(Character *character, Map *map)
 {
+	int coordNwX, coordNwY, coordNeX, coordNeY, coordSwX, coordSwY, coordSeX, coordSeY;
+	int firstX, firstY;
+	
 	// Set the coordenates, if character is moving
 	if( character->actualStep < character->moveSteps ){
-		character->rcDest.x = character->moveX[character->actualStep];
-		character->rcDest.y = character->moveY[character->actualStep];
-		character->actualStep++;
+		
+		// Check collition
+		printf("(%d, %d)\n", 11, 12);
+		GetCoor(character->moveX[0]+16+16, character->moveY[0]+32+16, &firstX, &firstY);
+		GetCoor(character->moveX[character->actualStep]+16+1, character->moveY[character->actualStep]+32+1, &coordNwX, &coordNwY);
+		GetCoor(character->moveX[character->actualStep]+16+32-1, character->moveY[character->actualStep]+32+1, &coordNeX, &coordNeY);
+		GetCoor(character->moveX[character->actualStep]+16+1, character->moveY[character->actualStep]+32+32-1, &coordSwX, &coordSwY);
+		GetCoor(character->moveX[character->actualStep]+16+32-1, character->moveY[character->actualStep]+32+32-1, &coordSeX, &coordSeY);
 
+		//printf("(%d, %d) charpos: %d ", coordX, coordY, map->charPosition[coordY][coordX]);
+		//printf("(%d, %d) collision: %d\n", coordX, coordY, map->colisions[coordY][coordX]);
+
+		// Check collision and skip first coordenate
+		if(((map->charPosition[coordNwY][coordNwX] || map->colisions[coordNwY][coordNwX]) || 
+		    (map->charPosition[coordNeY][coordNeX] || map->colisions[coordNeY][coordNeX]) ||
+		    (map->charPosition[coordSwY][coordSwX] || map->colisions[coordSwY][coordSwX]) ||																			 (map->charPosition[coordSeY][coordSeX] || map->colisions[coordSeY][coordSeX])) && 
+		    (!map->charPosition[firstY][firstX])){
+
+			character->actualStep = character->moveSteps;
+			goto fin;
+		}else{
+			character->rcDest.x = character->moveX[character->actualStep];
+			character->rcDest.y = character->moveY[character->actualStep];
+			character->actualStep++;
+		}
+	
 		// Animation
 		character->rcSrc.y = character->moveOrient * SPRITE_SIZE;
+		printf("%d \n", character->skipFrames);
 		if(character->skipFrames == NUM_SKIP_FRAMES) {
 			if (character->moveState == 8)
 				character->moveState = 1;
@@ -174,8 +206,11 @@ void CharacterMove(Character *character)
 		}else
 			character->skipFrames++;
 	}else{
+fin:
 		character->moveState = 0;
 		character->moving = 0;
+		//free(character->moveX);
+		//free(character->moveY);
 	}
 	character->rcSrc.x = character->moveState * SPRITE_SIZE;
 }

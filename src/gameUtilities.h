@@ -1,10 +1,16 @@
 #ifndef _GAMES_UTILITIES_H_
 #define _GAMES_UTILITIES_H_
 
+#include <math.h>
+
 #include "SDL.h"
 #include "SDL_image.h"
 
-#define SPRITE_SIZE   	64
+#define SPRITE_SIZE 64
+
+#define MAP_SIZE_X  40
+#define MAP_SIZE_Y  40
+#define TILE_SIZE 32
 
 typedef enum Orientation {
 	ORIENT_NORTH,
@@ -14,5 +20,6 @@ typedef enum Orientation {
 }Orientation;
 
 extern SDL_Surface* loadImage(char *filename);
+extern void GetCoor(int pixelX, int pixelY, int *coordX, int *coordY);
 
 #endif // _GAMES_UTILITIES_H_

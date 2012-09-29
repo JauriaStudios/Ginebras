@@ -23,3 +23,9 @@ SDL_Surface* loadImage(char* filename)
     //devolver imagen final
     return image;
 }
+
+void GetCoor(int pixelX, int pixelY, int *coordX, int *coordY)
+{
+	*coordX =  (int)(floor((double)(pixelX/TILE_SIZE)));
+	*coordY =  (int)(floor((double)(pixelY/TILE_SIZE)));
+}

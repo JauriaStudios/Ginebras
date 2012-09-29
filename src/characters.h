@@ -63,10 +63,10 @@ typedef struct Character{
 /**********************************************************
  **** METHODS 
  **********************************************************/
-extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement);
+extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos);
 extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor);
-extern void CharacterMove(Character *character);
+extern void CharacterMove(Character *character, Map *map);
 extern void CharacterDraw(Character* character, SDL_Surface* screen, Map *map);
 extern void CharacterSetAttack(Character *character);
 extern void CharacterAttack(Character* character);

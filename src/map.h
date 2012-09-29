@@ -18,12 +18,6 @@
 
 #define BUFFER_SIZE 1024
 
-#define MAP_SIZE_X 40
-#define MAP_SIZE_Y 40
-
-#define TILE_SIZE 32
-
-
 /**********************************************************
  *** STRUCTS
  **********************************************************/
@@ -56,6 +50,8 @@ typedef struct Map{
 
 	// Layers data
 	int background[MAP_SIZE_X][MAP_SIZE_Y];
+	int colisions[MAP_SIZE_X][MAP_SIZE_Y];
+	int **charPosition;
 	//int objects[MAP_SIZE_X][MAP_SIZE_Y];
 	//int collisions[MAP_SIZE_X][MAP_SIZE_Y];
 	
