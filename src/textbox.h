@@ -13,12 +13,16 @@
 typedef struct Textbox{	
 	
 	SDL_Surface *background;
-	SDL_Surface *message;
+	SDL_Surface *bgTileset;
 
-	SDL_Rect rcText, rcBox;
+	SDL_Surface *message;
+	
+	SDL_Rect rcDestText, rcDestBox, rcSrcBox;
 	
 	TTF_Font *font;
 	TTF_Font *fontMono;
+	
+	int windowX,windowY, windowW, windowH;
 
 	SDL_Color textColor;
 	
