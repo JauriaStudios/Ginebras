@@ -6,8 +6,10 @@
 /data/data/Objetos2.png
 /data/data/Objetos.png
 /tags
+/doc
 *.o
 *~
 *.swp
+configDoxy.cfg
 /documentacion_grafico
 ginebras
