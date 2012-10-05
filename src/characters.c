@@ -136,9 +136,7 @@ void CharacterSetDestination(Character* character, Cursor* cursor, Map *map)
 	
 	// steps
 	stepsX = abs( dx ) / character->velocity;
-	//printf("STEPS X: %d\n", stepsX);
 	stepsY = abs( dy ) / character->velocity;
-	//printf("STEPS Y: %d\n", stepsY);
 	
 	character->moveSteps = ceil(sqrt( (stepsX*stepsX) + (stepsY*stepsY) ));
 	
@@ -184,20 +182,16 @@ void CharacterMove(Character *character, Map *map)
 	if( character->actualStep < character->moveSteps ){
 		
 		// Check collition
-		printf("(%d, %d)\n", 11, 12);
 		GetCoor(character->moveX[0]+16+16, character->moveY[0]+32+16, &firstX, &firstY);
 		GetCoor(character->moveX[character->actualStep]+16+COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+COLLISIONS_DEPTH, &coordNwX, &coordNwY);
 		GetCoor(character->moveX[character->actualStep]+16+32-COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+COLLISIONS_DEPTH, &coordNeX, &coordNeY);
 		GetCoor(character->moveX[character->actualStep]+16+COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+32-COLLISIONS_DEPTH, &coordSwX, &coordSwY);
 		GetCoor(character->moveX[character->actualStep]+16+32-COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+32-COLLISIONS_DEPTH, &coordSeX, &coordSeY);
 
-		//printf("(%d, %d) charpos: %d ", coordX, coordY, map->charPosition[coordY][coordX]);
-		//printf("(%d, %d) collision: %d\n", coordX, coordY, map->colisions[coordY][coordX]);
-
 		// Check collision and skip first coordenate
-		if(((map->charPosition[coordNwY][coordNwX] || map->colisions[coordNwY][coordNwX]) || 
-		    	(map->charPosition[coordNeY][coordNeX] || map->colisions[coordNeY][coordNeX]) ||
-		    	(map->charPosition[coordSwY][coordSwX] || map->colisions[coordSwY][coordSwX]) ||																			 (map->charPosition[coordSeY][coordSeX] || map->colisions[coordSeY][coordSeX])) && 
+		if(((map->charPosition[coordNwY][coordNwX] || map->collisions[coordNwY][coordNwX]) || 
+		    	(map->charPosition[coordNeY][coordNeX] || map->collisions[coordNeY][coordNeX]) ||
+		    	(map->charPosition[coordSwY][coordSwX] || map->collisions[coordSwY][coordSwX]) ||																			 (map->charPosition[coordSeY][coordSeX] || map->collisions[coordSeY][coordSeX])) && 
 		    	(!map->charPosition[firstY][firstX])){
 			
 			character->actualStep = character->moveSteps;
@@ -213,7 +207,6 @@ void CharacterMove(Character *character, Map *map)
 	
 		// Animation
 		character->rcSrc.y = character->moveOrient * SPRITE_SIZE;
-		printf("%d \n", character->skipFrames);
 		if(character->skipFrames >= NUM_SKIP_FRAMES) {
 			if (character->moveState == 8)
 				character->moveState = 1;
