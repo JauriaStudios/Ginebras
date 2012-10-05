@@ -19,7 +19,7 @@ typedef enum Orientation {
 	ORIENT_EAST,
 }Orientation;
 
-extern void SDL_CopySurface (SDL_Surface *source, SDL_Rect *src,
+extern void copySurface (SDL_Surface *source, SDL_Rect *src,
                        SDL_Surface *destiny, SDL_Rect *dest);
 extern SDL_Surface* loadImage(char *filename);
 extern void GetCoor(int pixelX, int pixelY, int *coordX, int *coordY);

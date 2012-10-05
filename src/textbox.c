@@ -62,7 +62,7 @@ Textbox *TextboxConstructor(SDL_Surface *screen)
 	
 	// Window size in 16x tilesize
 	textbox->windowW = 8; //min 3
-	textbox->windowH = 2; // min 3
+	textbox->windowH = 3; // min 2
 
 	//create window Test
 	TextboxCreateWindow(textbox);
@@ -164,7 +164,7 @@ void TextboxCreateWindow(Textbox * textbox)
 			textbox->rcDestBox.y = 16*j;
 			
 			// Function from 
-			SDL_CopySurface(textbox->bgTileset, &textbox->rcSrcBox,
+			copySurface(textbox->bgTileset, &textbox->rcSrcBox,
                        							textbox->background, &textbox->rcDestBox);
 			//SDL_BlitSurface(textbox->bgTileset, &textbox->rcSrcBox,textbox->background, &textbox->rcDestBox);
 		}

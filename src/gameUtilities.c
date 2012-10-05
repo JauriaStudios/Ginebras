@@ -1,6 +1,6 @@
 #include "gameUtilities.h"
 
-void SDL_CopySurface (SDL_Surface *source, SDL_Rect *src,
+void copySurface (SDL_Surface *source, SDL_Rect *src,
                        SDL_Surface *destiny, SDL_Rect *dest)
 {
     int i;
@@ -22,7 +22,6 @@ void SDL_CopySurface (SDL_Surface *source, SDL_Rect *src,
 
        memmove ( & d_point[ d_offset], & s_point[s_offset],
 		(src->w)*(source->format->BytesPerPixel));
-
     }
 
     SDL_UnlockSurface(source);
