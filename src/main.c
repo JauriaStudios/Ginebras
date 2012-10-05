@@ -78,7 +78,10 @@ int main(int argc, char **argv)
 
 	// Create a cursor
 	cursor = CursorConstructor(game->actualCharacter->rcDest.x, game->actualCharacter->rcDest.y);	
-
+	
+	// Set initial cursor collision
+	CursorSetCollisionArea(cursor, game->actualCharacter->movement);
+	
 	// Create a timer
 	timer = TimerConstructor();
 
@@ -124,9 +127,6 @@ int main(int argc, char **argv)
 		
 		// Attack character
 		CharacterAttack(game->actualCharacter);
-
-		// Move characters 
-		//CharacterMove(game->actualCharacter);	
 
 		// Draw Characters
 		GameDrawCharacters(game, screen, map);
@@ -208,7 +208,7 @@ void HandleEvent(SDL_Event event, Game *game, Cursor* cursor, Map *map)
 				case SDLK_SPACE:
 					if(game->actualCharacter->rcDest.x +16 == cursor->rcDest.x && game->actualCharacter->rcDest.y +32 == cursor->rcDest.y )
 						break;
-					else
+					else if(!cursor->free)
 						CharacterSetDestination(game->actualCharacter, cursor, map);		
 					break;
 				case SDLK_p:
@@ -216,6 +216,19 @@ void HandleEvent(SDL_Event event, Game *game, Cursor* cursor, Map *map)
 					break;
 				case SDLK_a:
 					CharacterSetAttack(game->actualCharacter);
+					break;
+				case SDLK_f:
+					if(cursor->free){
+						// Set cursor on character position
+						CursorSetPosition(cursor, game->actualCharacter->rcDest.x, game->actualCharacter->rcDest.y);
+				
+						// Set cursor in the middle of the collision matrix
+						cursor->coordX = (cursor->sideLength-1)/2;
+						cursor->coordY = (cursor->sideLength-1)/2;	
+			
+						cursor->free = 0;
+					}else
+						cursor->free = 1;
 					break;
 				default:
 					break;

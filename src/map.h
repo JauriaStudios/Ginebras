@@ -23,10 +23,6 @@
  **********************************************************/
 typedef struct Map{	
 
-	SDL_Surface* surfaceBackground[MAP_SIZE_X][MAP_SIZE_Y];
-	SDL_Surface* tileSet;
-	SDL_Rect     rcGrassSrc, rcGrassDest;
-
 	// Map surface
 	SDL_Surface *surfaceBack;
 	SDL_Surface *surfaceFront;
@@ -35,6 +31,7 @@ typedef struct Map{
 	xmlChar* layer;
 
 	// Tileset
+	SDL_Surface* tileSet;
 	char *tileSetName, *tileSetImage;
 	char *tileSetWidth, *tileSetHeight, *tileWidth, *tileHeight;
 	char *firstgid;
@@ -46,14 +43,11 @@ typedef struct Map{
 	char layerName;
 	int  numLayers;
 	
-	int scroll_x, scroll_y, scrollVel, mapWidth, mapHeight;
+	int scroll_x, scroll_y, scrollVel;
 
 	// Layers data
-	int background[MAP_SIZE_X][MAP_SIZE_Y];
-	int colisions[MAP_SIZE_X][MAP_SIZE_Y];
+	int collisions[MAP_SIZE_X][MAP_SIZE_Y];
 	int **charPosition;
-	//int objects[MAP_SIZE_X][MAP_SIZE_Y];
-	//int collisions[MAP_SIZE_X][MAP_SIZE_Y];
 	
 } Map;
 
