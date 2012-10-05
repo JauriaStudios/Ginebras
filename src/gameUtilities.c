@@ -1,5 +1,36 @@
 #include "gameUtilities.h"
 
+void SDL_CopySurface (SDL_Surface *source, SDL_Rect *src,
+                       SDL_Surface *destiny, SDL_Rect *dest)
+{
+    int i;
+    int s_offset, d_offset;
+    Uint8 *s_point, *d_point;
+
+    SDL_LockSurface(source);
+    SDL_LockSurface(destiny);
+
+    s_point = (Uint8 *) source->pixels;
+    d_point = (Uint8 *) destiny->pixels;
+
+    for (i = 0; i < src->h; i++){	// Contador de fila
+
+       s_offset=(((src->y)+i)*(source->pitch)+
+                 ((src->x)*(source->format->BytesPerPixel)));
+       d_offset=(((dest->y)+i)*(destiny->pitch)+
+                 ((src->x)*(source->format->BytesPerPixel)));
+
+       memmove ( & d_point[ d_offset], & s_point[s_offset],
+		(src->w)*(source->format->BytesPerPixel));
+
+    }
+
+    SDL_UnlockSurface(source);
+    SDL_UnlockSurface(destiny);
+
+}
+
+
 SDL_Surface* loadImage(char* filename)
 {
     SDL_Surface* temp = NULL;
@@ -29,3 +60,5 @@ void GetCoor(int pixelX, int pixelY, int *coordX, int *coordY)
 	*coordX =  (int)(floor((double)(pixelX/TILE_SIZE)));
 	*coordY =  (int)(floor((double)(pixelY/TILE_SIZE)));
 }
+
+
