@@ -164,8 +164,7 @@ void TextboxCreateWindow(Textbox * textbox)
 			textbox->rcDestBox.y = 16*j;
 			
 			// Function from 
-			copySurface(textbox->bgTileset, &textbox->rcSrcBox,
-                       							textbox->background, &textbox->rcDestBox);
+			copySurface(textbox->bgTileset, &textbox->rcSrcBox, textbox->background, &textbox->rcDestBox);
 			//SDL_BlitSurface(textbox->bgTileset, &textbox->rcSrcBox,textbox->background, &textbox->rcDestBox);
 		}
 	}
