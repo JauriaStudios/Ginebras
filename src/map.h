@@ -11,12 +11,12 @@
 #include "list.h"
 #include "gameUtilities.h"
 
-//#include "cursor.h"
-
 #define SCREEN_WIDTH  	800
 #define SCREEN_HEIGHT 	600
 
 #define BUFFER_SIZE 1024
+
+#define BORDER 64
 
 /**********************************************************
  *** STRUCTS
@@ -28,12 +28,16 @@ typedef struct Map{
 	SDL_Surface *surfaceFront;
 	SDL_Surface *surfaceRefresh;
 
+	// Map attributes
+	int width, height;
+	int tileWidth, tileHeight;
+	
 	xmlChar* layer;
 
 	// Tileset
 	SDL_Surface* tileSet;
 	char *tileSetName, *tileSetImage;
-	char *tileSetWidth, *tileSetHeight, *tileWidth, *tileHeight;
+	char *tileSetWidth, *tileSetHeight;
 	char *firstgid;
 	int  numTileSet;
 
@@ -46,7 +50,7 @@ typedef struct Map{
 	int scroll_x, scroll_y, scrollVel;
 
 	// Layers data
-	int collisions[MAP_SIZE_X][MAP_SIZE_Y];
+	int **collisions;
 	int **charPosition;
 	
 } Map;
@@ -54,9 +58,8 @@ typedef struct Map{
 /**********************************************************
  *** METHODS
  **********************************************************/
-extern Map* MapConstructor(SDL_Surface *screen);
+extern Map* MapConstructor(SDL_Surface *screen, char *file);
 extern void MapDestructor(Map * map);
-extern void MapLoad(Map * map, char* file, SDL_Surface *screen);
 extern void MapUpdate(Map * map, SDL_Rect cursorCoords);
 extern void MapDraw(Map *map, SDL_Surface* screen);
 

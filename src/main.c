@@ -53,9 +53,8 @@ int main(int argc, char **argv)
 	SDL_EnableKeyRepeat(70, 70);
 	
 	// Load background
-	map = MapConstructor(screen);
-	MapLoad(map, "data/Newmap.tmx", screen);
-
+	map = MapConstructor(screen, "data/Newmap.tmx");
+	
 	// Load grid
 	grid = loadImage("data/Grid.png");
 
@@ -107,10 +106,10 @@ int main(int argc, char **argv)
 
 		// draw the grid
 		if(showGrid){
-			for (x = 0; x < (MAP_SIZE_X * TILE_SIZE) / (SPRITE_SIZE/2); x++) {
-				for (y = 0; y < (MAP_SIZE_Y * TILE_SIZE) / (SPRITE_SIZE/2); y++) {
-					rcGrid.x = x * SPRITE_SIZE/2;
-					rcGrid.y = y * SPRITE_SIZE/2;
+			for (x = 0; x < map->width; x++) {
+				for (y = 0; y < map->height; y++) {
+					rcGrid.x = x * map->tileWidth;
+					rcGrid.y = y * map->tileHeight;
 					SDL_BlitSurface(grid, NULL, map->surfaceBack, &rcGrid);
 				}
 			}
@@ -255,61 +254,63 @@ Character** vectorCharsGen(int option, int **pos, Map *map)
 	Character *character;
 	int i, j;
 
+	int y1 = 5, y2 = 8, x = 2;
+
 	// Alloc vector
 	charVector = (Character**)malloc(sizeof(Character *)*4);
 
 	if(option == 1){
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/heroe1", ORIENT_SOUTH, 5*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 7, 3, pos))) {
+		if( !(character = CharacterConstructor("data/heroe1", ORIENT_SOUTH, x*SPRITE_SIZE-(16), y1*SPRITE_SIZE/2, 7, 3, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_SOUTH, 2*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 6, 4, pos))){
+		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_SOUTH, (x+1)*SPRITE_SIZE-(16), y1*SPRITE_SIZE/2, 6, 4, pos))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 3*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 5, 5, pos))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, (x+2)*SPRITE_SIZE-(16), y1*SPRITE_SIZE/2, 5, 5, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 4*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 2, 6, pos))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, (x+3)*SPRITE_SIZE-(16), y1*SPRITE_SIZE/2, 2, 6, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[3] = character;
 	}else {
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/heroe1", ORIENT_NORTH, 5*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 7, 1, pos))) {
+		if( !(character = CharacterConstructor("data/heroe1", ORIENT_NORTH, (x)*SPRITE_SIZE-(16), y2*SPRITE_SIZE/2, 7, 1, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_NORTH, 2*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 6, 2, pos))){
+		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_NORTH, (x+1)*SPRITE_SIZE-(16), y2*SPRITE_SIZE/2, 6, 2, pos))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 3*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 5, 3, pos))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, (x+2)*SPRITE_SIZE-(16), y2*SPRITE_SIZE/2, 5, 3, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 4*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 2, 4, pos))) {
+		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, (x+3)*SPRITE_SIZE-(16), y2*SPRITE_SIZE/2, 2, 4, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
@@ -317,8 +318,8 @@ Character** vectorCharsGen(int option, int **pos, Map *map)
 	}
 
 	printf("\n");
-	for(i=0;i<MAP_SIZE_X;i++){
-		for(j=0;j<MAP_SIZE_Y;j++)
+	for(i=0;i<map->width;i++){
+		for(j=0;j<map->height;j++)
 			printf("%d ", map->charPosition[i][j]);	
 		printf("\n");
 	}

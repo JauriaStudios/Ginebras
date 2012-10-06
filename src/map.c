@@ -7,9 +7,8 @@
 typedef struct Layer{
 	char *name;
 	xmlChar *csvLayer;
-	SDL_Surface* surfaceLayer[MAP_SIZE_X][MAP_SIZE_Y];
 	SDL_Surface* imageLayer;
-	int data[MAP_SIZE_X][MAP_SIZE_Y];
+	int **data;
 	SDL_Rect rcDest;
 	int width, height;
 	struct list_head list;
@@ -28,38 +27,44 @@ typedef struct TileSet{
 /**********************************************************
  *** INTERNAL PROTOTIPES
  **********************************************************/
-static Layer *LayerConstructor(xmlChar *xmlchar, int numTileswidth, int numTilesheight, char *name,SDL_Surface *screen);
+static Layer *LayerConstructor(xmlChar *xmlchar, int numTileswidth, int numTilesheight, char *name,SDL_Surface *screen, Map *map);
 static xmlChar* parseLayer(xmlDocPtr map, xmlNodePtr cur);
 static void MapParseMap(Map* map, char *mapname, SDL_Surface *screen);
 static TileSet* getTile(int tileNum, Map *map);
 static void LayerGetSurface(Layer *layer, Map *map, SDL_Surface *screen);
 static TileSet *TileSetConstructor(xmlNodePtr cur);
+static void MapLoad(Map * map, SDL_Surface *screen, char *file);
 
 /**********************************************************
  *** PRIVATE METHODS
  **********************************************************/
-Layer *LayerConstructor(xmlChar *xmlchar, int numTileswidth, int numTilesheight, char *name,SDL_Surface *screen)
+Layer *LayerConstructor(xmlChar *xmlchar, int numTileswidth, int numTilesheight, char *name,SDL_Surface *screen, Map *map)
 {
 	// Variable definition section
-	Layer *this; 
+	Layer *this;
+	int i; 
 	
 	// Alloc memory
 	this = (Layer*)malloc(sizeof(Layer));
 
 	// Create layer surface
-	this->imageLayer = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, 40*32, 40*32, screen->format->BitsPerPixel,
-											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
-											0x00000000);
+	this->imageLayer = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, map->width*map->tileWidth, 
+										map->height*map->tileHeight, screen->format->BitsPerPixel, 
+										screen->format->Rmask, screen->format->Gmask, screen->format->Bmask, 0x00000000);
 	
 	Uint32 colorKey = SDL_MapRGB(this->imageLayer->format, 0xFF, 0x0, 0xFF);
 	SDL_FillRect(this->imageLayer, NULL, 0xFF00FF);
 	SDL_SetColorKey(this->imageLayer, SDL_SRCCOLORKEY, colorKey);
-
+	
 	this->name   = name;
 	this->width  = numTileswidth;
 	this->height = numTilesheight;
 	INIT_LIST_HEAD(&this->list);
 	this->csvLayer = xmlchar;
+
+	this->data = (int **)malloc(sizeof(int*) * this->width);
+	for(i = 0; i < this->width; i++)
+		this->data[i] = (int *)malloc(sizeof(int) * this->height);
 
 	return this;
 }
@@ -76,8 +81,8 @@ void LayerGetSurface(Layer *layer, Map *map, SDL_Surface *screen)
 			if(layer->data[j][i]){
 				tileSet = getTile(layer->data[j][i], map);
 				//printf("tilesetname: %s ", tileSet->tileSetName);
-				tileSet->rcDest.x = j * 32;
-				tileSet->rcDest.y = i * 32; 
+				tileSet->rcDest.x = j * map->tileWidth;
+				tileSet->rcDest.y = i * map->tileHeight; 
 				//printf("(%d, %d) ", tileSet->rcSrc.x, tileSet->rcSrc.y);
 				//printf("destino(%d, %d)\n", j*32, i*32 );
 				SDL_BlitSurface(tileSet->surface, &tileSet->rcSrc, layer->imageLayer, &tileSet->rcDest);
@@ -237,7 +242,14 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 		xmlFreeDoc(doc);
 		//return NULL;
 	}
-
+	
+	map->width = atoi((char*)xmlGetProp(cur, (xmlChar*)"width"));
+	map->height = atoi((char*)xmlGetProp(cur, (xmlChar*)"height"));
+	map->tileWidth = atoi((char*)xmlGetProp(cur, (xmlChar*)"tilewidth"));
+	map->tileHeight = atoi((char*)xmlGetProp(cur, (xmlChar*)"tileheight"));
+	
+	printf("W: %d, H: %d, tW: %d, tH: %d\n", map->width, map->height, map->tileWidth, map->tileHeight);
+		
 	cur = cur->xmlChildrenNode;
 	
 	// Create layer list
@@ -249,7 +261,7 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 		}
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *)"layer"))){
 			tmp = parseLayer (doc, cur);
-			layer = LayerConstructor(tmp,atoi((char*)xmlGetProp(cur, (xmlChar*)"width")),atoi((char*)xmlGetProp(cur, (xmlChar*)"height")), (char*)xmlGetProp(cur, (xmlChar*)"name"), screen);
+			layer = LayerConstructor(tmp,atoi((char*)xmlGetProp(cur, (xmlChar*)"width")),atoi((char*)xmlGetProp(cur, (xmlChar*)"height")), (char*)xmlGetProp(cur, (xmlChar*)"name"), screen, map);
 			list_add_tail(&layer->list, &map->listLayer);
 			//printf("%s", tmp);
 		}
@@ -277,41 +289,14 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 /**********************************************************
  *** PUBLIC METHODS
  **********************************************************/
-Map* MapConstructor(SDL_Surface *screen)
+Map* MapConstructor(SDL_Surface *screen, char *file)
 {
 	// Variable definition section
 	Map * map;
-	int i, j;
 
 	// Alloc map
 	map = (Map *)malloc(sizeof(Map));
-
-	// Create two main layers: back, front 
-	map->surfaceBack = SDL_CreateRGBSurface(SDL_SWSURFACE,40*32,40*32, screen->format->BitsPerPixel,
-											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
-											screen->format->Amask);
 	
-	Uint32 colorKey = SDL_MapRGB(map->surfaceBack->format, 0xFF, 0x0, 0xFF);
-	SDL_FillRect(map->surfaceBack, NULL, 0xFF00FF);
-	SDL_SetColorKey(map->surfaceBack, SDL_SRCCOLORKEY, colorKey);
-
-	map->surfaceFront = SDL_CreateRGBSurface(SDL_SWSURFACE,40*32,40*32, screen->format->BitsPerPixel,
-											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
-											screen->format->Amask);
-
-	Uint32 colorKey2 = SDL_MapRGB(map->surfaceFront->format, 0xFF, 0x0, 0xFF);
-	SDL_FillRect(map->surfaceFront, NULL, 0xFF00FF);
-	SDL_SetColorKey(map->surfaceFront, SDL_SRCCOLORKEY, colorKey2);
-
-	// Create refresh layer
-	map->surfaceRefresh = SDL_CreateRGBSurface(SDL_SWSURFACE,40*32,40*32, screen->format->BitsPerPixel,
-											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
-											screen->format->Amask);
-	
-	Uint32 colorKey3 = SDL_MapRGB(map->surfaceRefresh->format, 0xFF, 0x0, 0xFF);
-	SDL_FillRect(map->surfaceRefresh, NULL, 0xFF00FF);
-	SDL_SetColorKey(map->surfaceRefresh, SDL_SRCCOLORKEY, colorKey3);
-
 	// Inits
 	map->numTileSet = 0;
 	map->numLayers = 0;
@@ -321,32 +306,55 @@ Map* MapConstructor(SDL_Surface *screen)
 
 	// Init Layer
 	INIT_LIST_HEAD(&map->listLayer);
-	map->layer = NULL;
-
+	
 	// Init tileset
 	INIT_LIST_HEAD(&map->listTileSet);
 
-	// Init char position
-	map->charPosition = (int **)malloc(sizeof(int*) * MAP_SIZE_X);
-	for(i = 0; i < MAP_SIZE_X; i++)
-		map->charPosition[i] = (int *)malloc(sizeof(int) * MAP_SIZE_Y);
+	// Fill xml layer data
+	MapParseMap(map, file, screen);
 
-	for(i = 0; i < MAP_SIZE_X; i++)
-		for(j = 0; j < MAP_SIZE_Y; j++)
-			map->charPosition[i][j] = 0;
+	// Create two main layers: back, front 
+	map->surfaceBack = SDL_CreateRGBSurface(SDL_SWSURFACE, map->width * map->tileWidth, map->height * map->tileHeight, 
+											screen->format->BitsPerPixel,
+											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
+											screen->format->Amask);
+	
+	Uint32 colorKey = SDL_MapRGB(map->surfaceBack->format, 0xFF, 0x0, 0xFF);
+	SDL_FillRect(map->surfaceBack, NULL, 0xFF00FF);
+	SDL_SetColorKey(map->surfaceBack, SDL_SRCCOLORKEY, colorKey);
 
+	map->surfaceFront = SDL_CreateRGBSurface(SDL_SWSURFACE, map->width * map->tileWidth, map->height * map->tileHeight, 
+											screen->format->BitsPerPixel,
+											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
+											screen->format->Amask);
+
+	Uint32 colorKey2 = SDL_MapRGB(map->surfaceFront->format, 0xFF, 0x0, 0xFF);
+	SDL_FillRect(map->surfaceFront, NULL, 0xFF00FF);
+	SDL_SetColorKey(map->surfaceFront, SDL_SRCCOLORKEY, colorKey2);
+
+	// Create refresh layer
+	map->surfaceRefresh = SDL_CreateRGBSurface(SDL_SWSURFACE, map->width * map->tileWidth, map->height * map->tileHeight, 
+											screen->format->BitsPerPixel, 
+											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
+											screen->format->Amask);
+	
+	Uint32 colorKey3 = SDL_MapRGB(map->surfaceRefresh->format, 0xFF, 0x0, 0xFF);
+	SDL_FillRect(map->surfaceRefresh, NULL, 0xFF00FF);
+	SDL_SetColorKey(map->surfaceRefresh, SDL_SRCCOLORKEY, colorKey3);
+
+	// Map load
+	MapLoad(map, screen, file);
+
+ 	
 	return map;
 }
 
 
-void MapLoad(Map * map, char* file, SDL_Surface *screen)
+void MapLoad(Map * map, SDL_Surface *screen, char *file)
 {
 	// variable definition section
 	Layer *tmpLayer;
-	// fills xml layer data
-	MapParseMap(map, file, screen);
-	
-	// parse csv data
+
 	char *str1, *str2, *token, *subtoken;
     char *saveptr1, *saveptr2;
 	char nameLayer[50], pos[10];
@@ -357,6 +365,21 @@ void MapLoad(Map * map, char* file, SDL_Surface *screen)
     int i;
 	int j;
 	
+printf("W: %d, H: %d", map->width, map->height);
+ 
+	// Init char position
+	map->charPosition = (int **)malloc(sizeof(int*) * map->width);
+	for(i = 0; i < map->width; i++)
+		map->charPosition[i] = (int *)malloc(sizeof(int) * map->height);
+
+	for(i = 0; i < map->width; i++)
+		for(j = 0; j < map->height; j++)
+			map->charPosition[i][j] = 0;
+	
+	map->collisions = (int **)malloc(sizeof(int*) * map->width);
+	for(i = 0; i < map->width; i++)
+		map->collisions[i] = (int *)malloc(sizeof(int) * map->height);
+
 	// for all list parse xmlChars  
 	list_for_each_entry(tmpLayer, &map->listLayer, list){
 
@@ -381,8 +404,8 @@ void MapLoad(Map * map, char* file, SDL_Surface *screen)
 		
 		// Save data collisions in map
 		if(!strcmp(tmpLayer->name, "Colisiones")){
-			for(i=0; i<40; i++){
-				for(j=0; j<40; j++){
+			for(i=0; i < map->width; i++){
+				for(j=0; j < map->height; j++){
 					map->collisions[i][j] = tmpLayer->data[j][i];
 					printf("%d ", map->collisions[i][j]);
 				}
@@ -450,25 +473,24 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 */
 	// scroll izq.
 	if (x <= 64+30 - map->scroll_x) {
-		if (map->scroll_x <= 64) // scroll limit
+		if (map->scroll_x <= BORDER) // scroll limit
 			map->scroll_x += map->scrollVel;
 	}
 	// scroll der.
 	else if (x >= 650+30 - map->scroll_x){
-		if (map->scroll_x >= -550) // scroll limit
+		if (map->scroll_x >= -((map->width*map->tileWidth) - SCREEN_WIDTH + BORDER)) // scroll limit
 			map->scroll_x -= map->scrollVel;
 	}
 	// scroll up
 	else if (y <= 64 - map->scroll_y){
-		if (map->scroll_y <= 64 )// scroll limit
+		if (map->scroll_y <= BORDER )// scroll limit
 			map->scroll_y += map->scrollVel;
 	}
 	//scroll down
 	else if (y >= 500 - map->scroll_y){
-		if (map->scroll_y >= -750) // scroll limit
+		if (map->scroll_y >= -((map->height * map->tileHeight) - SCREEN_HEIGHT + BORDER)) // scroll limit
 			map->scroll_y -= map->scrollVel;
 	}
-	else{}
 
 }
 

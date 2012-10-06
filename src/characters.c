@@ -191,7 +191,8 @@ void CharacterMove(Character *character, Map *map)
 		// Check collision and skip first coordenate
 		if(((map->charPosition[coordNwY][coordNwX] || map->collisions[coordNwY][coordNwX]) || 
 		    	(map->charPosition[coordNeY][coordNeX] || map->collisions[coordNeY][coordNeX]) ||
-		    	(map->charPosition[coordSwY][coordSwX] || map->collisions[coordSwY][coordSwX]) ||																			 (map->charPosition[coordSeY][coordSeX] || map->collisions[coordSeY][coordSeX])) && 
+		    	(map->charPosition[coordSwY][coordSwX] || map->collisions[coordSwY][coordSwX]) || 
+				(map->charPosition[coordSeY][coordSeX] || map->collisions[coordSeY][coordSeX])) && 
 		    	(!map->charPosition[firstY][firstX])){
 			
 			character->actualStep = character->moveSteps;

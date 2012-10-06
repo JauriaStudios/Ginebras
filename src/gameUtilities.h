@@ -8,8 +8,6 @@
 
 #define SPRITE_SIZE 64
 
-#define MAP_SIZE_X  40
-#define MAP_SIZE_Y  40
 #define TILE_SIZE 32
 
 typedef enum Orientation {
