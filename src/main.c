@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 	SDL_Init(SDL_INIT_VIDEO);
 	
 	// set the title bar 
-	SDL_WM_SetCaption("The legend of Ginebras", "Jauria productions");
+	SDL_WM_SetCaption("The legend of Ginebras - Jauria productions", "Jauria productions");
 	
 	// create window 
 	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF); // SDL_FULLSCREEN
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 		MapUpdate(map, cursor->rcDest);
 
 		// Update Window
-		//TextboxUpdate(textbox, map->scroll_x, map->scroll_y);
+		TextboxUpdate(textbox, map->scroll_x, map->scroll_y);
 		
 		// Fill screen black
 		SDL_FillRect(screen, NULL, 0x0);
@@ -164,10 +164,10 @@ int main(int argc, char **argv)
 	}// end main while
 	
 	// Clean game and characters
+	//TextboxDestructor(textbox);
 	GameDestructor(game);
 	MapDestructor(map);
 	CursorDestructor(cursor);
-
 	SDL_Quit();
 
 	return 0;
@@ -319,7 +319,7 @@ Character** vectorCharsGen(int option, int **pos, Map *map)
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/leather", ORIENT_NORTH, 4*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 2, 4, pos))) {
+		if( !(character = CharacterConstructor("data/character/thief", ORIENT_NORTH, 4*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 2, 4, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}

@@ -50,19 +50,19 @@ Textbox *TextboxConstructor(SDL_Surface *screen)
 	// Window Position in px
 	textbox->rcDestWindow.x = 0;
 	textbox->rcDestWindow.y = 487;
-	
-	textbox->windowX = 60;
-	textbox->windowY = 50;
-	
+	// Text position
+	textbox->rcDestText.x = textbox->rcDestWindow.x + 15;
+	textbox->rcDestText.y = textbox->rcDestWindow.y + 20;
+		
 	// Window tiles
-	textbox->rcSrcBox.x = 0;
-	textbox->rcSrcBox.y = 0;
-	textbox->rcSrcBox.w = 16;
-	textbox->rcSrcBox.h = 16;
+	textbox->rcSrcTile.x = 0;
+	textbox->rcSrcTile.y = 0;
+	textbox->rcSrcTile.w = 16;
+	textbox->rcSrcTile.h = 16;
 	
 	// Window size in 16x tilesize
-	textbox->windowW = 49; //min 3
-	textbox->windowH = 6; // min 2
+	textbox->boxWidth = 49; //min 3
+	textbox->boxHeight = 6; // min 2
 
 	//create window Test
 	TextboxCreateWindow(textbox);
@@ -95,8 +95,8 @@ int TextboxDraw(Textbox * textbox, SDL_Surface* screen)
 	textbox->message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg, textbox->textColor);
 	
 	if (textbox->message != NULL){ 
-		SDL_BlitSurface(textbox->message , NULL, textbox->background, &textbox->rcDestText);
-		SDL_BlitSurface(textbox->background , NULL, screen, &textbox->rcDestWindow);
+		SDL_BlitSurface(textbox->background, NULL, screen, &textbox->rcDestWindow);
+		SDL_BlitSurface(textbox->message, NULL, screen, &textbox->rcDestText);
 		SDL_FreeSurface(textbox->message);
 		return 1;
 	}
@@ -113,8 +113,8 @@ void TextboxCreateWindow(Textbox * textbox)
 	//int x = textbox->windowX; 
 	//int y = textbox->windowY;
 	
-	int width = textbox->windowW;
-	int height = textbox->windowH;
+	int width = textbox->boxWidth;
+	int height = textbox->boxHeight;
 	
 	int i, j;
 	
@@ -125,47 +125,46 @@ void TextboxCreateWindow(Textbox * textbox)
 	for (i = 0; i <= width; i++){
 		for (j = 0; j <= height; j++){
 			if ((i == 0) && (j == 0)){
-				textbox->rcSrcBox.x = 0;
-				textbox->rcSrcBox.y = 0;
+				textbox->rcSrcTile.x = 0;
+				textbox->rcSrcTile.y = 0;
 			}
 			else if ((i <  width) && (j == 0)){
-				textbox->rcSrcBox.x = 16;
-				textbox->rcSrcBox.y = 0;
+				textbox->rcSrcTile.x = 16;
+				textbox->rcSrcTile.y = 0;
 			}
 			else if ((i ==  width) && (j == 0)){
-				textbox->rcSrcBox.x = 32;
-				textbox->rcSrcBox.y = 0;
+				textbox->rcSrcTile.x = 32;
+				textbox->rcSrcTile.y = 0;
 			}
 			else if ((i ==  width) && (j < height)){
-				textbox->rcSrcBox.x = 32;
-				textbox->rcSrcBox.y = 16;
+				textbox->rcSrcTile.x = 32;
+				textbox->rcSrcTile.y = 16;
 			}
 			else if ((i == 0 ) && (j < height)){
-				textbox->rcSrcBox.x = 0;
-				textbox->rcSrcBox.y = 16;
+				textbox->rcSrcTile.x = 0;
+				textbox->rcSrcTile.y = 16;
 			}
 			else if ((i == 0 ) && (j == height)){
-				textbox->rcSrcBox.x = 0;
-				textbox->rcSrcBox.y = 32;
+				textbox->rcSrcTile.x = 0;
+				textbox->rcSrcTile.y = 32;
 			}
 			else if ((i < width ) && (j == height)){
-				textbox->rcSrcBox.x = 16;
-				textbox->rcSrcBox.y = 32;
+				textbox->rcSrcTile.x = 16;
+				textbox->rcSrcTile.y = 32;
 			}
 			else if ((i == width ) && (j == height)){
-				textbox->rcSrcBox.x = 32;
-				textbox->rcSrcBox.y = 32;
+				textbox->rcSrcTile.x = 32;
+				textbox->rcSrcTile.y = 32;
 			}
 			else{
-				textbox->rcSrcBox.x = 16;
-				textbox->rcSrcBox.y = 16;
+				textbox->rcSrcTile.x = 16;
+				textbox->rcSrcTile.y = 16;
 			}
-			textbox->rcDestBox.x = 16*i;
-			textbox->rcDestBox.y = 16*j;
+			textbox->rcDestTile.x = 16*i;
+			textbox->rcDestTile.y = 16*j;
 			
-			// Function from 
-			copySurface(textbox->bgTileset, &textbox->rcSrcBox, textbox->background, &textbox->rcDestBox);
-			//SDL_BlitSurface(textbox->bgTileset, &textbox->rcSrcBox,textbox->background, &textbox->rcDestBox);
+			// apply tiles to textbox background
+			copySurface(textbox->bgTileset, &textbox->rcSrcTile, textbox->background, &textbox->rcDestTile);
 		}
 	}
 }
