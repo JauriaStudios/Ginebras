@@ -26,7 +26,7 @@ int showGrid   = 0;
 int main(int argc, char **argv)
 {
 	// Variable definition section
-	SDL_Surface *screen, *grid, *selector;
+	SDL_Surface *screen, *intro, *grid, *selector;
 	SDL_Rect rcGrid, rcSelector;
 	SDL_Event event;	
 
@@ -40,6 +40,7 @@ int main(int argc, char **argv)
 	Character **vectorChar1, **vectorChar2;
 
 	int x, y;
+
 	// initialize SDL
 	SDL_Init(SDL_INIT_VIDEO);
 	
@@ -50,8 +51,14 @@ int main(int argc, char **argv)
 	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
 	
 	// set keyboard repeat 
-	SDL_EnableKeyRepeat(70, 70);
+	SDL_EnableKeyRepeat(70, 70); // SDL_DEFAULT_REPEAT_INTERVAL
 	
+	// Game Intro
+	intro = loadImage("data/intro.png");
+	SDL_BlitSurface(intro, NULL, screen, NULL);
+	SDL_Flip(screen);
+	SDL_FreeSurface(intro);
+
 	// Load background
 	map = MapConstructor(screen, "data/Newmap.tmx");
 	
