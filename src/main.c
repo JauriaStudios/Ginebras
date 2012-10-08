@@ -16,7 +16,7 @@
 
 #define FRAMES_PER_SECOND 	10
 
-static void HandleEvent(SDL_Event event, Game *game, Cursor *cursor, Map *map);
+static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map);
 static Character** vectorCharsGen(int option, int **pos, Map *map);
 
 int modeCursor = 0;
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 	SDL_WM_SetCaption("The legend of Ginebras", "Jauria productions");
 	
 	// create window 
-	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
+	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF); // SDL_FULLSCREEN
 	
 	// set keyboard repeat 
 	SDL_EnableKeyRepeat(70, 70); // SDL_DEFAULT_REPEAT_INTERVAL
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
 		// look for an event 
 		if (SDL_PollEvent(&event)) {
-			HandleEvent(event, game, cursor, map);
+			HandleEvent(event, screen, game, cursor, map);
 		}
 				
 		// Map update
@@ -152,7 +152,8 @@ int main(int argc, char **argv)
 		TextboxDraw(textbox, screen);
 
 		// Update the screen 
-		SDL_UpdateRect(screen, 0, 0, 0, 0);
+		//SDL_UpdateRect(screen, 0, 0, 0, 0);
+		SDL_Flip(screen);
 		//SDL_UpdateRect(map->surfaceBack, 0, 0, 0, 0);
 
 		// Cap the frame rate
@@ -172,7 +173,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void HandleEvent(SDL_Event event, Game *game, Cursor* cursor, Map *map)
+void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor* cursor, Map *map)
 {
 	switch (event.type) {
 		/* close button clicked */
@@ -198,6 +199,9 @@ void HandleEvent(SDL_Event event, Game *game, Cursor* cursor, Map *map)
 					break;
 				case SDLK_DOWN:
 					if(modeCursor) CursorMove(cursor, ORIENT_SOUTH);
+					break;
+				case SDLK_t:
+					SDL_WM_ToggleFullScreen(screen);
 					break;
 				case SDLK_c:
 					if (modeCursor == 1)
