@@ -39,17 +39,17 @@ Textbox *TextboxConstructor(SDL_Surface *screen)
 	textbox->textColor.b = 255;
 	
 	// message to display
-	textbox->textMsg = "Ginebras";
+	textbox->textMsg = "Atacar";
 	
 	//Setup the location on the screen to blit to
 
 	// Text position
-	textbox->rcDestText.x = 75;
-	textbox->rcDestText.y = 65;
+	textbox->rcDestText.x = 15;
+	textbox->rcDestText.y = 20;
 	
 	// Window Position in px
-	textbox->rcDestWindow.x = 60;
-	textbox->rcDestWindow.y = 50;
+	textbox->rcDestWindow.x = 0;
+	textbox->rcDestWindow.y = 487;
 	
 	textbox->windowX = 60;
 	textbox->windowY = 50;
@@ -61,8 +61,8 @@ Textbox *TextboxConstructor(SDL_Surface *screen)
 	textbox->rcSrcBox.h = 16;
 	
 	// Window size in 16x tilesize
-	textbox->windowW = 8; //min 3
-	textbox->windowH = 3; // min 2
+	textbox->windowW = 49; //min 3
+	textbox->windowH = 6; // min 2
 
 	//create window Test
 	TextboxCreateWindow(textbox);
@@ -92,11 +92,11 @@ void TextboxUpdate(Textbox * textbox, int scrollX, int scrollY)
 
 int TextboxDraw(Textbox * textbox, SDL_Surface* screen)
 {
-	textbox->message = TTF_RenderText_Solid(textbox->font, textbox->textMsg, textbox->textColor);
+	textbox->message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg, textbox->textColor);
 	
-	if (textbox->message != NULL) {
+	if (textbox->message != NULL){ 
+		SDL_BlitSurface(textbox->message , NULL, textbox->background, &textbox->rcDestText);
 		SDL_BlitSurface(textbox->background , NULL, screen, &textbox->rcDestWindow);
-		SDL_BlitSurface(textbox->message , NULL, screen, &textbox->rcDestText);
 		SDL_FreeSurface(textbox->message);
 		return 1;
 	}

@@ -16,10 +16,10 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	int coordX, coordY;
 
 	strcpy(spriteMove, file); 
-	strcat(spriteMove, ".png");
+	strcat(spriteMove, "Walk.png");
 	// Load sprites movement image
 	if (!(character->sprite = loadImage(spriteMove))){
-		printf("Character constructor ERROR: couldn't load character sprite\n");
+		printf("Character constructor ERROR: couldn't load character Walk sprite\n");
 		return NULL;
 	}
 	
@@ -27,7 +27,7 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	strcat(spriteSlash, "Slash.png");
 	// Load sprites slash image
 	if (!(character->spriteSlash = loadImage(spriteSlash))){
-		printf("Character constructor ERROR: couldn't load character slash sprite\n");
+		printf("Character constructor ERROR: couldn't load character Slash sprite\n");
 		return NULL;
 	}
 
