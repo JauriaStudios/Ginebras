@@ -11,7 +11,7 @@ TTF_Font* loadFont(char* file, int ptsize)
 	return tmpfont;
 }
 
-Textbox *TextboxConstructor(SDL_Surface *screen)
+Textbox *TextboxConstructor(SDL_Surface *screen, int x, int y, int w, int h)
 {
 	// Variable definition section
 	
@@ -48,8 +48,8 @@ Textbox *TextboxConstructor(SDL_Surface *screen)
 	textbox->rcDestText.y = 20;
 	
 	// Window Position in px
-	textbox->rcDestWindow.x = 0;
-	textbox->rcDestWindow.y = 487;
+	textbox->rcDestWindow.x = x;
+	textbox->rcDestWindow.y = y;
 	// Text position
 	textbox->rcDestText.x = textbox->rcDestWindow.x + 15;
 	textbox->rcDestText.y = textbox->rcDestWindow.y + 20;
@@ -61,8 +61,8 @@ Textbox *TextboxConstructor(SDL_Surface *screen)
 	textbox->rcSrcTile.h = 16;
 	
 	// Window size in 16x tilesize
-	textbox->boxWidth = 49; //min 3
-	textbox->boxHeight = 6; // min 2
+	textbox->boxWidth = w; //min 3
+	textbox->boxHeight = h; // min 2
 
 	//create window Test
 	TextboxCreateWindow(textbox);

@@ -34,7 +34,7 @@ typedef struct Textbox{
 /**********************************************************
  *** METHODS
  **********************************************************/
-extern Textbox* TextboxConstructor(SDL_Surface *screen);
+extern Textbox* TextboxConstructor(SDL_Surface *screen, int x, int y, int w, int h);
 extern void TextboxDestructor(Textbox *textbox);
 extern void TextboxLoad(Textbox *textbox);
 extern void TextboxCreateWindow(Textbox * textbox);

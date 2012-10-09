@@ -269,7 +269,7 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 	// Create layer list
 	while (cur) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"tileset"))){
-			printf("destro de tileset, cur->name: %s\n", (char *)cur->name);
+			printf("dentro de tileset, cur->name: %s\n", (char *)cur->name);
 			tileSet = TileSetConstructor(cur);
 			list_add_tail(&tileSet->list, &map->listTileSet);
 		}
@@ -285,14 +285,14 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 	
 	list_for_each_entry(tmpLayer, &map->listLayer, list){
 		printf("%s\n", (char *)tmpLayer->csvLayer);
-		printf("**************************************************************************************************************************\n");
+		printf("*************************************************************************************************************\n");
 	}
 
-	printf("///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////\n");
+	printf("////////////////////////////////////////////////////////////////////////////////////////////////////////////////\n");
 
 	list_for_each_entry(tmpTileSet, &map->listTileSet, list){
 		printf("%s\n", (char *)tmpTileSet->tileSetName);
-		printf("-------------------------------------------------------------------------------------------------------------------------\n");
+		printf("--------------------------------------------------------------------------------------------------------------\n");
 	}
 
 	map->layer = tmp;
@@ -308,8 +308,8 @@ Map* MapConstructor(SDL_Surface *screen, char *file)
 	// Variable definition section
 	Map * map;
 	SDL_Surface *temp, *alpha;
-	SDL_Rect rcSrc, rcDest;
-	int i, j;
+	//SDL_Rect rcSrc, rcDest;
+	//int i, j;
 	
 	// Alloc map
 	map = (Map *)malloc(sizeof(Map));
@@ -335,7 +335,7 @@ Map* MapConstructor(SDL_Surface *screen, char *file)
 
 	// Fill xml layer data
 	MapParseMap(map, file, screen);
-
+/*
 	rcDest.x = 0;
 	rcDest.y = 0;
 
@@ -343,7 +343,7 @@ Map* MapConstructor(SDL_Surface *screen, char *file)
 	rcSrc.y = 0;
 	rcSrc.w =  map->tileWidth;
 	rcSrc.h = map->tileHeight;
-
+*/
 	// Create two main layers: back, front
 	
 	//temp = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, , (height+1)*16, 32, 0, 0, 0, 0x000000FF);
@@ -399,7 +399,6 @@ Map* MapConstructor(SDL_Surface *screen, char *file)
 */
 	// Map load
 	MapLoad(map, screen, file);
-
  	
 	return map;
 }
@@ -413,16 +412,17 @@ void MapLoad(Map * map, SDL_Surface *screen, char *file)
 	SDL_Surface *temp, *auxFront, *alpha;
 
 	char *str1, *str2, *token, *subtoken;
-    char *saveptr1, *saveptr2;
+    
+	char *saveptr1, *saveptr2;
 	char nameLayer[50], pos[10];
 
 	char *rowsDelimiter = "\n";
 	char *colsDelimiter = ",";
 
-    int i;
+	int i;
 	int j;
 	
-printf("W: %d, H: %d", map->width, map->height);
+	printf("W: %d, H: %d", map->width, map->height);
 	
 	rcDest.x = 0;
 	rcDest.y = 0;
@@ -444,10 +444,9 @@ printf("W: %d, H: %d", map->width, map->height);
 	alpha = loadImage("data/alpha.png");
 
 	temp = SDL_CreateRGBSurface(SDL_SWSURFACE, map->width * map->tileWidth, map->height * map->tileHeight, 
-											screen->format->BitsPerPixel,
-											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
-											screen->format->Amask);
-
+									screen->format->BitsPerPixel,
+									screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
+									screen->format->Amask);
 	auxFront = SDL_DisplayFormatAlpha(temp);
 
 	//auxFront = SDL_SetVideoMode(map->width * map->tileWidth,  map->height * map->tileHeight, 0, 0);
@@ -466,19 +465,19 @@ printf("W: %d, H: %d", map->width, map->height);
 	map->charPosition = (int **)malloc(sizeof(int*) * map->width);
 	for(i = 0; i < map->width; i++)
 		map->charPosition[i] = (int *)malloc(sizeof(int) * map->height);
-
+	
 	for(i = 0; i < map->width; i++)
 		for(j = 0; j < map->height; j++)
 			map->charPosition[i][j] = 0;
 	
-	map->collisions = (int **)malloc(sizeof(int*) * map->width);
-	for(i = 0; i < map->width; i++)
-		map->collisions[i] = (int *)malloc(sizeof(int) * map->height);
-
+	map->collisions = (int **)malloc(sizeof(int*) * map->height);
+	for(i = 0; i < map->height; i++)
+		map->collisions[i] = (int *)malloc(sizeof(int) * map->width);
+	
 	// for all list parse xmlChars  
 	list_for_each_entry(tmpLayer, &map->listLayer, list){
 
-        for (i = 0, str1 = (char *)tmpLayer->csvLayer; ; i++, str1 = NULL) {
+		for (i = 0, str1 = (char *)tmpLayer->csvLayer; ; i++, str1 = NULL) {
 			token = strtok_r(str1, rowsDelimiter, &saveptr1);
 			if (token == NULL)
 				break;
@@ -487,27 +486,25 @@ printf("W: %d, H: %d", map->width, map->height);
 				subtoken = strtok_r(str2, colsDelimiter, &saveptr2);
 				if (subtoken == NULL)
 					break;
-                //printf("|\t%s.bmp\t|", subtoken);
-				char bgTileName[20];
-				sprintf(bgTileName, "data/%s.bmp",subtoken);
-	 	    	tmpLayer->data[j][i]= atoi(subtoken);
+                		//printf("|\t%s.bmp\t|", subtoken);
+	 	    		tmpLayer->data[j][i] = atoi(subtoken);
 				//printf("DATA1(%d ,%d) = %d\n", j, i, tmpLayer->data[j][i]);
 				//tmpLayer->surfaceLayer[j][i] = loadImage(bgTileName);
 			}
 		}
+		
 		printf("\n********************layer: %s*********************\n", tmpLayer->name);
 		
 		// Save data collisions in map
 		if(!strcmp(tmpLayer->name, "Colisiones")){
-			for(i=0; i < map->width; i++){
-				for(j=0; j < map->height; j++){
+			for(i=0; i < map->height; i++){
+				for(j=0; j < map->width; j++){
 					map->collisions[i][j] = tmpLayer->data[j][i];
 					printf("%d ", map->collisions[i][j]);
 				}
 			printf("\n");
 			}
 		}
-
 		LayerGetSurface(tmpLayer, map, screen);
 	}
 	
@@ -540,7 +537,7 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 /*	
 	// scroll diagonal superior izq.
 	if ((x <= 64) && (y <= 64)){
-		if (map->scroll_x <= 64) // scroll limit
+		if (map->scroll_x <= BORDER) // scroll limit
 			map->scroll_x += map->scrollVel;
 		if (map->scroll_y <= 64) // scroll limit
 			map->scroll_y += map->scrollVel;
@@ -587,16 +584,16 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 		if (map->scroll_y >= -((map->height * map->tileHeight) - SCREEN_HEIGHT + BORDER)) // scroll limit
 			map->scroll_y -= map->scrollVel;
 	}
-
 }
 
 void MapDraw(Map *map, SDL_Surface* screen)
 {
 	//Layer *tmpLayer;
-	SDL_Rect rcFront, rcBack;
+	SDL_Rect rcBack;
+/*
+	SDL_Rect Front, rcBack;
 	SDL_Rect rcSrc, rcSrc2, rcDest;
 
-	// 
 	rcDest.x = 0;
 	rcDest.y = 0;
 	
@@ -611,14 +608,15 @@ void MapDraw(Map *map, SDL_Surface* screen)
 	rcSrc2.h = map->height * map->tileHeight;
 
 
-	rcBack.x = map->scroll_x;
-	rcBack.y = map->scroll_y;
-	rcFront.x = map->scroll_x;
-	rcFront.y = map->scroll_y;
-/*
 	rcDest.x = 650;
 	rcDest.y = -1000;
+
+	rcFront.x = map->scroll_x;
+	rcFront.y = map->scroll_y;
 */
+
+	rcBack.x = map->scroll_x;
+	rcBack.y = map->scroll_y;
 
 	//SDL_BlitSurface(map->surfaceFront, NULL, screen, &rcDest);
 	SDL_BlitSurface(map->surfaceFront, NULL, map->surfaceBack, NULL);
