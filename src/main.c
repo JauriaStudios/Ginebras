@@ -35,8 +35,8 @@ int main(int argc, char **argv)
 	Map *map;
 	Timer *timer;
 	Cursor *cursor;
-	Textbox *menu1;
-	Textbox *menu2;
+	Textbox *menu1;//, *menu2;
+	
 	// Only for developement
 	Character **vectorChar1, **vectorChar2;
 
@@ -70,8 +70,8 @@ int main(int argc, char **argv)
 	selector = loadImage("data/Selector.png");
 	
 	// Load Textbox
-	menu1 = TextboxConstructor(screen, 0, 487, 49, 6);
-	menu2 = TextboxConstructor(screen, 20, 80, 8, 16);
+	menu1 = TextboxConstructor(screen, 0, 487, 49, 6); // screen, x, y, w, h
+	//menu2 = TextboxConstructor(screen, 20, 80, 8, 16);
 
 		
 	// Generate character vector (provisional sólo para desarrollo)
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 	
 		// Draw Text Boxes
 		TextboxDraw(menu1, screen);
-		TextboxDraw(menu2, screen);
+		//TextboxDraw(menu2, screen);
 
 		// Update the screen 
 		//SDL_UpdateRect(screen, 0, 0, 0, 0);
@@ -331,8 +331,8 @@ Character** vectorCharsGen(int option, int **pos, Map *map)
 	}
 
 	printf("\n");
-	for(i=0;i<map->width;i++){
-		for(j=0;j<map->height;j++)
+	for(i=0;i<map->height;i++){
+		for(j=0;j<map->width;j++)
 			printf("%d ", map->charPosition[i][j]);	
 		printf("\n");
 	}
