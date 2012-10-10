@@ -462,12 +462,12 @@ void MapLoad(Map * map, SDL_Surface *screen, char *file)
 	}
 
 	// Init char position
-	map->charPosition = (int **)malloc(sizeof(int*) * map->width);
-	for(i = 0; i < map->width; i++)
-		map->charPosition[i] = (int *)malloc(sizeof(int) * map->height);
+	map->charPosition = (int **)malloc(sizeof(int*) * map->height);
+	for(i = 0; i < map->height; i++)
+		map->charPosition[i] = (int *)malloc(sizeof(int) * map->width);
 	
-	for(i = 0; i < map->width; i++)
-		for(j = 0; j < map->height; j++)
+	for(i = 0; i < map->height; i++)
+		for(j = 0; j < map->width; j++)
 			map->charPosition[i][j] = 0;
 	
 	map->collisions = (int **)malloc(sizeof(int*) * map->height);
