@@ -16,7 +16,7 @@
 
 #define FRAMES_PER_SECOND 	10
 
-static void HandleEvent(SDL_Event event, Game *game, Cursor *cursor, Map *map);
+static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map);
 static Character** vectorCharsGen(int option, int **pos, Map *map);
 
 int modeCursor = 0;
@@ -26,7 +26,7 @@ int showGrid   = 0;
 int main(int argc, char **argv)
 {
 	// Variable definition section
-	SDL_Surface *screen, *grid, *selector;
+	SDL_Surface *screen, *intro, *grid, *selector;
 	SDL_Rect rcGrid, rcSelector;
 	SDL_Event event;	
 
@@ -35,25 +35,33 @@ int main(int argc, char **argv)
 	Map *map;
 	Timer *timer;
 	Cursor *cursor;
-	Textbox *textbox;
+	Textbox *menu1;//, *menu2;
+	
 	// Only for developement
 	Character **vectorChar1, **vectorChar2;
 
 	int x, y;
+
 	// initialize SDL
 	SDL_Init(SDL_INIT_VIDEO);
 	
 	// set the title bar 
-	SDL_WM_SetCaption("The legend of Ginebras", "Jauria productions");
+	SDL_WM_SetCaption("The legend of Ginebras - Jauria productions", "Jauria productions");
 	
 	// create window 
-	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
+	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF); // SDL_FULLSCREEN
 	
 	// set keyboard repeat 
-	SDL_EnableKeyRepeat(70, 70);
+	SDL_EnableKeyRepeat(70, 70); // SDL_DEFAULT_REPEAT_INTERVAL
 	
+	// Game Intro
+	intro = loadImage("data/intro.png");
+	SDL_BlitSurface(intro, NULL, screen, NULL);
+	SDL_Flip(screen);
+	SDL_FreeSurface(intro);
+
 	// Load background
-	map = MapConstructor(screen, "data/Newmap.tmx");
+	map = MapConstructor(screen, "data/Pueblo60x80.tmx");
 	
 	// Load grid
 	grid = loadImage("data/Grid.png");
@@ -62,7 +70,9 @@ int main(int argc, char **argv)
 	selector = loadImage("data/Selector.png");
 	
 	// Load Textbox
-	textbox = TextboxConstructor(screen);
+	menu1 = TextboxConstructor(screen, 0, 487, 49, 6); // screen, x, y, w, h
+	//menu2 = TextboxConstructor(screen, 20, 80, 8, 16);
+
 		
 	// Generate character vector (provisional sólo para desarrollo)
 	vectorChar1 = vectorCharsGen(1, map->charPosition, map);
@@ -92,14 +102,14 @@ int main(int argc, char **argv)
 
 		// look for an event 
 		if (SDL_PollEvent(&event)) {
-			HandleEvent(event, game, cursor, map);
+			HandleEvent(event, screen, game, cursor, map);
 		}
 				
 		// Map update
 		MapUpdate(map, cursor->rcDest);
 
 		// Update Window
-		TextboxUpdate(textbox, map->scroll_x, map->scroll_y);
+		TextboxUpdate(menu1, map->scroll_x, map->scroll_y);
 		
 		// Fill screen black
 		SDL_FillRect(screen, NULL, 0x0);
@@ -143,30 +153,32 @@ int main(int argc, char **argv)
 		MapDraw(map, screen);
 	
 		// Draw Text Boxes
-		TextboxDraw(textbox, screen);
+		TextboxDraw(menu1, screen);
+		//TextboxDraw(menu2, screen);
 
 		// Update the screen 
-		SDL_UpdateRect(screen, 0, 0, 0, 0);
+		//SDL_UpdateRect(screen, 0, 0, 0, 0);
+		SDL_Flip(screen);
 		//SDL_UpdateRect(map->surfaceBack, 0, 0, 0, 0);
 
 		// Cap the frame rate
 		if( timer->startTicks < 1000 / FRAMES_PER_SECOND ){
-            SDL_Delay( ( 1000 / FRAMES_PER_SECOND ) - timer->startTicks); 
-        }
+			SDL_Delay( ( 1000 / FRAMES_PER_SECOND ) - timer->startTicks); 
+		}
 
 	}// end main while
 	
 	// Clean game and characters
+	//TextboxDestructor(textbox);
 	GameDestructor(game);
 	MapDestructor(map);
 	CursorDestructor(cursor);
-
 	SDL_Quit();
 
 	return 0;
 }
 
-void HandleEvent(SDL_Event event, Game *game, Cursor* cursor, Map *map)
+void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor* cursor, Map *map)
 {
 	switch (event.type) {
 		/* close button clicked */
@@ -192,6 +204,9 @@ void HandleEvent(SDL_Event event, Game *game, Cursor* cursor, Map *map)
 					break;
 				case SDLK_DOWN:
 					if(modeCursor) CursorMove(cursor, ORIENT_SOUTH);
+					break;
+				case SDLK_t:
+					SDL_WM_ToggleFullScreen(screen);
 					break;
 				case SDLK_c:
 					if (modeCursor == 1)
@@ -260,56 +275,56 @@ Character** vectorCharsGen(int option, int **pos, Map *map)
 
 	if(option == 1){
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/heroe1", ORIENT_SOUTH, 5*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 7, 3, pos))) {
+		if( !(character = CharacterConstructor("data/character/plate", ORIENT_SOUTH, 16*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 7, 3, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_SOUTH, 2*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 6, 4, pos))){
+		if( !(character = CharacterConstructor("data/character/chain", ORIENT_SOUTH, 14*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 6, 4, pos))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 3*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 5, 5, pos))) {
+		if( !(character = CharacterConstructor("data/character/hat", ORIENT_SOUTH, 12*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 5, 5, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_SOUTH, 4*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 2, 6, pos))) {
+		if( !(character = CharacterConstructor("data/character/leather", ORIENT_SOUTH, 10*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 2, 6, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[3] = character;
 	}else {
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/heroe1", ORIENT_NORTH, 5*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 7, 1, pos))) {
+		if( !(character = CharacterConstructor("data/character/bone", ORIENT_NORTH, 15*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 7, 1, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/esqueletico", ORIENT_NORTH, 2*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 6, 2, pos))){
+		if( !(character = CharacterConstructor("data/character/link", ORIENT_NORTH, 13*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 6, 2, pos))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 3*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 5, 3, pos))) {
+		if( !(character = CharacterConstructor("data/character/guard", ORIENT_NORTH, 11*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 5, 3, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/topos", ORIENT_NORTH, 4*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 2, 4, pos))) {
+		if( !(character = CharacterConstructor("data/character/thief", ORIENT_NORTH, 9*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 2, 4, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
@@ -317,8 +332,8 @@ Character** vectorCharsGen(int option, int **pos, Map *map)
 	}
 
 	printf("\n");
-	for(i=0;i<map->width;i++){
-		for(j=0;j<map->height;j++)
+	for(i=0;i<map->height;i++){
+		for(j=0;j<map->width;j++)
 			printf("%d ", map->charPosition[i][j]);	
 		printf("\n");
 	}
