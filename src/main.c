@@ -116,7 +116,8 @@ int main(int argc, char **argv)
 		}
 
 		// Draw area
-		AreaDraw(game->actualCharacter->moveArea, screen, map);		
+		//AreaDraw(game->actualCharacter->moveArea, screen, map);		
+		AreaSmartDraw(game->actualCharacter->moveArea, map, cursor);
 
 		// Draw cursor
 		CursorDraw(cursor, screen, map);	
