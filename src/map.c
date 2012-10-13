@@ -335,21 +335,8 @@ Map* MapConstructor(SDL_Surface *screen, char *file)
 
 	// Fill xml layer data
 	MapParseMap(map, file, screen);
-/*
-	rcDest.x = 0;
-	rcDest.y = 0;
 
-	rcSrc.x = 0;
-	rcSrc.y = 0;
-	rcSrc.w =  map->tileWidth;
-	rcSrc.h = map->tileHeight;
-*/
-	// Create two main layers: back, front
-	
-	//temp = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, , (height+1)*16, 32, 0, 0, 0, 0x000000FF);
-	
-		
-
+	// Create surface Back
 	temp = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, map->width * map->tileWidth, map->height * map->tileHeight, 
 											screen->format->BitsPerPixel,
 											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
@@ -357,33 +344,14 @@ Map* MapConstructor(SDL_Surface *screen, char *file)
 
 	map->surfaceBack = SDL_DisplayFormatAlpha(temp);
 
-/*	
-	Uint32 colorKey = SDL_MapRGB(map->surfaceBack->format, 0xFF, 0x0, 0xFF);
-	SDL_FillRect(map->surfaceBack, NULL, 0xFF00FF);
-	SDL_SetColorKey(map->surfaceBack, SDL_SRCCOLORKEY, colorKey);
-*/
+	// Create surface Front
 	temp = SDL_CreateRGBSurface(SDL_SWSURFACE, map->width * map->tileWidth, map->height * map->tileHeight, 
 											screen->format->BitsPerPixel,
 											screen->format->Rmask, screen->format->Gmask, screen->format->Bmask,
 											screen->format->Amask);
 
 	map->surfaceFront = SDL_DisplayFormatAlpha(temp);
-/*
-	// Fill with alpha
-	for(i = 0; i < map->height; i++){
-		for(j = 0; j < map->width; j++){
-			rcDest.x = j * map->tileWidth;
-			rcDest.y = i * map->tileHeight; 
-			copySurface(alpha, &rcSrc, 	map->surfaceFront, &rcDest);
-		}
-	}
-*/
 
-/*
-	Uint32 colorKey2 = SDL_MapRGB(map->surfaceFront->format, 0xFF, 0x0, 0xFF);
-	SDL_FillRect(map->surfaceFront, NULL, 0xFF00FF);
-	SDL_SetColorKey(map->surfaceFront, SDL_SRCCOLORKEY, colorKey2);
-*/
 	// Create refresh layer
 	temp = SDL_CreateRGBSurface(SDL_SWSURFACE, map->width * map->tileWidth, map->height * map->tileHeight, 
 											screen->format->BitsPerPixel, 
@@ -391,15 +359,13 @@ Map* MapConstructor(SDL_Surface *screen, char *file)
 											screen->format->Amask);
 	
 	map->surfaceRefresh = SDL_DisplayFormatAlpha(temp);
-
-/*
-	Uint32 colorKey3 = SDL_MapRGB(map->surfaceRefresh->format, 0xFF, 0x0, 0xFF);
-	SDL_FillRect(map->surfaceRefresh, NULL, 0xFF00FF);
-	SDL_SetColorKey(map->surfaceRefresh, SDL_SRCCOLORKEY, colorKey3);
-*/
+	
 	// Map load
 	MapLoad(map, screen, file);
  	
+	// free
+	SDL_FreeSurface(temp);
+	
 	return map;
 }
 
@@ -589,42 +555,31 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 void MapDraw(Map *map, SDL_Surface* screen)
 {
 	//Layer *tmpLayer;
-	SDL_Rect rcBack;
-/*
-	SDL_Rect Front, rcBack;
-	SDL_Rect rcSrc, rcSrc2, rcDest;
-
-	rcDest.x = 0;
-	rcDest.y = 0;
+	SDL_Rect rcClip, rcDest, rcDestR;
+	//SDL_Rect rcBack;
 	
-	rcSrc.x = 0;
-	rcSrc.y = 0;
-	rcSrc.w = map->width * map->tileWidth;
-	rcSrc.h = map->height * map->tileHeight;
+	rcClip.x = -map->scroll_x;
+	rcClip.y = -map->scroll_y;
+	rcClip.w = SCREEN_WIDTH;
+	rcClip.h = SCREEN_HEIGHT;
 
-	rcSrc2.x = 0;
-	rcSrc2.y = 0;
-	rcSrc2.w = map->width * map->tileWidth;
-	rcSrc2.h = map->height * map->tileHeight;
+	rcDest.x = -map->scroll_x;
+	rcDest.y = -map->scroll_y;
 
+	rcDestR.x = -map->scroll_x;
+	rcDestR.y = -map->scroll_y;
 
-	rcDest.x = 650;
-	rcDest.y = -1000;
+	//rcBack.x = map->scroll_x;
+	//rcBack.y = map->scroll_y;
 
-	rcFront.x = map->scroll_x;
-	rcFront.y = map->scroll_y;
-*/
+	// Front -> Back
+	SDL_BlitSurface(map->surfaceFront, &rcClip, map->surfaceBack, &rcDest);
 
-	rcBack.x = map->scroll_x;
-	rcBack.y = map->scroll_y;
+	// Draw on scree
+	SDL_BlitSurface(map->surfaceBack, &rcClip, screen, NULL);
 
-	//SDL_BlitSurface(map->surfaceFront, NULL, screen, &rcDest);
-	SDL_BlitSurface(map->surfaceFront, NULL, map->surfaceBack, NULL);
-//SDL_SetClipRect(SDL_Surface *surface, SDL_Rect *rect);
-	SDL_BlitSurface(map->surfaceBack, NULL, screen, &rcBack);
-	//SDL_BlitSurface(map->surfaceFront, NULL, screen, &rcFront);
-	
-	SDL_BlitSurface(map->surfaceRefresh, NULL, map->surfaceBack, NULL);
+	// Refresh Back
+	SDL_BlitSurface(map->surfaceRefresh, &rcClip, map->surfaceBack, &rcDestR);
 }
 
 void MapDestructor(Map * map)
