@@ -67,16 +67,16 @@ Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text,
 	if(image){
 		rcSrcImg.x = 0;
 		rcSrcImg.y = 0;
-		rcSrcImg.w = 150;
-		rcSrcImg.h = 150;
-		rcDestImg.x = 0;
-		rcDestImg.y = 0;
+		rcSrcImg.w = 135;
+		rcSrcImg.h = 135;
+		rcDestImg.x = 10;
+		rcDestImg.y = 5;
 		if(!(textbox->image = loadImage(image))){
 			printf("Text Box constructor ERROR: impossible load %s\n", image);
 			return NULL;
 		}
 		
-		overSurface(textbox->image, &rcSrcImg, textbox->background, &rcDestImg, 150);
+		overSurface(textbox->image, &rcSrcImg, textbox->background, &rcDestImg, 135);
 	}
 
 	// Set text

@@ -22,6 +22,7 @@ static Character** vectorCharsGen(int option, int **pos, Map *map);
 int modeCursor = 0;
 int gameover   = 0;
 int showGrid   = 0;
+int showInterface = 1;
 
 int main(int argc, char **argv)
 {
@@ -148,7 +149,8 @@ int main(int argc, char **argv)
 		MapDraw(map, screen);
 
 		// Draw interface
-		InterfaceDraw(interface, screen);
+		if(showInterface)
+			InterfaceDraw(interface, screen);
 
 		// Update the screen 
 		//SDL_UpdateRect(screen, 0, 0, 0, 0);
@@ -225,6 +227,12 @@ void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor* curso
 					break;
 				case SDLK_a:
 					CharacterSetAttack(game->actualCharacter);
+					break;
+				case SDLK_i:
+					if (showInterface == 1)
+						showInterface = 0;
+					else
+						showInterface = 1;
 					break;
 				case SDLK_f:
 					if(cursor->free){
