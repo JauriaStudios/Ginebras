@@ -11,11 +11,13 @@
  *** STRUCTS
  **********************************************************/
 typedef struct Textbox{	
+
+	char *name;
 	
 	SDL_Surface *background;
 	SDL_Surface *bgTileset;
-	SDL_Surface *message;
-	
+	SDL_Surface *image;
+
 	SDL_Rect rcDestText, rcDestTile, rcSrcTile, rcDestWindow ;
 	
 	SDL_Color textColor;
@@ -25,18 +27,20 @@ typedef struct Textbox{
 	
 	int boxWidth, boxHeight;
 	
+	int rows;
 	
-	char *textMsg;
-	
+	char **textMsg;
+
+	struct list_head list;
+
 } Textbox;
 
 
 /**********************************************************
  *** METHODS
  **********************************************************/
-extern Textbox* TextboxConstructor(SDL_Surface *screen, int x, int y, int w, int h);
+extern Textbox* TextboxConstructor(char *name, int x, int y, int w, int h, char **text, int rows, char *image);
 extern void TextboxDestructor(Textbox *textbox);
-extern void TextboxLoad(Textbox *textbox);
 extern void TextboxCreateWindow(Textbox * textbox);
 extern void TextboxUpdate(Textbox *textbox, int scrollX, int scrollY);
 extern int TextboxDraw(Textbox *textbox, SDL_Surface *screen);

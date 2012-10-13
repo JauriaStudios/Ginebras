@@ -67,17 +67,22 @@ SDL_Surface* loadImage(char* filename)
 {
     SDL_Surface* temp = NULL;
     SDL_Surface* image = NULL;
- 
+	
+	if(!filename)
+		return NULL;
+	 
     //cargar imagen temporal
     temp = IMG_Load(filename);
-    if(temp == NULL ) return NULL;
+    if(!temp) 
+		return NULL;
  
     //cambiar formato y liberar imagen temp
     image = SDL_DisplayFormatAlpha(temp);
 	//image = SDL_DisplayFormat(temp);
 
     SDL_FreeSurface(temp);
-    if(image == NULL) return NULL;
+    if(!image) 
+		return NULL;
  
     //elegimos como color el 'rosa magico' y lo hacemos color clave
     //Uint32 colorKey = SDL_MapRGB(image->format, 0xFF, 0, 0xFF);

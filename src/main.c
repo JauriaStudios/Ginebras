@@ -12,9 +12,9 @@
 #include "map.h"
 #include "player.h"
 #include "area.h"
+#include "interface.h"
 #include "textbox.h"
-
-#define FRAMES_PER_SECOND 	10
+#define FRAMES_PER_SECOND 10
 
 static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map);
 static Character** vectorCharsGen(int option, int **pos, Map *map);
@@ -35,8 +35,8 @@ int main(int argc, char **argv)
 	Map *map;
 	Timer *timer;
 	Cursor *cursor;
-	Textbox *menu1;//, *menu2;
-	
+	Interface *interface;	
+
 	// Only for developement
 	Character **vectorChar1, **vectorChar2;
 
@@ -68,12 +68,10 @@ int main(int argc, char **argv)
 
 	// Load selector
 	selector = loadImage("data/Selector.png");
-	
-	// Load Textbox
-	menu1 = TextboxConstructor(screen, 0, 487, 49, 6); // screen, x, y, w, h
-	//menu2 = TextboxConstructor(screen, 20, 80, 8, 16);
 
-		
+	// Create game interface
+	interface = InterfaceConstructor(8);
+
 	// Generate character vector (provisional sólo para desarrollo)
 	vectorChar1 = vectorCharsGen(1, map->charPosition, map);
 	vectorChar2 = vectorCharsGen(2, map->charPosition, map);
@@ -88,12 +86,12 @@ int main(int argc, char **argv)
 	// Create a cursor
 	cursor = CursorConstructor(game->actualCharacter->rcDest.x, game->actualCharacter->rcDest.y);	
 	
-	// Set initial cursor collision
-	CursorSetCollisionArea(cursor, game->actualCharacter->movement);
-	
 	// Create a timer
 	timer = TimerConstructor();
 
+	// Set initial cursor collision
+	CursorSetCollisionArea(cursor, game->actualCharacter->movement);
+	
 	// Main while
 	while (!gameover)
 	{
@@ -108,9 +106,6 @@ int main(int argc, char **argv)
 		// Map update
 		MapUpdate(map, cursor->rcDest);
 
-		// Update Window
-		TextboxUpdate(menu1, map->scroll_x, map->scroll_y);
-		
 		// Fill screen black
 		SDL_FillRect(screen, NULL, 0x0);
 
@@ -148,13 +143,12 @@ int main(int argc, char **argv)
 		rcSelector.x = game->actualCharacter->rcDest.x + 16;
 		rcSelector.y = game->actualCharacter->rcDest.y - 16;
 		SDL_BlitSurface(selector, NULL, map->surfaceBack, &rcSelector);
-
+				
 		// Draw background
 		MapDraw(map, screen);
-	
-		// Draw Text Boxes
-		TextboxDraw(menu1, screen);
-		//TextboxDraw(menu2, screen);
+
+		// Draw interface
+		InterfaceDraw(interface, screen);
 
 		// Update the screen 
 		//SDL_UpdateRect(screen, 0, 0, 0, 0);
@@ -169,10 +163,10 @@ int main(int argc, char **argv)
 	}// end main while
 	
 	// Clean game and characters
-	//TextboxDestructor(textbox);
 	GameDestructor(game);
 	MapDestructor(map);
 	CursorDestructor(cursor);
+	InterfaceDestructor(interface);
 	SDL_Quit();
 
 	return 0;

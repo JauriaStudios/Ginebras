@@ -11,48 +11,44 @@ TTF_Font* loadFont(char* file, int ptsize)
 	return tmpfont;
 }
 
-Textbox *TextboxConstructor(SDL_Surface *screen, int x, int y, int w, int h)
+Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text, int rows, char *image)
 {
 	// Variable definition section
-	
 	Textbox * textbox;
-	
+	SDL_Rect rcSrcImg, rcDestImg;
+
 	// Alloc map
 	textbox = (Textbox *)malloc(sizeof(Textbox));
 	
+	textbox->name = name; 
+
 	// initialize sdl ttf
-	if (TTF_Init() == -1) {
+	if (TTF_Init())
 		printf("Unable to initialize SDL_ttf: %s \n", TTF_GetError());
-	
-	}
 	
 	//init fonts
 	textbox->font = NULL;
 	textbox->fontMono = NULL;
 
-	// Load fonts and images
-	TextboxLoad(textbox);
+	// load Fonts
+	textbox->font = loadFont("data/font/ChronoTrigger.ttf",20);
+	textbox->fontMono = loadFont("data/font/ChronoTriggerMonospaced.ttf",18);
+
+	// load Images
+	textbox->bgTileset = loadImage("data/windowTileset.png");
 
 	// define text color
 	textbox->textColor.r = 255;
 	textbox->textColor.g = 255;
 	textbox->textColor.b = 255;
 	
-	// message to display
-	textbox->textMsg = "Atacar";
-	
-	//Setup the location on the screen to blit to
-
-	// Text position
-	textbox->rcDestText.x = 15;
-	textbox->rcDestText.y = 20;
-	
 	// Window Position in px
 	textbox->rcDestWindow.x = x;
 	textbox->rcDestWindow.y = y;
+
 	// Text position
-	textbox->rcDestText.x = textbox->rcDestWindow.x + 15;
-	textbox->rcDestText.y = textbox->rcDestWindow.y + 20;
+	textbox->rcDestText.x = textbox->rcDestWindow.x + 10;
+	textbox->rcDestText.y = textbox->rcDestWindow.y - 10;
 		
 	// Window tiles
 	textbox->rcSrcTile.x = 0;
@@ -64,57 +60,74 @@ Textbox *TextboxConstructor(SDL_Surface *screen, int x, int y, int w, int h)
 	textbox->boxWidth = w; //min 3
 	textbox->boxHeight = h; // min 2
 
-	//create window Test
+	// Create window Test
 	TextboxCreateWindow(textbox);
+
+	// Load image
+	if(image){
+		rcSrcImg.x = 0;
+		rcSrcImg.y = 0;
+		rcSrcImg.w = 150;
+		rcSrcImg.h = 150;
+		rcDestImg.x = 0;
+		rcDestImg.y = 0;
+		if(!(textbox->image = loadImage(image))){
+			printf("Text Box constructor ERROR: impossible load %s\n", image);
+			return NULL;
+		}
+		
+		overSurface(textbox->image, &rcSrcImg, textbox->background, &rcDestImg, 150);
+	}
+
+	// Set text
+	textbox->textMsg = text;
+	textbox->rows    = rows;
+	INIT_LIST_HEAD(&textbox->list);
 
 	return textbox;
 }
 
-void TextboxLoad(Textbox * textbox)
-{
-	// load Fonts
-	textbox->font = loadFont("data/font/ChronoTrigger.ttf",20);
-	textbox->fontMono = loadFont("data/font/ChronoTriggerMonospaced.ttf",30);
-
-	// load Images
-	textbox->bgTileset = loadImage("data/windowTileset.png");
-}
-
 void TextboxUpdate(Textbox * textbox, int scrollX, int scrollY)
 {
-	char *tmpMsg;
-	tmpMsg = (char *)malloc(sizeof(char)*50);
+	//char *tmpMsg;
+	//tmpMsg = (char *)malloc(sizeof(char)*50);
 	
-	sprintf(tmpMsg,"X:%d  Y:%d", scrollX, scrollY);
+	//sprintf(tmpMsg,"X:%d  Y:%d", scrollX, scrollY);
 	//printf("%s", tmpMsg);	
-	textbox->textMsg = tmpMsg;
+	//textbox->textMsg = tmpMsg;
 }
 
-int TextboxDraw(Textbox * textbox, SDL_Surface* screen)
+int TextboxDraw(Textbox *textbox, SDL_Surface* screen)
 {
-	textbox->message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg, textbox->textColor);
+	int i;
+	SDL_Surface *message = NULL;
+	SDL_Rect rcDest;
 	
-	if (textbox->message != NULL){ 
-		SDL_BlitSurface(textbox->background, NULL, screen, &textbox->rcDestWindow);
-		SDL_BlitSurface(textbox->message, NULL, screen, &textbox->rcDestText);
-		SDL_FreeSurface(textbox->message);
-		return 1;
+	SDL_BlitSurface(textbox->background, NULL, screen, &textbox->rcDestWindow);
+
+	rcDest.x = textbox->rcDestText.x;
+	rcDest.y = textbox->rcDestText.y;
+	for(i = 0; (i < textbox->rows) && textbox->textMsg; i++){
+		message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg[i], textbox->textColor);
+		if(!message){
+			printf("TextBoxDraw ERROR: impossible draw %d line, does not exist\n", i);
+			return -1;
+		}
+		rcDest.y += 20;
+		SDL_BlitSurface(message, NULL, screen, &rcDest);
+		SDL_FreeSurface(message);
 	}
-	else {
-		// report error
-		return 0;
-	}
+
+	return 0;
+
 }
 
 void TextboxCreateWindow(Textbox * textbox)
 {
 	SDL_Surface* temp = NULL;
 	
-	//int x = textbox->windowX; 
-	//int y = textbox->windowY;
-	
-	int width = textbox->boxWidth;
-	int height = textbox->boxHeight;
+	int width = textbox->boxWidth/16;
+	int height = textbox->boxHeight/16;
 	
 	int i, j;
 	
@@ -173,7 +186,6 @@ void TextboxDestructor(Textbox * textbox)
 {
 	
 	//Free the text_surface surface
-	SDL_FreeSurface(textbox->message);
 	SDL_FreeSurface(textbox->background);
 	SDL_FreeSurface(textbox->bgTileset);
 

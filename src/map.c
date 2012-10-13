@@ -514,7 +514,7 @@ void MapLoad(Map * map, SDL_Surface *screen, char *file)
 		
 		if(!strcmp(pos, "front")){
 			printf("NAME LAYER FRONT: %s\n", nameLayer);
-			overSurface(tmpLayer->imageLayer, &rcSrc, auxFront, &rcDest, map->width * map->tileHeight);		
+			overSurface(tmpLayer->imageLayer, &rcSrc, auxFront, &rcDest, map->width * map->tileWidth);		
 		}else{
 			printf("NAME LAYER BACK: %s\n", nameLayer);
 			SDL_BlitSurface(tmpLayer->imageLayer, &rcSrc, map->surfaceBack, &rcDest);			
@@ -570,7 +570,7 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 			map->scroll_x += map->scrollVel;
 	}
 	// scroll der.
-	else if (x >= 650+30 - map->scroll_x){
+	else if (x >= (SCREEN_WIDTH-150)+30 - map->scroll_x){
 		if (map->scroll_x >= -((map->width*map->tileWidth) - SCREEN_WIDTH + BORDER)) // scroll limit
 			map->scroll_x -= map->scrollVel;
 	}
@@ -580,7 +580,7 @@ void MapUpdate(Map * map, SDL_Rect cursorCoords)
 			map->scroll_y += map->scrollVel;
 	}
 	//scroll down
-	else if (y >= 500 - map->scroll_y){
+	else if (y >= (SCREEN_HEIGHT-100) - map->scroll_y){
 		if (map->scroll_y >= -((map->height * map->tileHeight) - SCREEN_HEIGHT + BORDER)) // scroll limit
 			map->scroll_y -= map->scrollVel;
 	}
@@ -620,6 +620,7 @@ void MapDraw(Map *map, SDL_Surface* screen)
 
 	//SDL_BlitSurface(map->surfaceFront, NULL, screen, &rcDest);
 	SDL_BlitSurface(map->surfaceFront, NULL, map->surfaceBack, NULL);
+//SDL_SetClipRect(SDL_Surface *surface, SDL_Rect *rect);
 	SDL_BlitSurface(map->surfaceBack, NULL, screen, &rcBack);
 	//SDL_BlitSurface(map->surfaceFront, NULL, screen, &rcFront);
 	
