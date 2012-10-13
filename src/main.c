@@ -14,7 +14,8 @@
 #include "area.h"
 #include "interface.h"
 #include "textbox.h"
-#define FRAMES_PER_SECOND 10
+
+#define FRAMES_PER_SECOND 30
 
 static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map);
 static Character** vectorCharsGen(int option, int **pos, Map *map);
@@ -153,9 +154,7 @@ int main(int argc, char **argv)
 			InterfaceDraw(interface, screen);
 
 		// Update the screen 
-		//SDL_UpdateRect(screen, 0, 0, 0, 0);
 		SDL_Flip(screen);
-		//SDL_UpdateRect(map->surfaceBack, 0, 0, 0, 0);
 
 		// Cap the frame rate
 		if( timer->startTicks < 1000 / FRAMES_PER_SECOND ){
