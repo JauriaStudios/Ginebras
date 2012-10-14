@@ -14,6 +14,7 @@
 #include "area.h"
 #include "interface.h"
 #include "textbox.h"
+#include "intro.h"
 
 #define FRAMES_PER_SECOND 30
 
@@ -28,22 +29,23 @@ int showInterface = 1;
 int main(int argc, char **argv)
 {
 	// Variable definition section
-	SDL_Surface *screen, *intro, *grid, *selector;
+	SDL_Surface *screen, *grid, *selector;
 	SDL_Rect rcGrid, rcSelector;
 	SDL_Event event;	
 
+	Intro *intro;	
 	Game *game;
 	Player *player1, *player2;
 	Map *map;
 	Timer *timer;
 	Cursor *cursor;
 	Interface *interface;	
-
+	
 	// Only for developement
 	Character **vectorChar1, **vectorChar2;
-
+	
 	int x, y;
-
+	
 	// initialize SDL
 	SDL_Init(SDL_INIT_VIDEO);
 	
@@ -57,34 +59,33 @@ int main(int argc, char **argv)
 	SDL_EnableKeyRepeat(70, 70); // SDL_DEFAULT_REPEAT_INTERVAL
 	
 	// Game Intro
-	intro = loadImage("data/intro.png");
-	SDL_BlitSurface(intro, NULL, screen, NULL);
-	SDL_Flip(screen);
-	SDL_FreeSurface(intro);
-
+	intro = IntroConstructor();
+	IntroDraw(intro, screen);
+	IntroDestructor(intro);
+		
 	// Load background
 	map = MapConstructor(screen, "data/Pueblo60x80.tmx");
 	
 	// Load grid
 	grid = loadImage("data/Grid.png");
-
+	
 	// Load selector
 	selector = loadImage("data/Selector.png");
-
+	
 	// Create game interface
 	interface = InterfaceConstructor(8);
-
+	
 	// Generate character vector (provisional sólo para desarrollo)
 	vectorChar1 = vectorCharsGen(1, map->charPosition, map);
 	vectorChar2 = vectorCharsGen(2, map->charPosition, map);
-
+	
 	// Create players
 	player1 = PlayerConstructor(vectorChar1, 4);
 	player2 = PlayerConstructor(vectorChar2, 4);
-
+	
 	// Create game
 	game = GameConstructor(player1, player2);
-
+	
 	// Create a cursor
 	cursor = CursorConstructor(game->actualCharacter->rcDest.x, game->actualCharacter->rcDest.y);	
 	
