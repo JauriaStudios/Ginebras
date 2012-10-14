@@ -7,6 +7,7 @@
 #include "SDL_image.h"
 
 #define SPRITE_SIZE 64
+
 #define TILE_SIZE 32
 #define SCREEN_WIDTH  	1280
 #define SCREEN_HEIGHT 	800

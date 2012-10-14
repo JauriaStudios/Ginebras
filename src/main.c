@@ -14,6 +14,7 @@
 #include "area.h"
 #include "interface.h"
 #include "textbox.h"
+#include "intro.h"
 #include "grid.h"
 
 #define FRAMES_PER_SECOND 30
@@ -29,10 +30,11 @@ int showInterface = 1;
 int main(int argc, char **argv)
 {
 	// Variable definition section
-	SDL_Surface *screen, *intro, *selector;
+	SDL_Surface *screen, *selector;
 	SDL_Rect rcSelector;
 	SDL_Event event;	
 
+	Intro *intro;	
 	Game *game;
 	Player *player1, *player2;
 	Map *map;
@@ -43,6 +45,7 @@ int main(int argc, char **argv)
 
 	// Only for developement
 	Character **vectorChar1, **vectorChar2;
+
 
 	// initialize SDL
 	SDL_Init(SDL_INIT_VIDEO);
@@ -57,11 +60,10 @@ int main(int argc, char **argv)
 	SDL_EnableKeyRepeat(70, 70); // SDL_DEFAULT_REPEAT_INTERVAL
 	
 	// Game Intro
-	intro = loadImage("data/intro.png");
-	SDL_BlitSurface(intro, NULL, screen, NULL);
-	SDL_Flip(screen);
-	SDL_FreeSurface(intro);
-
+	intro = IntroConstructor();
+	IntroDraw(intro, screen);
+	IntroDestructor(intro);
+		
 	// Load background
 	map = MapConstructor(screen, "data/Pueblo60x80.tmx");
 	
@@ -138,10 +140,10 @@ int main(int argc, char **argv)
 		rcSelector.x = game->actualCharacter->rcDest.x + 16;
 		rcSelector.y = game->actualCharacter->rcDest.y - 16;
 		SDL_BlitSurface(selector, NULL, map->surfaceBack, &rcSelector);
-		
+				
 		// Draw background
 		MapDraw(map, screen);
-	
+
 		// Draw interface
 		if(showInterface)
 			InterfaceDraw(interface, screen);
