@@ -11,9 +11,6 @@
 #include "list.h"
 #include "gameUtilities.h"
 
-#define SCREEN_WIDTH  	1280
-#define SCREEN_HEIGHT 	800
-
 #define BUFFER_SIZE 1024
 
 #define BORDER 64

@@ -19,7 +19,7 @@ typedef struct Cursor{
 
 extern Cursor* CursorConstructor(int x0, int y0);
 extern void CursorDestructor(Cursor *this);
-extern void CursorDraw(Cursor* cursor, SDL_Surface* screen, Map *map);
+extern void CursorDraw(Cursor* cursor, Map *map);
 extern void CursorMove(Cursor* cursor, Orientation orientation);
 extern void CursorSetPosition(Cursor *cursor, int x, int y);
 extern void CursorSetCollisionArea(Cursor *cursor, int area);

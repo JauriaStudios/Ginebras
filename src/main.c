@@ -14,6 +14,7 @@
 #include "area.h"
 #include "interface.h"
 #include "textbox.h"
+#include "grid.h"
 
 #define FRAMES_PER_SECOND 30
 
@@ -28,8 +29,8 @@ int showInterface = 1;
 int main(int argc, char **argv)
 {
 	// Variable definition section
-	SDL_Surface *screen, *intro, *grid, *selector;
-	SDL_Rect rcGrid, rcSelector;
+	SDL_Surface *screen, *intro, *selector;
+	SDL_Rect rcSelector;
 	SDL_Event event;	
 
 	Game *game;
@@ -37,12 +38,11 @@ int main(int argc, char **argv)
 	Map *map;
 	Timer *timer;
 	Cursor *cursor;
-	Interface *interface;	
+	Interface *interface;
+	Grid *grid;	
 
 	// Only for developement
 	Character **vectorChar1, **vectorChar2;
-
-	int x, y;
 
 	// initialize SDL
 	SDL_Init(SDL_INIT_VIDEO);
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	map = MapConstructor(screen, "data/Pueblo60x80.tmx");
 	
 	// Load grid
-	grid = loadImage("data/Grid.png");
+	grid = GridConstructor(map->tileWidth, map->tileHeight);
 
 	// Load selector
 	selector = loadImage("data/Selector.png");
@@ -112,22 +112,15 @@ int main(int argc, char **argv)
 		SDL_FillRect(screen, NULL, 0x0);
 
 		// draw the grid
-		if(showGrid){
-			for (x = 0; x < map->width; x++) {
-				for (y = 0; y < map->height; y++) {
-					rcGrid.x = x * map->tileWidth;
-					rcGrid.y = y * map->tileHeight;
-					SDL_BlitSurface(grid, NULL, map->surfaceBack, &rcGrid);
-				}
-			}
-		}
+		if(showGrid)
+			GridDraw(grid, map);
 
 		// Draw area
 		//AreaDraw(game->actualCharacter->moveArea, screen, map);		
 		AreaSmartDraw(game->actualCharacter->moveArea, map, cursor);
 
 		// Draw cursor
-		CursorDraw(cursor, screen, map);	
+		CursorDraw(cursor, map);	
 
 		// Move characters 
 		GameMoveCharacters(game, map);	
@@ -145,10 +138,10 @@ int main(int argc, char **argv)
 		rcSelector.x = game->actualCharacter->rcDest.x + 16;
 		rcSelector.y = game->actualCharacter->rcDest.y - 16;
 		SDL_BlitSurface(selector, NULL, map->surfaceBack, &rcSelector);
-				
+		
 		// Draw background
 		MapDraw(map, screen);
-
+	
 		// Draw interface
 		if(showInterface)
 			InterfaceDraw(interface, screen);
@@ -163,7 +156,8 @@ int main(int argc, char **argv)
 
 	}// end main while
 	
-	// Clean game and characters
+	// Free
+	GridDestructor(grid);
 	GameDestructor(game);
 	MapDestructor(map);
 	CursorDestructor(cursor);

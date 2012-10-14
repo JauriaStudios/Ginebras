@@ -28,7 +28,7 @@ void CursorDestructor(Cursor *this)
 	free(this);
 }
 
-void CursorDraw(Cursor* cursor, SDL_Surface* screen, Map *map)
+void CursorDraw(Cursor* cursor, Map *map)
 {
 	SDL_BlitSurface(cursor->sprite, NULL, map->surfaceBack, &cursor->rcDest);
 }

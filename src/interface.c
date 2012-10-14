@@ -29,7 +29,7 @@ Interface* InterfaceConstructor(int numBoxesW)
 
 	// Create image textbox
 	box = TextboxConstructor("image", (SCREEN_WIDTH/numBoxesW) * 7, SCREEN_HEIGHT-(2*(SCREEN_HEIGHT/HEIGHT_COEF)+22), 
-									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, "data/viktor03.png");
+									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, "data/viktor135.png");
 	list_add_tail(&box->list, &this->listBoxesW);
 
 	return this;

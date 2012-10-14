@@ -47,7 +47,7 @@ Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text,
 	textbox->rcDestWindow.y = y;
 
 	// Text position
-	textbox->rcDestText.x = textbox->rcDestWindow.x + 10;
+	textbox->rcDestText.x = textbox->rcDestWindow.x + 12;
 	textbox->rcDestText.y = textbox->rcDestWindow.y - 10;
 		
 	// Window tiles
