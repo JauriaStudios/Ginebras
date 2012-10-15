@@ -13,27 +13,33 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	character = (Character *)malloc(sizeof(Character));
 	char spriteMove[75];
 	char spriteSlash[75];
+	char sprite192Slash[75];
 	int coordX, coordY;
 
-	strcpy(spriteMove, file); 
-	strcat(spriteMove, "Walk.png");
+	sprintf(spriteMove, "%sWalk.png", file);
 	// Load sprites movement image
 	if (!(character->sprite = loadImage(spriteMove))){
 		printf("Character constructor ERROR: couldn't load character Walk sprite\n");
 		return NULL;
 	}
 	
-	strcpy(spriteSlash, file); 
-	strcat(spriteSlash, "Slash.png");
+	sprintf(spriteSlash, "%sSlash.png", file);
 	// Load sprites slash image
 	if (!(character->spriteSlash = loadImage(spriteSlash))){
+		SDL_FreeSurface(character->sprite);
 		printf("Character constructor ERROR: couldn't load character Slash sprite\n");
 		return NULL;
 	}
 
+	sprintf(sprite192Slash, "%s192Slash.png", file);
+	// Load 192 slash 	
+	character->sprite192Slash = loadImage(sprite192Slash);
+
 	// Set movement
 	character->movement = movement;
 	if (!(character->moveArea = AreaConstructor(x0, y0, movement))){
+		SDL_FreeSurface(character->sprite);
+		SDL_FreeSurface(character->spriteSlash);
 		printf("Character constructor ERROR: couldn't create movement area\n");
 		return NULL;
 	}
@@ -51,7 +57,10 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	// Set initial character position
 	GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
 	pos[coordY][coordX] = 1;
-	
+
+	// Set initial orientation
+	character->moveOrient = or;
+		
 	// Set initial velocity
 	character->velocity = 5;
 
@@ -90,7 +99,10 @@ void CharacterDestructor(Character *character)
 {
 	// Free character image
 	SDL_FreeSurface(character->sprite);
-	
+
+	// Free slash sprite
+	SDL_FreeSurface(character->sprite);
+
 	// Free movement area
 	AreaDestructor(character->moveArea);
 	
@@ -181,14 +193,31 @@ void CharacterMove(Character *character, Map *map)
 	// Set the coordenates, if character is moving
 	if( character->actualStep < character->moveSteps ){
 		
-		// Check collition
-		GetCoor(character->moveX[0]+16+16, character->moveY[0]+32+16, &firstX, &firstY);
-		GetCoor(character->moveX[character->actualStep]+16+COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+COLLISIONS_DEPTH, &coordNwX, &coordNwY);
-		GetCoor(character->moveX[character->actualStep]+16+32-COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+COLLISIONS_DEPTH, &coordNeX, &coordNeY);
-		GetCoor(character->moveX[character->actualStep]+16+COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+32-COLLISIONS_DEPTH, &coordSwX, &coordSwY);
-		GetCoor(character->moveX[character->actualStep]+16+32-COLLISIONS_DEPTH, character->moveY[character->actualStep]+32+32-COLLISIONS_DEPTH, &coordSeX, &coordSeY);
+		// Get character coordenate
+		GetCoor(character->moveX[0]+16+16, character->moveY[0]+32+16, 
+				&firstX, &firstY);
+		
+		// Get north west corner coordenate
+		GetCoor(character->moveX[character->actualStep]+16+COLLISIONS_DEPTH, 
+				character->moveY[character->actualStep]+32+COLLISIONS_DEPTH, 
+				&coordNwX, &coordNwY);
+		
+		// Get north east corner coordanate
+		GetCoor(character->moveX[character->actualStep]+16+32-COLLISIONS_DEPTH, 
+				character->moveY[character->actualStep]+32+COLLISIONS_DEPTH, 
+				&coordNeX, &coordNeY);
+		
+		// Get south west corner coordenate 
+		GetCoor(character->moveX[character->actualStep]+16+COLLISIONS_DEPTH, 
+				character->moveY[character->actualStep]+32+32-COLLISIONS_DEPTH, 
+				&coordSwX, &coordSwY);
+		
+		// Get south east corner coordenate
+		GetCoor(character->moveX[character->actualStep]+16+32-COLLISIONS_DEPTH, 
+				character->moveY[character->actualStep]+32+32-COLLISIONS_DEPTH, 
+				&coordSeX, &coordSeY);
 
-		// Check collision and skip first coordenate
+		// Check collision and skip first coordenate for the initial movement
 		if(((map->charPosition[coordNwY][coordNwX] || map->collisions[coordNwY][coordNwX]) || 
 		    	(map->charPosition[coordNeY][coordNeX] || map->collisions[coordNeY][coordNeX]) ||
 		    	(map->charPosition[coordSwY][coordSwX] || map->collisions[coordSwY][coordSwX]) || 
@@ -233,15 +262,23 @@ fin:
 
 void CharacterDraw(Character* character, SDL_Surface* screen, Map *map)
 {
+	SDL_Rect rc192;
+
 	if(character->moving)
 		SDL_BlitSurface(character->sprite, &character->rcSrc, map->surfaceBack, &character->rcDest);
-	else if(character->attacking)
-		SDL_BlitSurface(character->spriteSlash, &character->rcSrcAttack, map->surfaceBack, &character->rcDest);
-	else
+	else if(character->attacking){
+		if(character->attackType == SLASH)
+			SDL_BlitSurface(character->spriteSlash, &character->rcSrcAttack, map->surfaceBack, &character->rcDest);
+		else if(character->attackType == SLASH192){
+			rc192.x = character->rcDest.x - SPRITE_SIZE;
+			rc192.y = character->rcDest.y - SPRITE_SIZE;
+			SDL_BlitSurface(character->sprite192Slash, &character->rcSrcAttack, map->surfaceBack, &rc192);		
+		}
+	}else
 		SDL_BlitSurface(character->sprite, &character->rcSrc, map->surfaceBack, &character->rcDest);	
 }
 
-void CharacterSetAttack(Character *character)
+void CharacterSetAttack(Character *character, int type)
 {
 	// Set status attack
 	character->attacking  		= 1;
@@ -249,14 +286,24 @@ void CharacterSetAttack(Character *character)
 	character->attackState  	= 1;
 	character->attackSteps  	= 4;
 	character->skipFrames 		= 0;
-
+	character->attackType 		= type;
 }
 
 void CharacterAttack(Character *character)
 {
-	
-	if( (character->actualAttackStep < character->attackSteps) && character->attacking){
-		character->rcSrcAttack.y = character->moveOrient * SPRITE_SIZE;
+	int spriteSize = SPRITE_SIZE;
+	if(character->attackType == SLASH){
+		spriteSize = SPRITE_SIZE;
+		character->rcSrcAttack.w = SPRITE_SIZE;
+		character->rcSrcAttack.h = SPRITE_SIZE;
+	}else if(character->attackType == SLASH192){
+		spriteSize = 192;
+		character->rcSrcAttack.w = 192;
+		character->rcSrcAttack.h = 192;
+	}
+
+	if((character->actualAttackStep < character->attackSteps) && character->attacking){
+		character->rcSrcAttack.y = character->moveOrient * spriteSize;
 		if(character->skipFrames == NUM_SKIP_FRAMES) {
 			if (character->attackState == 5)
 				character->attackState = 1;
@@ -272,6 +319,6 @@ void CharacterAttack(Character *character)
 		character->attackState = 0;
 		character->attacking = 0;
 	}
-	character->rcSrcAttack.x = character->attackState * SPRITE_SIZE;
+	character->rcSrcAttack.x = character->attackState * spriteSize;
 	
 }

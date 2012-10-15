@@ -221,7 +221,10 @@ void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor* curso
 					GameActionChar(game, cursor);
 					break;
 				case SDLK_a:
-					CharacterSetAttack(game->actualCharacter);
+					CharacterSetAttack(game->actualCharacter, SLASH);
+					break;
+				case SDLK_s:
+					CharacterSetAttack(game->actualCharacter, SLASH192);
 					break;
 				case SDLK_i:
 					if (showInterface == 1)
