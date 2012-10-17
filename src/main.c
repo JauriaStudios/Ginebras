@@ -118,8 +118,7 @@ int main(int argc, char **argv)
 			GridDraw(grid, map);
 
 		// Draw area
-		//AreaDraw(game->actualCharacter->moveArea, screen, map);		
-		AreaSmartDraw(game->actualCharacter->moveArea, map, cursor);
+		AreaDraw(game->actualCharacter->moveArea, map, cursor);
 
 		// Draw cursor
 		CursorDraw(cursor, map);	
@@ -226,6 +225,9 @@ void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor* curso
 				case SDLK_s:
 					CharacterSetAttack(game->actualCharacter, SLASH192);
 					break;
+				case SDLK_d:
+					CharacterSetAttack(game->actualCharacter, SPELL);
+					break;
 				case SDLK_i:
 					if (showInterface == 1)
 						showInterface = 0;
@@ -303,7 +305,7 @@ Character** vectorCharsGen(int option, int **pos, Map *map)
 		charVector[3] = character;
 	}else {
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/bone", ORIENT_NORTH, 15*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 7, 1, pos))) {
+		if( !(character = CharacterConstructor("data/character/bone", ORIENT_NORTH, 15*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 7, 20, pos))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
