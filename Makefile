@@ -1,23 +1,24 @@
 #
 #   Makefile
 #
-#   Copyright 2007, 2008 Lancer-X/ASCEAI
+#   Copyright 2012 Jauria Studios
 #
-#   This file is part of Meritous.
+#   This file is part of Sons of Battle.
 #
-#   Meritous is free software: you can redistribute it and/or modify
+#   Sons of Battle is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   Meritous is distributed in the hope that it will be useful,
+#   Sons of Battle is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with Meritous.  If not, see <http://www.gnu.org/licenses/>.
+#   along with Sons of Battle.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 LDFLAGS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_mixer -lz `xml2-config --libs`
 CCFLAGS = -O2 -Wall `sdl-config --cflags` -g `xml2-config --cflags`
 #
