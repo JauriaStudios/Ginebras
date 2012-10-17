@@ -26,9 +26,7 @@
  **********************************************************/
 typedef struct Intro{
 	SDL_Surface  *intro;
-	//SDL_Surface *fade2;
 	SDL_Rect rcIntro;
-	//SDL_Rect rcFade2;
 } Intro;
 
 /**********************************************************
