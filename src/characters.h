@@ -27,6 +27,7 @@ typedef struct DestinationPoint{
 typedef enum AttackType {
 	SLASH,
 	SLASH192,
+	SPELL,
 } AttackType;
 
 typedef struct Character{
@@ -34,6 +35,7 @@ typedef struct Character{
 	SDL_Surface* sprite;
 	SDL_Surface* spriteSlash;
 	SDL_Surface* sprite192Slash;
+	SDL_Surface* spriteSpell; 
 	SDL_Rect	 rcSrc, rcSrcAttack;
 	SDL_Rect     rcDest;
 	
