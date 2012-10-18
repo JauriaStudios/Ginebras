@@ -259,7 +259,7 @@ void CharacterMove(Character *character, Map *map)
 		// Animation
 		character->rcSrc.y = character->moveOrient * SPRITE_SIZE;
 		if(character->skipFrames >= NUM_SKIP_FRAMES) {
-			if (character->moveState == 8)
+			if (character->moveState == 4)
 				character->moveState = 1;
 			else
 				character->moveState++;
@@ -305,7 +305,7 @@ void CharacterSetAttack(Character *character, int type)
 {
 	// Set status attack
 	character->attacking  		= 1;
-	character->actualAttackStep = 0;
+	character->actualAttackStep	= 0;
 	character->attackState  	= 1;
 	character->skipFrames 		= 0;
 	character->attackType 		= type;
@@ -314,7 +314,7 @@ void CharacterSetAttack(Character *character, int type)
 			character->attackSteps = 4;
 			break;
 		case SPELL:
-			character->attackSteps = 6;
+			character->attackSteps = 3;
 			break;
 		case SLASH192:
 			character->attackSteps = 4;
@@ -343,7 +343,7 @@ void CharacterAttack(Character *character)
 		if(character->skipFrames == NUM_SKIP_FRAMES) {
 			if ((character->attackState == 5) && ((character->attackType == SLASH) || (character->attackType == SLASH192)))
 				character->attackState = 1;
-			else if ((character->attackState == 6) && (character->attackType == SPELL))
+			else if ((character->attackState == 4) && (character->attackType == SPELL))
 				character->attackState = 1;	
 			else{
 				character->attackState++;
