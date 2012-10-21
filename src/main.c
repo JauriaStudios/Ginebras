@@ -42,9 +42,43 @@ int modeCursor = 0;
 int gameover   = 0;
 int showGrid   = 0;
 int showInterface = 1;
+int skipIntro = 0;
+int fullScreen = 0;
 
 int main(int argc, char **argv)
 {
+	// handle main arguments
+	if (argc > 1) {
+		int i ;
+		for (i = 1; i < argc; i++) {
+			if (!strcasecmp(argv[i], "--fullscreen")) {
+				fullScreen = 1;
+			}
+			if (!strcasecmp(argv[i], "--skip")) {
+				skipIntro = 1;
+			}
+			if (!strcasecmp(argv[i], "--help")) {
+				printf( "usage: %s --map mapname # not implemented\n", argv[0] );
+				printf( "usage: %s --skip # Skip intro \n", argv[0] );
+				printf( "usage: %s --fullscreen # start in fullscreen mode \n", argv[0] );
+				printf( "usage: %s --help # show this help \n", argv[0] );
+			}
+/*			if (!strcasecmp(argv[i], "framedelay")) {
+				frame_len = atoi(argv[i+1]);
+			}
+			if (!strcasecmp(argv[i], "bmpwrite")) {
+				WriteBitmaps = 1;
+			}
+			if (!strcasecmp(argv[i], "bmpstart")) {
+				WB_StartRange = atoi(argv[i+1]);
+			}
+			if (!strcasecmp(argv[i], "bmpend")) {
+				WB_EndRange = atoi(argv[i+1]);
+			} */
+		}
+	}
+	// end of arguments
+
 	// Variable definition section
 	SDL_Surface *screen, *selector;
 	SDL_Rect rcSelector;
@@ -70,16 +104,20 @@ int main(int argc, char **argv)
 	SDL_WM_SetCaption("The legend of Ginebras - Jauria productions", "Jauria productions");
 	
 	// create window 
-	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF); // SDL_FULLSCREEN
+	if(fullScreen == 1)
+		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF| SDL_FULLSCREEN);
+	else
+		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF);
 	
 	// set keyboard repeat 
 	SDL_EnableKeyRepeat(70, 70); // SDL_DEFAULT_REPEAT_INTERVAL
 	
 	// Game Intro
-	intro = IntroConstructor();
-	IntroDraw(intro, screen);
-	IntroDestructor(intro);
-		
+	if(skipIntro == 0){
+		intro = IntroConstructor();
+		IntroDraw(intro, screen);
+		IntroDestructor(intro);
+	}		
 	// Load background
 	map = MapConstructor(screen, "data/Pueblo60x80.tmx");
 	
@@ -87,7 +125,9 @@ int main(int argc, char **argv)
 	grid = GridConstructor(map->tileWidth, map->tileHeight);
 
 	// Load selector
-	selector = loadImage("data/Selector.png");
+	if(!(selector = loadImage("data/Selector.png"))){
+		printf("Main ERROR: impossible load data/Selector.png\n");
+	}
 
 	// Create game interface
 	interface = InterfaceConstructor(8);
@@ -212,7 +252,14 @@ void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor* curso
 					if(modeCursor) CursorMove(cursor, ORIENT_SOUTH);
 					break;
 				case SDLK_t:
-					SDL_WM_ToggleFullScreen(screen);
+					if (fullScreen == 1){
+						fullScreen = 0;
+						SDL_WM_ToggleFullScreen(screen);
+					}
+					else{
+						fullScreen = 1;
+						SDL_WM_ToggleFullScreen(screen);
+					}
 					break;
 				case SDLK_c:
 					if (modeCursor == 1)

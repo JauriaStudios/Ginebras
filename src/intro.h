@@ -15,7 +15,7 @@
  */
 
 #ifndef _INTRO_H_
-#define _INTRo_H_
+#define _INTRO_H_
 
 #include "SDL.h"
 #include "SDL_image.h"
@@ -25,8 +25,8 @@
  *** STRUCTS
  **********************************************************/
 typedef struct Intro{
-	SDL_Surface  *intro;
-	SDL_Rect rcIntro;
+	SDL_Surface  *intro, *logo1, *logo2, *logo3;
+	SDL_Rect rcIntro, rcLogo1, rcLogo2, rcLogo3;
 } Intro;
 
 /**********************************************************

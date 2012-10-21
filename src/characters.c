@@ -50,11 +50,19 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 
 	sprintf(sprite192Slash, "%s192Slash.png", file);
 	// Load 192 slash sprite 	
-	character->sprite192Slash = loadImage(sprite192Slash);
+	if (!(character->sprite192Slash = loadImage(sprite192Slash))){
+		SDL_FreeSurface(character->sprite);
+		printf("Character constructor ERROR: couldn't load character Slash192 sprite\n");
+		return NULL;
+	}
 
 	sprintf(spriteSpell, "%sSpell.png", file);
 	// Load spell sprite 	
-	character->spriteSpell = loadImage(spriteSpell);
+	if (!(character->spriteSpell = loadImage(spriteSpell))){
+		SDL_FreeSurface(character->sprite);
+		printf("Character constructor ERROR: couldn't load character Spell sprite\n");
+		return NULL;
+	}
 
 	// Set movement
 	character->movement = movement;

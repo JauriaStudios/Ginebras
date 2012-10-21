@@ -23,9 +23,10 @@ Cursor* CursorConstructor(int x0, int y0)
 	Cursor* cursor;
 	cursor = (Cursor *)malloc(sizeof(Cursor));
 	// Load sprites image
-	if ((cursor->sprite = loadImage("data/Cursor.png")) == NULL)
+	if (!(cursor->sprite = loadImage("data/Cursor.png"))){
+		printf("ERROR cursor: couldn't load cursor\n");
 		return NULL;
-	
+	}
 	// Set sprite initial position
 	cursor->rcDest.x = x0 + 16;
 	cursor->rcDest.y = y0 + 32;	
