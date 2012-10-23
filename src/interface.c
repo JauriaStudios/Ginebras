@@ -25,6 +25,20 @@ char *text[] = {"Link",
 				"Mov: 10",
 				"State: none"};
 
+char *menuText[] = {" * Attack", 
+					"   Spells", 
+					"   Items", 
+					"   Defend"};
+
+char *spellsText[] = {" * Fire", 
+					  "   Ice", 
+					  "   Lighthing", 
+					  "   Shield"};
+
+char *itemsText[] = {" * Lol potion", 
+					 "   Mana potion", 
+					 "   Remedy"};
+
 Interface* InterfaceConstructor(int numBoxesW)
 {
 	Interface *this;
