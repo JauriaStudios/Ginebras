@@ -94,7 +94,10 @@ void LayerGetSurface(Layer *layer, Map *map, SDL_Surface *screen)
 	SDL_Surface *alpha;
 	SDL_Rect rcDest, rcSrc;
 
-	alpha = loadImage("data/alpha.png");	
+	// For fill front surface with alpha
+	if(!(alpha = loadImage("data/alpha.png"))){
+		printf("MAP LOAD FAIL: impossible load data/alpha.png file\n");
+	}
 
 	// Window tiles
 	rcSrc.x = 0;
@@ -333,8 +336,7 @@ Map* MapConstructor(SDL_Surface *screen, char *file)
 	// For fill front surface with alpha
 	if(!(alpha = loadImage("data/alpha.png"))){
 		printf("MAP CONSTRUCTOR FAIL: impossible load data/alpha.png file\n");
-		return NULL;
-	}		
+	}
 	
 	// Inits
 	map->numTileSet = 0;
@@ -423,7 +425,9 @@ void MapLoad(Map * map, SDL_Surface *screen, char *file)
 	rcSrcAlpha.h = map->tileHeight;
 	
 	// For fill front surface with alpha
-	alpha = loadImage("data/alpha.png");
+	if(!(alpha = loadImage("data/alpha.png"))){
+		printf("MAP LOAD FAIL: impossible load data/alpha.png file\n");
+	}
 
 	temp = SDL_CreateRGBSurface(SDL_SWSURFACE, map->width * map->tileWidth, map->height * map->tileHeight, 
 									screen->format->BitsPerPixel,

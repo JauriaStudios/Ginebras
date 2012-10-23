@@ -50,8 +50,11 @@ Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text,
 	textbox->font = loadFont("data/font/ChronoTrigger.ttf",20);
 	textbox->fontMono = loadFont("data/font/ChronoTriggerMonospaced.ttf",18);
 
-	// load Images
-	textbox->bgTileset = loadImage("data/windowTileset.png");
+	// load Window tileset
+	if(!(textbox->bgTileset = loadImage("data/windowTileset.png"))){
+		printf("TEXBOX CONSTRUCTOR FAIL: impossible load data/windowTileset.png file\n");
+		return NULL;
+	}
 
 	// define text color
 	textbox->textColor.r = 255;
