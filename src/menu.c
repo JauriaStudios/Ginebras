@@ -16,12 +16,63 @@
 
 #include "menu.h"
 
-Menu* MenuConstructor(char **text)
+/**********************************************************
+ *** PUBLIC METHODS IMPLEMENTATION
+ **********************************************************/
+Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
+{
+	// Variable definition section
+	Menu *this;
+
+	// Alloc memory for root menu
+	this = (Menu *)malloc(sizeof(Menu));
+
+	// Save root menu text
+	this->root = root;
+	
+	// Set end branch
+	this->endBranch = endBranch;
+
+	// Set initial position menu cursor
+	this->position = 0;
+	
+	// Set root rows
+	this->numRows = numRows;
+ 
+	// Alloc memory for submenus vectors
+	this->subMenus = (char ***)malloc(numSubMenus * sizeof(char **));
+
+	return this;
+}
+
+int	MenuAddSubMenu(char **subMenu, int numRows)
+{
+	
+}
+
+void MenuDestructor(Menu *this)
+{
+	free(this->subMenus);
+
+	free(this);
+}
+
+int MenuOk(Menu *this)
 {
 
 }
 
-void MenuDestructor(Menu *this)
+int	MenuBack(Menu *this)
+{
+
+}
+
+int MenuUp(Menu *this)
+{
+
+}
+
+int MenuDown(Menu *this)
 {
 
 }
