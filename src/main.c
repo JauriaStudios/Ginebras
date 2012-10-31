@@ -32,18 +32,20 @@
 #include "textbox.h"
 #include "intro.h"
 #include "grid.h"
+#include "menu.h"
 
 #define FRAMES_PER_SECOND 30
 
-static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map);
+static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map, Menu *menu);
 static Character** vectorCharsGen(int option, int **pos, Map *map);
 
-int modeCursor = 0;
-int gameover   = 0;
-int showGrid   = 0;
+int modeCursor    = 0;
+int gameover      = 0;
+int showGrid      = 0;
 int showInterface = 1;
-int skipIntro = 0;
-int fullScreen = 0;
+int skipIntro     = 0;
+int fullScreen    = 0;
+int modeMenu      = 0;
 
 int main(int argc, char **argv)
 {
@@ -160,7 +162,7 @@ int main(int argc, char **argv)
 
 		// look for an event 
 		if (SDL_PollEvent(&event)) {
-			HandleEvent(event, screen, game, cursor, map);
+			HandleEvent(event, screen, game, cursor, map, interface->menu);
 		}
 				
 		// Map update
@@ -224,7 +226,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor* cursor, Map *map)
+void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *cursor, Map *map, Menu *menu)
 {
 	switch (event.type) {
 		/* close button clicked */
@@ -238,18 +240,22 @@ void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor* curso
 				case SDLK_ESCAPE:
 				case SDLK_q:
 					gameover = 1;
-					break;
+					break;		
 				case SDLK_LEFT:
-					if(modeCursor) CursorMove(cursor, ORIENT_WEST);
+					if(modeMenu) MenuBack(menu); 
+					else if(modeCursor) CursorMove(cursor, ORIENT_WEST);
 					break;
 				case SDLK_RIGHT:
-					if(modeCursor) CursorMove(cursor, ORIENT_EAST);
+					if(modeMenu) MenuOk(menu);
+					else if(modeCursor) CursorMove(cursor, ORIENT_EAST);
 					break;
 				case SDLK_UP:
-					if(modeCursor) CursorMove(cursor, ORIENT_NORTH);
+					if(modeMenu) MenuUp(menu);
+					else if(modeCursor) CursorMove(cursor, ORIENT_NORTH);
 					break;
 				case SDLK_DOWN:
-					if(modeCursor) CursorMove(cursor, ORIENT_SOUTH);
+					if(modeMenu) MenuDown(menu);
+					else if(modeCursor) CursorMove(cursor, ORIENT_SOUTH);
 					break;
 				case SDLK_t:
 					if (fullScreen == 1){
@@ -296,6 +302,12 @@ void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor* curso
 						showInterface = 0;
 					else
 						showInterface = 1;
+					break;
+				case SDLK_m:
+					if (modeMenu == 1)
+						modeMenu = 0;
+					else
+						modeMenu = 1;
 					break;
 				case SDLK_f:
 					if(cursor->free){

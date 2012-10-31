@@ -20,12 +20,18 @@
 #include "list.h"
 #include "textbox.h"
 #include "map.h"
+#include "menu.h"
 
 /**********************************************************
  *** STRUCTS
  **********************************************************/
 typedef struct Interface{
 	struct list_head listBoxesW;
+	Menu *menu;
+	char **text;
+	char **menuText;
+	char **spellsText;
+	char **itemsText;
 } Interface;
 
 /**********************************************************
@@ -35,4 +41,4 @@ extern Interface* InterfaceConstructor(int numBoxesW);
 extern void InterfaceDraw(Interface *this, SDL_Surface *screen);
 extern void InterfaceDestructor(Interface *this);
 
-#endif // _MAP_H_
+#endif // _INTERFACE_H_

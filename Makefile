@@ -24,7 +24,8 @@ CCFLAGS = -O2 -Wall `sdl-config --cflags` -g `xml2-config --cflags`
 #
 OBJS = 	src/main.o src/intro.o src/cursor.o src/characters.o src/timer.o  \
 		src/game.o src/gameUtilities.o src/map.o src/player.o \
-		src/area.o src/textbox.o src/interface.o src/grid.o
+		src/area.o src/textbox.o src/interface.o src/grid.o \
+		src/menu.o
 #
 default:	ginebras
 

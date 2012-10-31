@@ -22,6 +22,7 @@
 #include "SDL_ttf.h"
 #include "list.h"
 #include "gameUtilities.h"
+#include "menu.h"
 
 /**********************************************************
  *** STRUCTS
@@ -40,7 +41,9 @@ typedef struct Textbox{
 	
 	TTF_Font *font;
 	TTF_Font *fontMono;
-	
+
+	Menu *menu;	
+
 	int boxWidth, boxHeight;
 	
 	int rows;
@@ -55,7 +58,7 @@ typedef struct Textbox{
 /**********************************************************
  *** METHODS
  **********************************************************/
-extern Textbox* TextboxConstructor(char *name, int x, int y, int w, int h, char **text, int rows, char *image);
+extern Textbox* TextboxConstructor(char *name, int x, int y, int w, int h, char **text, int rows, char *image, Menu *menu);
 extern void TextboxDestructor(Textbox *textbox);
 extern void TextboxCreateWindow(Textbox * textbox);
 extern void TextboxUpdate(Textbox *textbox, int scrollX, int scrollY);

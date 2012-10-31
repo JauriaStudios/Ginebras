@@ -39,34 +39,88 @@ char *itemsText[] = {" * Lol potion",
 					 "   Mana potion", 
 					 "   Remedy"};
 
+int endBranch[4] = {1, 0, 0, 1}; // this mean that the selected branch has or not has a submenu
+
+char *names[] = {"char0", "char1", "char2", "char3", "char4", "char5", "char6", "char7"};
+
 Interface* InterfaceConstructor(int numBoxesW)
 {
+	// Variable definition section
 	Interface *this;
 	Textbox *box;
+	Menu *menu;
 	int i;
-
-	char *names[] = {"char0", "char1", "char2", "char3", "char4", "char5", "char6", "char7"};
 
 	this = (Interface *)malloc(sizeof(Interface));
 	INIT_LIST_HEAD(&this->listBoxesW);
 
+	// Alloc text
+	this->text = (char**)malloc(sizeof(char*) * 25);
+	for(i = 0; i < 25; i++)
+		this->text[i] = (char*)malloc(sizeof(char) * 10);
+
+	this->menuText = (char**)malloc(sizeof(char*) * 25);
+	for(i = 0; i < 25; i++)
+		this->menuText[i] = (char*)malloc(sizeof(char) * 10);
+
+	this->spellsText = (char**)malloc(sizeof(char*) * 25);
+	for(i = 0; i < 25; i++)
+		this->spellsText[i] = (char*)malloc(sizeof(char) * 10);
+
+	this->itemsText = (char**)malloc(sizeof(char*) * 25);
+	for(i = 0; i < 25; i++)
+		this->itemsText[i] = (char*)malloc(sizeof(char) * 10);
+	
+	// Copy texts
+	for(i = 0; text[i]; i++)
+		strcpy(this->text[i], text[i]);
+	
+	for(i = 0; menuText[i]; i++)
+		strcpy(this->menuText[i], menuText[i]);
+
+	for(i = 0; spellsText[i]; i++)
+		strcpy(this->spellsText[i], spellsText[i]);
+
+	for(i = 0; itemsText[i]; i++)
+		strcpy(this->itemsText[i], itemsText[i]);
+
 	// Create horizontal interface
 	for(i = 0; i < numBoxesW; i++){
 		box = TextboxConstructor(names[i], (SCREEN_WIDTH/numBoxesW) * i, SCREEN_HEIGHT-((SCREEN_HEIGHT/HEIGHT_COEF)+12), 
-										   (SCREEN_WIDTH/numBoxesW)-1, SCREEN_HEIGHT/HEIGHT_COEF, text, 6, NULL);
+										   (SCREEN_WIDTH/numBoxesW)-1, SCREEN_HEIGHT/HEIGHT_COEF, this->text, 6, NULL, NULL);
 		list_add_tail(&box->list, &this->listBoxesW);
 	}
 
 	// Create image textbox
 	box = TextboxConstructor("image", (SCREEN_WIDTH/numBoxesW) * 7, SCREEN_HEIGHT-(2*(SCREEN_HEIGHT/HEIGHT_COEF)+22), 
-									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, "data/viktor135.png");
+									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, "data/viktor135.png", NULL);
 	list_add_tail(&box->list, &this->listBoxesW);
 
+	// Create menu
+	menu = MenuConstructor(this->menuText, 4, endBranch, 4);
+	MenuAddSubMenu(menu, NULL, 0);
+	MenuAddSubMenu(menu, this->spellsText, 4);
+	MenuAddSubMenu(menu, this->itemsText, 3);
+	MenuAddSubMenu(menu, NULL, 0);
+	this->menu = menu;
+	box = TextboxConstructor("menu", (SCREEN_WIDTH/numBoxesW) * 7, SCREEN_HEIGHT-(3*(SCREEN_HEIGHT/HEIGHT_COEF)+32), 
+									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, NULL, menu);
+	list_add_tail(&box->list, &this->listBoxesW);
+	
 	return this;
 }
 
 void InterfaceDestructor(Interface *this)
 {
+	// Variable definition section
+	Textbox *tmp, *tmp2;
+
+	// Free boxes
+	list_for_each_entry_safe(tmp, tmp2, &this->listBoxesW, list) {
+		list_del(&tmp->list);
+		TextboxDestructor(tmp);
+	}
+
 	free(this);
 }
 

@@ -27,7 +27,7 @@ TTF_Font* loadFont(char* file, int ptsize)
 	return tmpfont;
 }
 
-Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text, int rows, char *image)
+Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text, int rows, char *image, Menu *menu)
 {
 	// Variable definition section
 	Textbox * textbox;
@@ -98,6 +98,12 @@ Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text,
 		overSurface(textbox->image, &rcSrcImg, textbox->background, &rcDestImg, 135);
 	}
 
+	// Load menu
+	if(menu){
+		textbox->menu = menu;
+	}else
+		textbox->menu = NULL;
+
 	// Set text
 	textbox->textMsg = text;
 	textbox->rows    = rows;
@@ -123,6 +129,12 @@ int TextboxDraw(Textbox *textbox, SDL_Surface* screen)
 	SDL_Rect rcDest;
 	
 	SDL_BlitSurface(textbox->background, NULL, screen, &textbox->rcDestWindow);
+
+	// Set menu text
+	if(textbox->menu){
+		textbox->textMsg = textbox->menu->actualMenu;
+		textbox->rows = textbox->menu->actualMenuRows;
+	}
 
 	rcDest.x = textbox->rcDestText.x;
 	rcDest.y = textbox->rcDestText.y;

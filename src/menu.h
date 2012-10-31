@@ -17,6 +17,8 @@
 #ifndef _MENU_H_
 #define _MENU_H_
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /**********************************************************
@@ -30,13 +32,23 @@ typedef struct Menu{
 	int  position;
 	int  numRows;
 	int  *numRowsSubMenu;
+	int  countSubMenus;
+	
+	char **actualMenu;
+	int actualMenuRows;
+	
+	char **previusMenu;
+	int previusMenuRows;
+	int previusPosition;
+
+	int isRoot;
 } Menu;
 
 /**********************************************************
  *** METHODS
  **********************************************************/
 extern Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus);
-extern int	 MenuAddSubMenu(char **subMenu, int numRows);
+extern int	 MenuAddSubMenu(Menu *this, char **subMenu, int numRows);
 extern void  MenuDestructor(Menu *this);
 extern int 	 MenuOk(Menu *this);
 extern int	 MenuBack(Menu *this);
