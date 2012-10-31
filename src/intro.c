@@ -43,7 +43,7 @@ Intro* IntroConstructor()
 	
 	
 	this->rcIntro.x = (SCREEN_WIDTH >> 1) - (this->intro->w >> 1);
-	this->rcIntro.y = 0;
+	this->rcIntro.y = (SCREEN_HEIGHT >> 1) - (this->intro->h >> 1);
 
 	this->rcLogo1.x = (SCREEN_WIDTH >> 1) - (this->logo1->w >> 1);
 	this->rcLogo1.y = (SCREEN_HEIGHT >> 1) - (this->logo1->h >> 1);
