@@ -16,20 +16,36 @@
 
 #include "menu.h"
 
+#define MAX_ROWS    10
+#define MAX_ROW_LEN 25
+
 /**********************************************************
  *** PUBLIC METHODS IMPLEMENTATION
  **********************************************************/
-Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
+Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus, int (**handler)(void*), void **data)
 {
 	// Variable definition section
 	Menu *this;
+    int i;
 
 	// Alloc memory for root menu
 	this = (Menu *)malloc(sizeof(Menu));
 
-	// Save root menu text
-	this->root = root;
-	
+    // Alloc root menu text
+	this->root = (char**)malloc(sizeof(char*) * MAX_ROW_LEN);
+	for(i = 0; i < MAX_ROW_LEN; i++)
+		this->root[i] = (char*)malloc(sizeof(char) * MAX_ROWS);
+    
+    // Save the text
+    for(i = 0; root[i]; i++)
+		strcpy(this->root[i], root[i]);
+
+	// Assign callbacks
+	this->MenuRootCallBacks = handler;
+
+	// Assign data callbacks
+	this->menuRootData = data;	
+
 	// Set root rows
 	this->numRows = numRows;
 
@@ -44,7 +60,11 @@ Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
 
 	// Alloc rows number submenus
 	this->numRowsSubMenu = (int *)malloc(numSubMenus *  sizeof(int));
-	
+
+	// Alloc callbacks and their data
+	this->MenuSubCallBacks = calloc(numSubMenus, sizeof(int(**)(void)));
+	this->menuSubData = (void ***)malloc(numSubMenus * sizeof(void **));
+
 	// Set initial position menu cursor
 	this->position = 0;
 
@@ -52,27 +72,43 @@ Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
 	this->countSubMenus = 0;
 
 	// Set actual menu	
-	this->actualMenu = root;
-	this->actualMenuRows = numRows;
-	this->isRoot = 1;	 
+	this->actualMenu = this->root;
+	this->actualMenuRows = this->numRows;
+	this->isRoot = 1;
 
 	return this;
 }
 
-int	MenuAddSubMenu(Menu *this, char **subMenu, int numRows)
+int	MenuAddSubMenu(Menu *this, char **subMenu, int numRows, int (**handler)(void*), void **data)
 {
+    // Variable definition section
+    int i;
+
 	// Check if the menu is not full
 	if(this->countSubMenus >= this->numSubMenus){
 		printf("MenuAddSubMenu ERROR: Sub menu vector is full\n");
 		return -1;
 	}
-	
-	// Set sub menu text
-	this->subMenus[this->countSubMenus] = subMenu;
 
-	// Set number of rows in the sub menu
-	this->numRowsSubMenu[this->countSubMenus] = numRows;
+    if(subMenu){
+        // Alloc submenu
+        this->subMenus[this->countSubMenus] = (char **)malloc(sizeof(char*) * MAX_ROW_LEN);
+        for(i = 0; i < MAX_ROW_LEN; i++)
+            this->subMenus[this->countSubMenus][i] = (char*)malloc(sizeof(char) * MAX_ROWS);
 
+        // Save the text
+        for(i = 0; subMenu[i]; i++)
+		    strcpy(this->subMenus[this->countSubMenus][i], subMenu[i]);
+
+	    // Set number of rows in the sub menu
+	    this->numRowsSubMenu[this->countSubMenus] = numRows;
+
+		// Assign callbacks
+		this->MenuSubCallBacks[this->countSubMenus] = handler;
+
+		// Assign data callbacks
+		this->menuSubData[this->countSubMenus] = data;	
+    }
 	// Increment number of sub menus
 	this->countSubMenus++;
 
@@ -81,6 +117,24 @@ int	MenuAddSubMenu(Menu *this, char **subMenu, int numRows)
 
 void MenuDestructor(Menu *this)
 {
+    // Variable definition section
+    int i, j;
+
+	// Free callbacks
+	free(this->MenuSubCallBacks);
+	free(this->menuSubData);
+
+    // Free Submenus
+    for(i = 0; i < MAX_ROWS; i++)
+        for(j = 0; j < MAX_ROW_LEN; j++)
+            free(this->subMenus[i][j]);
+    free(this->subMenus);        
+
+    // Free root text
+    for(i = 0; i < MAX_ROWS; i++)
+        free(this->root[i]);
+    free(this->root);
+
 	free(this->subMenus);
 	free(this->numRowsSubMenu);
 	free(this);
@@ -88,17 +142,30 @@ void MenuDestructor(Menu *this)
 
 int MenuOk(Menu *this)
 {
-	if(!this->endBranch[this->position] && this->isRoot){
-		this->previusMenu = this->actualMenu;
-		this->previusMenuRows = this->actualMenuRows;
+	if(this->isRoot){
+		if(!this->endBranch[this->position]){
+			this->previusMenu = this->actualMenu;
+			this->previusMenuRows = this->actualMenuRows;
 			
-		this->actualMenu = this->subMenus[this->position];
-		this->actualMenuRows = this->numRowsSubMenu[this->position];
+			this->actualMenu = this->subMenus[this->position];
+			this->actualMenuRows = this->numRowsSubMenu[this->position];
 
-		this->previusPosition = this->position;
-		this->position = 0;
-		this->isRoot = 0;	
+			this->previusPosition = this->position;
+			this->position = 0;
+			this->isRoot = 0;
+		}else{
+			if(this->MenuRootCallBacks[this->position]){
+				// Call callback with the data
+				this->MenuRootCallBacks[this->position](this->menuRootData[this->position]);
+			}
+		}
+	}else{
+		if(this->MenuSubCallBacks[this->previusPosition][this->position]){
+			// Call callback with the data
+			this->MenuSubCallBacks[this->previusPosition][this->position](this->menuRootData[this->position]);
+		}
 	}
+
 	return 0;
 }
 

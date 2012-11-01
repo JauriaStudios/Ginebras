@@ -43,10 +43,30 @@ int endBranch[4] = {1, 0, 0, 1}; // this mean that the selected branch has or no
 
 char *names[] = {"char0", "char1", "char2", "char3", "char4", "char5", "char6", "char7"};
 
-Interface* InterfaceConstructor(int numBoxesW)
+int Attack(void *data)
+{
+	Game *game = (Game *)data;
+	Character *character = game->actualCharacter;
+
+	CharacterSetAttack(character, SLASH192);
+
+	return 0;
+}
+
+int Defend(void *data)
+{
+	Game *game = (Game *)data;
+	Character *character = game->actualCharacter;
+
+	CharacterSetAttack(character, SPELL);
+
+	return 0;
+}
+
+Interface* InterfaceConstructor(int numBoxesW, Game *game)
 {
 	// Variable definition section
-	Interface *this;
+    Interface *this;
 	Textbox *box;
 	Menu *menu;
 	int i;
@@ -54,35 +74,13 @@ Interface* InterfaceConstructor(int numBoxesW)
 	this = (Interface *)malloc(sizeof(Interface));
 	INIT_LIST_HEAD(&this->listBoxesW);
 
-	// Alloc text
+    // Alloc text (development)
 	this->text = (char**)malloc(sizeof(char*) * 25);
 	for(i = 0; i < 25; i++)
-		this->text[i] = (char*)malloc(sizeof(char) * 10);
-
-	this->menuText = (char**)malloc(sizeof(char*) * 25);
-	for(i = 0; i < 25; i++)
-		this->menuText[i] = (char*)malloc(sizeof(char) * 10);
-
-	this->spellsText = (char**)malloc(sizeof(char*) * 25);
-	for(i = 0; i < 25; i++)
-		this->spellsText[i] = (char*)malloc(sizeof(char) * 10);
-
-	this->itemsText = (char**)malloc(sizeof(char*) * 25);
-	for(i = 0; i < 25; i++)
-		this->itemsText[i] = (char*)malloc(sizeof(char) * 10);
+		this->text[i] = (char*)malloc(sizeof(char) * 10);	
 	
-	// Copy texts
 	for(i = 0; text[i]; i++)
 		strcpy(this->text[i], text[i]);
-	
-	for(i = 0; menuText[i]; i++)
-		strcpy(this->menuText[i], menuText[i]);
-
-	for(i = 0; spellsText[i]; i++)
-		strcpy(this->spellsText[i], spellsText[i]);
-
-	for(i = 0; itemsText[i]; i++)
-		strcpy(this->itemsText[i], itemsText[i]);
 
 	// Create horizontal interface
 	for(i = 0; i < numBoxesW; i++){
@@ -96,13 +94,49 @@ Interface* InterfaceConstructor(int numBoxesW)
 									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, "data/viktor135.png", NULL);
 	list_add_tail(&box->list, &this->listBoxesW);
 
+	// Root menu functions
+	this->MenuRootFunc[0] = Attack;
+	this->MenuRootFunc[1] = NULL;
+	this->MenuRootFunc[2] = NULL;
+	this->MenuRootFunc[3] = Defend;
+
+	// Root data functions
+	this->dataRootFunc[0] = game;
+	this->dataRootFunc[1] = NULL;
+	this->dataRootFunc[2] = NULL;
+	this->dataRootFunc[3] = game;
+
+	// Spells menu functions
+	this->MenuSpellsFunc[0] = Attack;
+	this->MenuSpellsFunc[1] = NULL;
+	this->MenuSpellsFunc[2] = NULL;
+	this->MenuSpellsFunc[3] = Defend;
+
+	// Root data functions
+	this->dataSpellsFunc[0] = game;
+	this->dataSpellsFunc[1] = NULL;
+	this->dataSpellsFunc[2] = NULL;
+	this->dataSpellsFunc[3] = game;
+
+	// Root menu functions
+	this->MenuItemsFunc[0] = Attack;
+	this->MenuItemsFunc[1] = NULL;
+	this->MenuItemsFunc[2] = NULL;
+
+	// Root data functions
+	this->dataItemsFunc[0] = game;
+	this->dataItemsFunc[1] = NULL;
+	this->dataItemsFunc[2] = NULL;
+
 	// Create menu
-	menu = MenuConstructor(this->menuText, 4, endBranch, 4);
-	MenuAddSubMenu(menu, NULL, 0);
-	MenuAddSubMenu(menu, this->spellsText, 4);
-	MenuAddSubMenu(menu, this->itemsText, 3);
-	MenuAddSubMenu(menu, NULL, 0);
+    menu = MenuConstructor(menuText, 4,endBranch, 4, this->MenuRootFunc, this->dataRootFunc);
+	MenuAddSubMenu(menu, NULL, 0, NULL, NULL);
+	MenuAddSubMenu(menu, spellsText, 4, this->MenuSpellsFunc, this->dataSpellsFunc);
+	MenuAddSubMenu(menu, itemsText, 3, this->MenuItemsFunc, this->dataItemsFunc);
+	MenuAddSubMenu(menu, NULL, 0, NULL, NULL);
 	this->menu = menu;
+
+	// Construt the menu text box
 	box = TextboxConstructor("menu", (SCREEN_WIDTH/numBoxesW) * 7, SCREEN_HEIGHT-(3*(SCREEN_HEIGHT/HEIGHT_COEF)+32), 
 									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, NULL, menu);
 	list_add_tail(&box->list, &this->listBoxesW);

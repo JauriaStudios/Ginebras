@@ -140,9 +140,6 @@ int main(int argc, char **argv)
 		printf("Main ERROR: impossible load data/Selector.png\n");
 	}
 
-	// Create game interface
-	interface = InterfaceConstructor(8);
-
 	// Generate character vector (provisional sólo para desarrollo)
 	vectorChar1 = vectorCharsGen(1, map->charPosition, map);
 	vectorChar2 = vectorCharsGen(2, map->charPosition, map);
@@ -153,6 +150,9 @@ int main(int argc, char **argv)
 
 	// Create game
 	game = GameConstructor(player1, player2);
+
+	// Create game interface
+	interface = InterfaceConstructor(8, game);
 
 	// Create a cursor
 	cursor = CursorConstructor(game->actualCharacter->rcDest.x, game->actualCharacter->rcDest.y);	
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 		// Start the timer
 		TimerStart(timer);
 
-		// look for an event 
+		// Look for an event 
 		if (SDL_PollEvent(&event)) {
 			HandleEvent(event, screen, game, cursor, map, interface->menu);
 		}

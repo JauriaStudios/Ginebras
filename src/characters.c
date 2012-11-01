@@ -21,7 +21,7 @@ typedef enum OrientCollision {
 	NORTH_EAST,
 	SOUTH_WEST,
 	SOUTH_EAST,
-}OrientCollision;
+} OrientCollision;
 
 Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos)
 {
@@ -73,6 +73,9 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 		return NULL;
 	}
 	
+    // Set initial state
+    character->state = MOVING;
+
 	// Set sprite initial position
 	character->rcDest.x = x0;
 	character->rcDest.y = y0;
@@ -309,7 +312,7 @@ void CharacterDraw(Character* character, SDL_Surface* screen, Map *map)
 		SDL_BlitSurface(character->sprite, &character->rcSrc, map->surfaceBack, &character->rcDest);	
 }
 
-void CharacterSetAttack(Character *character, int type)
+void CharacterSetAttack(Character *character, AttackType type)
 {
 	// Set status attack
 	character->attacking  		= 1;
@@ -367,4 +370,16 @@ void CharacterAttack(Character *character)
 	}
 	character->rcSrcAttack.x = character->attackState * spriteSize;
 	
+}
+
+void CharacterUpdate(Character *character)
+{
+    switch(character->state){
+        case MOVING:
+            break;
+        case ATTACKING:
+            break;
+        default:
+            break;
+    }
 }
