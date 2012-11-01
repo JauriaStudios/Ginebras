@@ -312,7 +312,7 @@ void CharacterDraw(Character* character, SDL_Surface* screen, Map *map)
 		SDL_BlitSurface(character->sprite, &character->rcSrc, map->surfaceBack, &character->rcDest);	
 }
 
-void CharacterSetAttack(Character *character, int type)
+void CharacterSetAttack(Character *character, AttackType type)
 {
 	// Set status attack
 	character->attacking  		= 1;
@@ -370,4 +370,16 @@ void CharacterAttack(Character *character)
 	}
 	character->rcSrcAttack.x = character->attackState * spriteSize;
 	
+}
+
+void CharacterUpdate(Character *character)
+{
+    switch(character->state){
+        case MOVING:
+            break;
+        case ATTACKING:
+            break;
+        default:
+            break;
+    }
 }

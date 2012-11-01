@@ -22,7 +22,7 @@
 /**********************************************************
  *** PUBLIC METHODS IMPLEMENTATION
  **********************************************************/
-Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
+Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus, int (**handler)(void*), void **data)
 {
 	// Variable definition section
 	Menu *this;
@@ -40,6 +40,12 @@ Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
     for(i = 0; root[i]; i++)
 		strcpy(this->root[i], root[i]);
 
+	// Assign callbacks
+	this->MenuRootCallBacks = handler;
+
+	// Assign data callbacks
+	this->menuRootData = data;	
+
 	// Set root rows
 	this->numRows = numRows;
 
@@ -54,7 +60,11 @@ Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
 
 	// Alloc rows number submenus
 	this->numRowsSubMenu = (int *)malloc(numSubMenus *  sizeof(int));
-	
+
+	// Alloc callbacks and their data
+	this->MenuSubCallBacks = calloc(numSubMenus, sizeof(int(**)(void)));
+	this->menuSubData = (void ***)malloc(numSubMenus * sizeof(void **));
+
 	// Set initial position menu cursor
 	this->position = 0;
 
@@ -69,7 +79,7 @@ Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
 	return this;
 }
 
-int	MenuAddSubMenu(Menu *this, char **subMenu, int numRows)
+int	MenuAddSubMenu(Menu *this, char **subMenu, int numRows, int (**handler)(void*), void **data)
 {
     // Variable definition section
     int i;
@@ -92,6 +102,12 @@ int	MenuAddSubMenu(Menu *this, char **subMenu, int numRows)
 
 	    // Set number of rows in the sub menu
 	    this->numRowsSubMenu[this->countSubMenus] = numRows;
+
+		// Assign callbacks
+		this->MenuSubCallBacks[this->countSubMenus] = handler;
+
+		// Assign data callbacks
+		this->menuSubData[this->countSubMenus] = data;	
     }
 	// Increment number of sub menus
 	this->countSubMenus++;
@@ -103,6 +119,10 @@ void MenuDestructor(Menu *this)
 {
     // Variable definition section
     int i, j;
+
+	// Free callbacks
+	free(this->MenuSubCallBacks);
+	free(this->menuSubData);
 
     // Free Submenus
     for(i = 0; i < MAX_ROWS; i++)
@@ -122,17 +142,30 @@ void MenuDestructor(Menu *this)
 
 int MenuOk(Menu *this)
 {
-	if(!this->endBranch[this->position] && this->isRoot){
-		this->previusMenu = this->actualMenu;
-		this->previusMenuRows = this->actualMenuRows;
+	if(this->isRoot){
+		if(!this->endBranch[this->position]){
+			this->previusMenu = this->actualMenu;
+			this->previusMenuRows = this->actualMenuRows;
 			
-		this->actualMenu = this->subMenus[this->position];
-		this->actualMenuRows = this->numRowsSubMenu[this->position];
+			this->actualMenu = this->subMenus[this->position];
+			this->actualMenuRows = this->numRowsSubMenu[this->position];
 
-		this->previusPosition = this->position;
-		this->position = 0;
-		this->isRoot = 0;	
+			this->previusPosition = this->position;
+			this->position = 0;
+			this->isRoot = 0;
+		}else{
+			if(this->MenuRootCallBacks[this->position]){
+				// Call callback with the data
+				this->MenuRootCallBacks[this->position](this->menuRootData[this->position]);
+			}
+		}
+	}else{
+		if(this->MenuSubCallBacks[this->previusPosition][this->position]){
+			// Call callback with the data
+			this->MenuSubCallBacks[this->previusPosition][this->position](this->menuRootData[this->position]);
+		}
 	}
+
 	return 0;
 }
 

@@ -21,6 +21,9 @@
 #include "textbox.h"
 #include "map.h"
 #include "menu.h"
+#include "game.h"
+
+#define MAX_MENU_FUNC 4
 
 /**********************************************************
  *** STRUCTS
@@ -29,12 +32,25 @@ typedef struct Interface{
 	struct list_head listBoxesW;
 	Menu *menu;
 	char **text;
+
+	// Functions root menu
+	int (*MenuRootFunc[MAX_MENU_FUNC])(void *data);
+	Game *dataRootFunc[MAX_MENU_FUNC];
+
+	// Functions spell menu
+	int (*MenuSpellsFunc[MAX_MENU_FUNC])(void *data);
+	Game *dataSpellsFunc[MAX_MENU_FUNC];
+
+	// Functions menu root
+	int (*MenuItemsFunc[MAX_MENU_FUNC])(void *data);
+	Game *dataItemsFunc[MAX_MENU_FUNC];
+
 } Interface;
 
 /**********************************************************
  *** METHODS
  **********************************************************/
-extern Interface* InterfaceConstructor(int numBoxesW);
+extern Interface* InterfaceConstructor(int numBoxesW, Game *game);
 extern void InterfaceDraw(Interface *this, SDL_Surface *screen);
 extern void InterfaceDestructor(Interface *this);
 

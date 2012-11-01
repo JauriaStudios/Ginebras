@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_CB  4
+
 /**********************************************************
  *** STRUCTS
  **********************************************************/
@@ -42,13 +44,21 @@ typedef struct Menu{
 	int previusPosition;
 
 	int isRoot;
+
+    // Callbacks
+    int (**MenuRootCallBacks)(void *data);
+    int (***MenuSubCallBacks)(void *data);
+
+    // Data callbacks
+    void **menuRootData;
+    void ***menuSubData;
 } Menu;
 
 /**********************************************************
  *** METHODS
  **********************************************************/
-extern Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus);
-extern int	 MenuAddSubMenu(Menu *this, char **subMenu, int numRows);
+extern Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus, int (**handler)(void*), void **data);
+extern int	 MenuAddSubMenu(Menu *this, char **subMenu, int numRows, int (**handler)(void*), void **data);
 extern void  MenuDestructor(Menu *this);
 extern int 	 MenuOk(Menu *this);
 extern int	 MenuBack(Menu *this);

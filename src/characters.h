@@ -91,7 +91,7 @@ typedef struct Character{
 	int actualAttackStep;
 	int attacking;
 	int attackState; // 1, 2 ... 5 ; 0 stop
-	int attackType;
+	AttackType attackType;
 
 	// Collisions
 	int collisionX;
@@ -109,7 +109,8 @@ extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor, Map *map);
 extern void CharacterMove(Character *character, Map *map);
 extern void CharacterDraw(Character* character, SDL_Surface* screen, Map *map);
-extern void CharacterSetAttack(Character *character, int type);
+extern void CharacterSetAttack(Character *character, AttackType type);
 extern void CharacterAttack(Character* character);
+extern void CharacterUpdate(Character* character);
 
 #endif //_CHARACTER_H_
