@@ -74,8 +74,6 @@ void IntroDraw(Intro *this, SDL_Surface *screen)
 	tmpSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
 	blackFade = SDL_CreateRGBSurface(SDL_SWSURFACE, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
 
-	SDL_Delay(1000);
-
 	SDL_BlitSurface(this->logo1, NULL, tmpSurface, &this->rcLogo1);
 	fadeScreen(tmpSurface, 1000);
 
@@ -85,10 +83,10 @@ void IntroDraw(Intro *this, SDL_Surface *screen)
 	SDL_BlitSurface(this->logo3, NULL, tmpSurface, &this->rcLogo3);
 	fadeScreen(tmpSurface, 1000);
 
-	fadeScreen(blackFade, 1200);
+	fadeScreen(blackFade, 1800);
 
 	SDL_BlitSurface(this->intro, NULL, tmpSurface, &this->rcIntro);
-	fadeScreen(tmpSurface, 2000);
+	fadeScreen(tmpSurface, 4000);
 
 	SDL_FreeSurface(tmpSurface);
 	SDL_FreeSurface(blackFade);	
