@@ -29,9 +29,6 @@ typedef struct Interface{
 	struct list_head listBoxesW;
 	Menu *menu;
 	char **text;
-	char **menuText;
-	char **spellsText;
-	char **itemsText;
 } Interface;
 
 /**********************************************************

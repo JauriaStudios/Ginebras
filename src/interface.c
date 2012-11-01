@@ -46,7 +46,7 @@ char *names[] = {"char0", "char1", "char2", "char3", "char4", "char5", "char6", 
 Interface* InterfaceConstructor(int numBoxesW)
 {
 	// Variable definition section
-	Interface *this;
+    Interface *this;
 	Textbox *box;
 	Menu *menu;
 	int i;
@@ -54,35 +54,13 @@ Interface* InterfaceConstructor(int numBoxesW)
 	this = (Interface *)malloc(sizeof(Interface));
 	INIT_LIST_HEAD(&this->listBoxesW);
 
-	// Alloc text
+    // Alloc text (development)
 	this->text = (char**)malloc(sizeof(char*) * 25);
 	for(i = 0; i < 25; i++)
-		this->text[i] = (char*)malloc(sizeof(char) * 10);
-
-	this->menuText = (char**)malloc(sizeof(char*) * 25);
-	for(i = 0; i < 25; i++)
-		this->menuText[i] = (char*)malloc(sizeof(char) * 10);
-
-	this->spellsText = (char**)malloc(sizeof(char*) * 25);
-	for(i = 0; i < 25; i++)
-		this->spellsText[i] = (char*)malloc(sizeof(char) * 10);
-
-	this->itemsText = (char**)malloc(sizeof(char*) * 25);
-	for(i = 0; i < 25; i++)
-		this->itemsText[i] = (char*)malloc(sizeof(char) * 10);
+		this->text[i] = (char*)malloc(sizeof(char) * 10);	
 	
-	// Copy texts
 	for(i = 0; text[i]; i++)
 		strcpy(this->text[i], text[i]);
-	
-	for(i = 0; menuText[i]; i++)
-		strcpy(this->menuText[i], menuText[i]);
-
-	for(i = 0; spellsText[i]; i++)
-		strcpy(this->spellsText[i], spellsText[i]);
-
-	for(i = 0; itemsText[i]; i++)
-		strcpy(this->itemsText[i], itemsText[i]);
 
 	// Create horizontal interface
 	for(i = 0; i < numBoxesW; i++){
@@ -97,10 +75,10 @@ Interface* InterfaceConstructor(int numBoxesW)
 	list_add_tail(&box->list, &this->listBoxesW);
 
 	// Create menu
-	menu = MenuConstructor(this->menuText, 4, endBranch, 4);
+    menu = MenuConstructor(menuText, 4,endBranch, 4);
 	MenuAddSubMenu(menu, NULL, 0);
-	MenuAddSubMenu(menu, this->spellsText, 4);
-	MenuAddSubMenu(menu, this->itemsText, 3);
+	MenuAddSubMenu(menu, spellsText, 4);
+	MenuAddSubMenu(menu, itemsText, 3);
 	MenuAddSubMenu(menu, NULL, 0);
 	this->menu = menu;
 	box = TextboxConstructor("menu", (SCREEN_WIDTH/numBoxesW) * 7, SCREEN_HEIGHT-(3*(SCREEN_HEIGHT/HEIGHT_COEF)+32), 

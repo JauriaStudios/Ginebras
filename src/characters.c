@@ -21,7 +21,7 @@ typedef enum OrientCollision {
 	NORTH_EAST,
 	SOUTH_WEST,
 	SOUTH_EAST,
-}OrientCollision;
+} OrientCollision;
 
 Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos)
 {
@@ -73,6 +73,9 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 		return NULL;
 	}
 	
+    // Set initial state
+    character->state = MOVING;
+
 	// Set sprite initial position
 	character->rcDest.x = x0;
 	character->rcDest.y = y0;

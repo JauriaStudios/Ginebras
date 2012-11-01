@@ -46,6 +46,11 @@ typedef enum AttackType {
 	SPELL,
 } AttackType;
 
+typedef enum CharacterState {
+    MOVING,
+    ATTACKING,
+} CharacterState;
+
 typedef struct Character{
 
 	SDL_Surface* sprite;
@@ -61,7 +66,10 @@ typedef struct Character{
 	struct list_head list;
 	struct list_head listSort;
 
-	// move
+    // State
+    CharacterState state;
+	
+    // Move
 	Area *moveArea;
 	int movement;
 	unsigned moving;

@@ -16,6 +16,9 @@
 
 #include "menu.h"
 
+#define MAX_ROWS    10
+#define MAX_ROW_LEN 25
+
 /**********************************************************
  *** PUBLIC METHODS IMPLEMENTATION
  **********************************************************/
@@ -23,13 +26,20 @@ Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
 {
 	// Variable definition section
 	Menu *this;
+    int i;
 
 	// Alloc memory for root menu
 	this = (Menu *)malloc(sizeof(Menu));
 
-	// Save root menu text
-	this->root = root;
-	
+    // Alloc root menu text
+	this->root = (char**)malloc(sizeof(char*) * MAX_ROW_LEN);
+	for(i = 0; i < MAX_ROW_LEN; i++)
+		this->root[i] = (char*)malloc(sizeof(char) * MAX_ROWS);
+    
+    // Save the text
+    for(i = 0; root[i]; i++)
+		strcpy(this->root[i], root[i]);
+
 	// Set root rows
 	this->numRows = numRows;
 
@@ -52,27 +62,37 @@ Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus)
 	this->countSubMenus = 0;
 
 	// Set actual menu	
-	this->actualMenu = root;
-	this->actualMenuRows = numRows;
-	this->isRoot = 1;	 
+	this->actualMenu = this->root;
+	this->actualMenuRows = this->numRows;
+	this->isRoot = 1;
 
 	return this;
 }
 
 int	MenuAddSubMenu(Menu *this, char **subMenu, int numRows)
 {
+    // Variable definition section
+    int i;
+
 	// Check if the menu is not full
 	if(this->countSubMenus >= this->numSubMenus){
 		printf("MenuAddSubMenu ERROR: Sub menu vector is full\n");
 		return -1;
 	}
-	
-	// Set sub menu text
-	this->subMenus[this->countSubMenus] = subMenu;
 
-	// Set number of rows in the sub menu
-	this->numRowsSubMenu[this->countSubMenus] = numRows;
+    if(subMenu){
+        // Alloc submenu
+        this->subMenus[this->countSubMenus] = (char **)malloc(sizeof(char*) * MAX_ROW_LEN);
+        for(i = 0; i < MAX_ROW_LEN; i++)
+            this->subMenus[this->countSubMenus][i] = (char*)malloc(sizeof(char) * MAX_ROWS);
 
+        // Save the text
+        for(i = 0; subMenu[i]; i++)
+		    strcpy(this->subMenus[this->countSubMenus][i], subMenu[i]);
+
+	    // Set number of rows in the sub menu
+	    this->numRowsSubMenu[this->countSubMenus] = numRows;
+    }
 	// Increment number of sub menus
 	this->countSubMenus++;
 
@@ -81,6 +101,20 @@ int	MenuAddSubMenu(Menu *this, char **subMenu, int numRows)
 
 void MenuDestructor(Menu *this)
 {
+    // Variable definition section
+    int i, j;
+
+    // Free Submenus
+    for(i = 0; i < MAX_ROWS; i++)
+        for(j = 0; j < MAX_ROW_LEN; j++)
+            free(this->subMenus[i][j]);
+    free(this->subMenus);        
+
+    // Free root text
+    for(i = 0; i < MAX_ROWS; i++)
+        free(this->root[i]);
+    free(this->root);
+
 	free(this->subMenus);
 	free(this->numRowsSubMenu);
 	free(this);
