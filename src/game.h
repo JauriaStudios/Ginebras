@@ -26,11 +26,12 @@ typedef struct Game {
 	struct list_head listCharacters;
 	Character *actualCharacter;
 	Player *player1, *player2;
+	Map *map;
 	int numChar;
 	int numChecks;
 } Game;
 
-extern Game* GameConstructor(Player *player1, Player *player2);
+extern Game* GameConstructor(Player *player1, Player *player2, Map *map);
 extern int GameMoveCharacters(Game *game, Map *map);
 extern int GameDrawCharacters(Game *game, SDL_Surface *screen, Map *map);
 extern void GameDestructor(Game *game);

@@ -80,3 +80,30 @@ void AreaDraw(Area *this, Map *map, Cursor *cursor)
 		}
 	}
 }
+
+int** AreaGetShade(int radius)
+{
+	// Variable definition section
+	int **shade;
+	int sizeSide = 2*radius + 1;
+	int i, j;
+
+	// Alloc move allowed area for the cursor
+	shade = (int **)malloc(sizeof(int*) * sizeSide);
+	for(i = 0; i < sizeSide; i++)
+		shade[i] = (int *)malloc(sizeof(int) * sizeSide);
+	
+	// Set matrix
+	for(i = 0; i < sizeSide; i++){
+		for(j = 0; j < sizeSide; j++){
+			if((j >= radius - i) && (j <= radius + i) && (i <= radius))
+				shade[i][j] = 1;
+			else if((j >= radius - ((sizeSide-1) - i)) && (j <= radius + ((sizeSide-1) - i)) && (i > radius))
+				shade[i][j] = 1;
+			else
+				shade[i][j] = 0;
+		}
+	}
+
+	return shade;
+}

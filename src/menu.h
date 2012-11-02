@@ -45,6 +45,8 @@ typedef struct Menu{
 
 	int isRoot;
 
+	int visible;
+
     // Callbacks
     int (**MenuRootCallBacks)(void *data);
     int (***MenuSubCallBacks)(void *data);

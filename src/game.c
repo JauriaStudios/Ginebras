@@ -16,7 +16,7 @@
 
 #include "game.h"
 
-Game* GameConstructor(Player *player1, Player *player2)
+Game* GameConstructor(Player *player1, Player *player2, Map *map)
 {
 	// Variable definition section
 	Game *game;
@@ -28,6 +28,7 @@ Game* GameConstructor(Player *player1, Player *player2)
 	// Alloc game
 	game = (Game *)malloc(sizeof(Game));
 	
+	game ->map = map;
 	// Alloc player1 and player2 characters
 	charVector = (Character**)malloc(sizeof(Character *) * (numChars));
 

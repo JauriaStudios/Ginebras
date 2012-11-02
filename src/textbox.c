@@ -109,6 +109,7 @@ Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text,
 	textbox->rows    = rows;
 	INIT_LIST_HEAD(&textbox->list);
 
+	textbox->visible = 1;
 	return textbox;
 }
 
@@ -127,26 +128,30 @@ int TextboxDraw(Textbox *textbox, SDL_Surface* screen)
 	int i;
 	SDL_Surface *message = NULL;
 	SDL_Rect rcDest;
-	
-	SDL_BlitSurface(textbox->background, NULL, screen, &textbox->rcDestWindow);
+
 
 	// Set menu text
 	if(textbox->menu){
 		textbox->textMsg = textbox->menu->actualMenu;
 		textbox->rows = textbox->menu->actualMenuRows;
+		textbox->visible = textbox->menu->visible;
 	}
 
-	rcDest.x = textbox->rcDestText.x;
-	rcDest.y = textbox->rcDestText.y;
-	for(i = 0; (i < textbox->rows) && textbox->textMsg; i++){
-		message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg[i], textbox->textColor);
-		if(!message){
-			printf("TextBoxDraw ERROR: impossible draw %d line, does not exist\n", i);
-			return -1;
+	if(textbox->visible){
+		SDL_BlitSurface(textbox->background, NULL, screen, &textbox->rcDestWindow);
+
+		rcDest.x = textbox->rcDestText.x;
+		rcDest.y = textbox->rcDestText.y;
+		for(i = 0; (i < textbox->rows) && textbox->textMsg; i++){
+			message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg[i], textbox->textColor);
+			if(!message){
+				printf("TextBoxDraw ERROR: impossible draw %d line, does not exist\n", i);
+				return -1;
+			}
+			rcDest.y += 20;
+			SDL_BlitSurface(message, NULL, screen, &rcDest);
+			SDL_FreeSurface(message);
 		}
-		rcDest.y += 20;
-		SDL_BlitSurface(message, NULL, screen, &rcDest);
-		SDL_FreeSurface(message);
 	}
 
 	return 0;

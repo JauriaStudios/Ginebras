@@ -23,7 +23,7 @@ typedef enum OrientCollision {
 	SOUTH_EAST,
 } OrientCollision;
 
-Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos)
+Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int attackRadius)
 {
 	Character* character;
 	character = (Character *)malloc(sizeof(Character));
@@ -120,9 +120,11 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	character->rcSrcAttack.w = SPRITE_SIZE;
 	character->rcSrcAttack.h = SPRITE_SIZE;
 	
+	// Set attack atributes
 	character->attackState = 0;
 	character->attacking = 0;
 	character->actualAttackStep = 0;
+	character->attackRadius = attackRadius;
 
 	return character;
 }
@@ -151,6 +153,7 @@ void CharacterSetDestination(Character* character, Cursor* cursor, Map *map)
 	
 	// Set status move
 	character->moving     = 1;
+	character->state	  = MOVING;
 	character->actualStep = 0;
 	character->moveState  = 1;
 	character->moveSteps  = 0;
@@ -214,6 +217,13 @@ void CharacterSetDestination(Character* character, Cursor* cursor, Map *map)
 		character->moveX[character->moveSteps-1] = cursor->rcDest.x - 16;
 		character->moveY[character->moveSteps-1] = cursor->rcDest.y - 32;
 	}
+}
+
+void CharacterGetCoor(Character *character, int *x, int *y)
+{
+	// Get character coordenate
+	GetCoor(character->rcDest.x +16, character->rcDest.y +32, 
+			x, y);
 }
 
 void CharacterMove(Character *character, Map *map)
@@ -281,6 +291,7 @@ void CharacterMove(Character *character, Map *map)
 fin:
 		character->moveState = 0;
 		character->moving = 0;
+		character->state = STOP;
 		
 		// Set to 0 character position
 		GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
@@ -316,6 +327,7 @@ void CharacterSetAttack(Character *character, AttackType type)
 {
 	// Set status attack
 	character->attacking  		= 1;
+	character->state			= ATTACKING;
 	character->actualAttackStep	= 0;
 	character->attackState  	= 1;
 	character->skipFrames 		= 0;
@@ -367,19 +379,45 @@ void CharacterAttack(Character *character)
 	}else{
 		character->attackState = 0;
 		character->attacking = 0;
+		character->state = STOP;
 	}
 	character->rcSrcAttack.x = character->attackState * spriteSize;
 	
 }
 
-void CharacterUpdate(Character *character)
+int CharacterCheckEnemy(Character *character, Map *map, int radius)
 {
-    switch(character->state){
-        case MOVING:
-            break;
-        case ATTACKING:
-            break;
-        default:
-            break;
-    }
+	// Variable definition section
+	int i, j, x, y, charX, charY;
+	int **shade;
+	int sideLen = 2*radius+1;
+
+	// Get character position
+	CharacterGetCoor(character, &charX, &charY);
+
+	shade = AreaGetShade(radius);
+
+	x = charX - radius;
+	y = charY - radius;
+
+	// Seach an enemy in the attack area
+	for(i = 0; i < sideLen; i++){
+		for(j = 0; j < sideLen; j++){
+			if(map->charPosition[y+i][x+j] && shade[i][j] && (i != radius || j != radius)){
+				// Free Submenus
+    			for(i = 0; i < sideLen; i++)
+    				free(shade[i]);
+    			free(shade);
+				return 1;
+			}
+		}
+	}
+
+	 // Free Submenus
+    for(i = 0; i < sideLen; i++)
+    	free(shade[i]);
+    free(shade);
+
+	return 0;
 }
+

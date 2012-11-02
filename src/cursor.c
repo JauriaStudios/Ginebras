@@ -116,9 +116,9 @@ void CursorSetCollisionArea(Cursor *cursor, int area)
 				cursor->collisionArea[i][j] = 1;
 			else
 				cursor->collisionArea[i][j] = 0;
-			printf("%d ", cursor->collisionArea[i][j]);
+			//printf("%d ", cursor->collisionArea[i][j]);
 		}
-		printf("\n");
+		//printf("\n");
 	}
 
 /*
