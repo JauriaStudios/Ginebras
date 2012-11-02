@@ -44,6 +44,8 @@ typedef struct Textbox{
 
 	Menu *menu;	
 
+	int visible;
+
 	int boxWidth, boxHeight;
 	
 	int rows;

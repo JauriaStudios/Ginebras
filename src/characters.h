@@ -47,6 +47,7 @@ typedef enum AttackType {
 } AttackType;
 
 typedef enum CharacterState {
+	STOP,
     MOVING,
     ATTACKING,
 } CharacterState;
@@ -91,6 +92,7 @@ typedef struct Character{
 	int actualAttackStep;
 	int attacking;
 	int attackState; // 1, 2 ... 5 ; 0 stop
+	int attackRadius;
 	AttackType attackType;
 
 	// Collisions
@@ -104,13 +106,14 @@ typedef struct Character{
 /**********************************************************
  **** METHODS 
  **********************************************************/
-extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos);
+extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int areaRadius);
 extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor, Map *map);
 extern void CharacterMove(Character *character, Map *map);
 extern void CharacterDraw(Character* character, SDL_Surface* screen, Map *map);
 extern void CharacterSetAttack(Character *character, AttackType type);
 extern void CharacterAttack(Character* character);
-extern void CharacterUpdate(Character* character);
+extern void CharacterGetCoor(Character *character, int *x, int *y);
+extern int  CharacterCheckEnemy(Character *character, Map *map, int radius);
 
 #endif //_CHARACTER_H_

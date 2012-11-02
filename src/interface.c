@@ -48,7 +48,8 @@ int Attack(void *data)
 	Game *game = (Game *)data;
 	Character *character = game->actualCharacter;
 
-	CharacterSetAttack(character, SLASH192);
+	if(CharacterCheckEnemy(game->actualCharacter, game->map, 1))
+		CharacterSetAttack(character, SLASH192);
 
 	return 0;
 }
@@ -73,6 +74,8 @@ Interface* InterfaceConstructor(int numBoxesW, Game *game)
 
 	this = (Interface *)malloc(sizeof(Interface));
 	INIT_LIST_HEAD(&this->listBoxesW);
+
+	this->showMenu = 0;
 
     // Alloc text (development)
 	this->text = (char**)malloc(sizeof(char*) * 25);
@@ -134,11 +137,13 @@ Interface* InterfaceConstructor(int numBoxesW, Game *game)
 	MenuAddSubMenu(menu, spellsText, 4, this->MenuSpellsFunc, this->dataSpellsFunc);
 	MenuAddSubMenu(menu, itemsText, 3, this->MenuItemsFunc, this->dataItemsFunc);
 	MenuAddSubMenu(menu, NULL, 0, NULL, NULL);
+	menu->visible = 0;
 	this->menu = menu;
-
+	
 	// Construt the menu text box
 	box = TextboxConstructor("menu", (SCREEN_WIDTH/numBoxesW) * 7, SCREEN_HEIGHT-(3*(SCREEN_HEIGHT/HEIGHT_COEF)+32), 
 									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, NULL, menu);
+	box->visible = 0;
 	list_add_tail(&box->list, &this->listBoxesW);
 	
 	return this;

@@ -42,7 +42,7 @@
 static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map, Menu *menu);
 static Character** vectorCharsGen(int option, int **pos, Map *map);
 
-int modeCursor    = 0;
+int modeCursor    = 1;
 int gameover      = 0;
 int showGrid      = 0;
 int showInterface = 1;
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 	player2 = PlayerConstructor(vectorChar2, 4);
 
 	// Create game
-	game = GameConstructor(player1, player2);
+	game = GameConstructor(player1, player2, map);
 
 	// Create game interface
 	interface = InterfaceConstructor(8, game);
@@ -316,10 +316,13 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 						showInterface = 1;
 					break;
 				case SDLK_m:
-					if (modeMenu == 1)
+					if (modeMenu == 1){
 						modeMenu = 0;
-					else
+						menu->visible = 0;
+					}else{
 						modeMenu = 1;
+						menu->visible = 1;
+					}
 					break;
 				case SDLK_f:
 					if(cursor->free){
@@ -364,56 +367,56 @@ Character** vectorCharsGen(int option, int **pos, Map *map)
 
 	if(option == 1){
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/bone", ORIENT_SOUTH, 16*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 7, 3, pos))) {
+		if( !(character = CharacterConstructor("data/character/bone", ORIENT_SOUTH, 16*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 7, 3, pos, 1))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/chain", ORIENT_SOUTH, 14*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 6, 4, pos))){
+		if( !(character = CharacterConstructor("data/character/chain", ORIENT_SOUTH, 14*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 6, 4, pos, 1))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/hat", ORIENT_SOUTH, 12*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 5, 5, pos))) {
+		if( !(character = CharacterConstructor("data/character/hat", ORIENT_SOUTH, 12*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 5, 5, pos, 1))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/leather", ORIENT_SOUTH, 10*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 2, 6, pos))) {
+		if( !(character = CharacterConstructor("data/character/leather", ORIENT_SOUTH, 10*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 2, 6, pos, 1))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[3] = character;
 	}else {
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/TurBoss", ORIENT_NORTH, 15*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 7, 20, pos))) {
+		if( !(character = CharacterConstructor("data/character/TurBoss", ORIENT_NORTH, 15*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 7, 20, pos, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/link", ORIENT_NORTH, 13*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 6, 2, pos))){
+		if( !(character = CharacterConstructor("data/character/link", ORIENT_NORTH, 13*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 6, 2, pos, 2))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/guard", ORIENT_NORTH, 11*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 5, 3, pos))) {
+		if( !(character = CharacterConstructor("data/character/guard", ORIENT_NORTH, 11*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 5, 3, pos, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/thief", ORIENT_NORTH, 9*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 2, 4, pos))) {
+		if( !(character = CharacterConstructor("data/character/thief", ORIENT_NORTH, 9*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 2, 4, pos, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}

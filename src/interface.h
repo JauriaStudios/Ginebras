@@ -33,6 +33,8 @@ typedef struct Interface{
 	Menu *menu;
 	char **text;
 
+	int showMenu;
+
 	// Functions root menu
 	int (*MenuRootFunc[MAX_MENU_FUNC])(void *data);
 	Game *dataRootFunc[MAX_MENU_FUNC];
