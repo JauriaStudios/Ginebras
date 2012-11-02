@@ -35,6 +35,7 @@
 #include "intro.h"
 #include "grid.h"
 #include "menu.h"
+#include "audio.h"
 
 #define FRAMES_PER_SECOND 30
 
@@ -51,45 +52,11 @@ int modeMenu      = 0;
 
 int main(int argc, char **argv)
 {
-	// handle main arguments
-	if (argc > 1) {
-		int i ;
-		for (i = 1; i < argc; i++) {
-			if (!strcasecmp(argv[i], "--fullscreen")) {
-				fullScreen = 1;
-			}
-			if (!strcasecmp(argv[i], "--skip")) {
-				skipIntro = 1;
-			}
-			if (!strcasecmp(argv[i], "--help")) {
-				printf( "usage: %s --map mapname # not implemented\n", argv[0] );
-				printf( "usage: %s --skip # Skip intro \n", argv[0] );
-				printf( "usage: %s --fullscreen # start in fullscreen mode \n", argv[0] );
-				printf( "usage: %s --help # show this help \n", argv[0] );
-			}
-/*			if (!strcasecmp(argv[i], "framedelay")) {
-				frame_len = atoi(argv[i+1]);
-			}
-			if (!strcasecmp(argv[i], "bmpwrite")) {
-				WriteBitmaps = 1;
-			}
-			if (!strcasecmp(argv[i], "bmpstart")) {
-				WB_StartRange = atoi(argv[i+1]);
-			}
-			if (!strcasecmp(argv[i], "bmpend")) {
-				WB_EndRange = atoi(argv[i+1]);
-			} */
-		}
-	}
-	// end of arguments
-
 	// Variable definition section
 	SDL_Surface *screen, *selector;
 	SDL_Rect rcSelector;
 	SDL_Event event;	
 
-	Mix_Chunk *introSound = NULL;
-	
 	Intro *intro;	
 	Game *game;
 	Player *player1, *player2;
@@ -98,40 +65,45 @@ int main(int argc, char **argv)
 	Cursor *cursor;
 	Interface *interface;
 	Grid *grid;	
+	Audio *introSound;
 
 	Character **vectorChar1, **vectorChar2;
 
+	// Default map to load
+	char *mapName = "Pueblo60x80.tmx";
+	char mapNameBuff[40];
 
-	// Config for OpenAudio()
-	int channel = 0;
-
-	int audio_rate = 22050;
-	Uint16 audio_format = AUDIO_S16SYS;
-	int audio_channels = 2;
-	int audio_buffers = 4096;	// Only for developement
-
+	// handle main arguments
+	if (argc > 1) {
+		int i ;
+		for (i = 1; i < argc; i++) {
+			if (!strcasecmp(argv[i], "--window")) {
+				fullScreen = 0;
+			}
+			if (!strcasecmp(argv[i], "--skip")) {
+				skipIntro = 1;
+			}
+			if (!strcasecmp(argv[i], "--map")) {
+				mapName = argv[i+1];
+			}
+			if (!strcasecmp(argv[i], "--help")) {
+				printf( "usage: %s --map mapname # Load especified map\n", argv[0] );
+				printf( "usage: %s --skip # Skip intro \n", argv[0] );
+				printf( "usage: %s --window # start in window mode \n", argv[0] );
+				printf( "usage: %s --help # show this help \n", argv[0] );
+				return -1;
+			}
+		}
+	}
+	// end of arguments
 	// initialize SDL Video & Audio mixer
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0 ) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
 		fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
 		return 1;
 	}
 	
-	 
-	// initializer audio
-	if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) {
-		fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError());
-		exit(1);
-	}
-	
-	// Load Sound File
-	introSound = Mix_LoadWAV("data/sound/intro.wav");
-	
-	if(introSound == NULL) {
-		fprintf(stderr, "Unable to load WAV file: %s\n", Mix_GetError());
-	}
-	
 	// set the title bar 
-	SDL_WM_SetCaption("The legend of Ginebras - Jauria productions", "Jauria productions");
+	SDL_WM_SetCaption("The legend of Ginebras - Jauria Studios", "Jauria Studios");
 	
 	// create window 
 	if(fullScreen == 1)
@@ -142,22 +114,24 @@ int main(int argc, char **argv)
 	// set keyboard repeat 
 	SDL_EnableKeyRepeat(70, 70); // SDL_DEFAULT_REPEAT_INTERVAL
 	
+	// Load Sound
+	introSound = AudioConstructor();
+	AudioLoadFile(introSound, "data/sound/intro.wav");
+	
 	// Game Intro
 	if(skipIntro == 0){
+		SDL_Delay(1000);
 
-
-		channel = Mix_PlayChannel(-1, introSound, 0);
-		if(channel == -1) {
-				fprintf(stderr, "Unable to play WAV file: %s\n", Mix_GetError());
-		}
-
+		AudioPlaySound(introSound);
 		intro = IntroConstructor();
 		IntroDraw(intro, screen);
 		IntroDestructor(intro);
-	}		
+	}
+
 	// Load background
-	map = MapConstructor(screen, "data/Pueblo60x80.tmx");
-	
+	sprintf(mapNameBuff,"data/%s",mapName);
+	map = MapConstructor(screen, mapNameBuff);
+
 	// Load grid
 	grid = GridConstructor(map->tileWidth, map->tileHeight);
 
@@ -256,13 +230,9 @@ int main(int argc, char **argv)
 	MapDestructor(map);
 	CursorDestructor(cursor);
 	InterfaceDestructor(interface);
+	AudioDestructor(introSound);
 	
-	// Flush Audio Channel
-	while(Mix_Playing(channel) != 0);
-	// Free sound file
-	Mix_FreeChunk(introSound);
-	Mix_CloseAudio();
-		
+
 	SDL_Quit();
 
 	return 0;
