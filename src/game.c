@@ -134,6 +134,7 @@ void GameActionChar(Game *game, Cursor *cursor)
 		if(!tmp->check){
 			tmp->check = 1;
 			game->actualCharacter = tmp;
+			//tmp->moveArea->state = NONE;
 			AreaSetPosition(tmp->moveArea, tmp->rcDest.x, tmp->rcDest.y);
 			CursorSetPosition(cursor, tmp->rcDest.x, tmp->rcDest.y);
 			CursorSetCollisionArea(cursor, tmp->movement);

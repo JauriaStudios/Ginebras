@@ -47,6 +47,8 @@ typedef struct Menu{
 
 	int visible;
 
+	int colorRow;
+
     // Callbacks
     int (**MenuRootCallBacks)(void *data);
     int (***MenuSubCallBacks)(void *data);
@@ -54,6 +56,11 @@ typedef struct Menu{
     // Data callbacks
     void **menuRootData;
     void ***menuSubData;
+
+	// Back callback
+	int (*MenuBack)(void *data);
+	void *menuBackData;
+
 } Menu;
 
 /**********************************************************
@@ -66,5 +73,6 @@ extern int 	 MenuOk(Menu *this);
 extern int	 MenuBack(Menu *this);
 extern int 	 MenuUp(Menu *this);
 extern int	 MenuDown(Menu *this);
+extern void  MenuClose(Menu *this);
 
 #endif // _MENU_H_

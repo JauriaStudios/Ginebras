@@ -37,7 +37,7 @@ typedef struct Textbox{
 
 	SDL_Rect rcDestText, rcDestTile, rcSrcTile, rcDestWindow ;
 	
-	SDL_Color textColor;
+	SDL_Color textColor, textHigh;
 	
 	TTF_Font *font;
 	TTF_Font *fontMono;

@@ -49,6 +49,7 @@ int showInterface = 1;
 int skipIntro     = 0;
 int fullScreen    = 1;
 int modeMenu      = 0;
+int flag		  = 0;
 
 int main(int argc, char **argv)
 {
@@ -156,7 +157,10 @@ int main(int argc, char **argv)
 
 	// Create a cursor
 	cursor = CursorConstructor(game->actualCharacter->rcDest.x, game->actualCharacter->rcDest.y);	
+
+	// (provisional)
 	game->cursor = cursor;
+	game->menu = interface->menu;
 
 	// Create a timer
 	timer = TimerConstructor();
@@ -190,7 +194,7 @@ int main(int argc, char **argv)
 
 		// Draw cursor
 		CursorDraw(cursor, map);	
-
+	
 		// Move characters 
 		GameMoveCharacters(game, map);	
 		
@@ -214,6 +218,16 @@ int main(int argc, char **argv)
 		// Draw interface
 		if(showInterface)
 			InterfaceDraw(interface, screen);
+
+		// Check character end turn
+		if(game->actualCharacter->attacking)
+			flag = 1;
+		if(!(game->actualCharacter->attacking) && flag == 1){
+			flag = 0;
+			modeMenu = 0;
+			MenuClose(interface->menu);
+			GameActionChar(game, cursor);
+		}
 
 		// Update the screen 
 		SDL_Flip(screen);
@@ -242,7 +256,6 @@ int main(int argc, char **argv)
 void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *cursor, Map *map, Menu *menu)
 {
 	// Variable definition section
-	int i;
 
 	switch (event.type) {
 		/* close button clicked */
@@ -258,20 +271,28 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 					gameover = 1;
 					break;		
 				case SDLK_LEFT:
-					if(modeMenu) MenuBack(menu); 
-					else if(modeCursor) CursorMove(cursor, ORIENT_WEST);
+					if(modeMenu && game->actualCharacter->moveArea->state == MOVEMENT && menu->visible) 
+						MenuBack(menu); 
+					else if(modeCursor) 
+						CursorMove(cursor, ORIENT_WEST);
 					break;
 				case SDLK_RIGHT:
-					if(modeMenu) MenuOk(menu);
-					else if(modeCursor) CursorMove(cursor, ORIENT_EAST);
+					if(modeMenu && game->actualCharacter->moveArea->state == MOVEMENT && menu->visible) 
+						MenuOk(menu);
+					else if(modeCursor) 
+						CursorMove(cursor, ORIENT_EAST);
 					break;
 				case SDLK_UP:
-					if(modeMenu) MenuUp(menu);
-					else if(modeCursor) CursorMove(cursor, ORIENT_NORTH);
+					if(modeMenu && game->actualCharacter->moveArea->state == MOVEMENT && menu->visible) 
+						MenuUp(menu);
+					else if(modeCursor) 
+						CursorMove(cursor, ORIENT_NORTH);
 					break;
 				case SDLK_DOWN:
-					if(modeMenu) MenuDown(menu);
-					else if(modeCursor) CursorMove(cursor, ORIENT_SOUTH);
+					if(modeMenu && game->actualCharacter->moveArea->state == MOVEMENT && menu->visible) 
+						MenuDown(menu);
+					else if(modeCursor)
+						CursorMove(cursor, ORIENT_SOUTH);
 					break;
 				case SDLK_t:
 					if (fullScreen == 1){
@@ -296,12 +317,24 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 						showGrid = 1;
 					break;
 				case SDLK_SPACE:
-					if(game->actualCharacter->rcDest.x +16 == cursor->rcDest.x && game->actualCharacter->rcDest.y +32 == cursor->rcDest.y )
-						break;
-					else if(!cursor->free)
-						CharacterSetDestination(game->actualCharacter, cursor, map);		
+					switch(game->actualCharacter->moveArea->state){
+						case MOVEMENT:
+							if(game->actualCharacter->rcDest.x +16 == cursor->rcDest.x && game->actualCharacter->rcDest.y +32 == cursor->rcDest.y )
+								break;
+							else if(!cursor->free){
+								CharacterSetDestination(game->actualCharacter, cursor, map);
+								break;
+							}
+						case ATTACK:
+							CharacterSetAttack(game->actualCharacter, SLASH192);
+							//MenuClose(menu);
+							break;
+						default:
+							break;
+					}
 					break;
 				case SDLK_p:
+					MenuClose(menu);
 					GameActionChar(game, cursor);
 					break;
 				case SDLK_a:
@@ -322,10 +355,9 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 				case SDLK_m:
 					if (modeMenu == 1){
 						modeMenu = 0;
-						menu->visible = 0;
-						MenuBack(menu);
-						for(i = 0; i <= menu->position+1; i++)
-							MenuUp(menu);
+						
+						MenuClose(menu);
+
 					}else{
 						modeMenu = 1;
 						menu->visible = 1;

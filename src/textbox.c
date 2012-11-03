@@ -60,6 +60,10 @@ Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text,
 	textbox->textColor.r = 255;
 	textbox->textColor.g = 255;
 	textbox->textColor.b = 255;
+	// define text color
+	textbox->textHigh.r = 255;
+	textbox->textHigh.g = 0;
+	textbox->textHigh.b = 0;
 	
 	// Window Position in px
 	textbox->rcDestWindow.x = x;
@@ -143,7 +147,11 @@ int TextboxDraw(Textbox *textbox, SDL_Surface* screen)
 		rcDest.x = textbox->rcDestText.x;
 		rcDest.y = textbox->rcDestText.y;
 		for(i = 0; (i < textbox->rows) && textbox->textMsg; i++){
-			message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg[i], textbox->textColor);
+			if(textbox->menu && (i == textbox->menu->colorRow)){
+				message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg[i], textbox->textHigh);
+			}else
+				message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg[i], textbox->textColor);
+
 			if(!message){
 				printf("TextBoxDraw ERROR: impossible draw %d line, does not exist\n", i);
 				return -1;

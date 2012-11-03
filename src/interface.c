@@ -52,6 +52,7 @@ int Attack(void *data)
 	// Construct area attack
 	if(CharacterCheckEnemy(character, game->map, aRadius)){
 		AreaSetAttackArea(character->moveArea, character, aRadius, game->cursor);
+		game->menu->colorRow = game->menu->position;
 		//CharacterSetAttack(character, SLASH192);
 	}
 	return 0;
@@ -64,8 +65,17 @@ int Defend(void *data)
 
 	CharacterSetAttack(character, SPELL);
 
-	AreaSetMovArea(character->moveArea, character, game->cursor);
+	return 0;
+}
 
+int Back(void *data)
+{
+	Game *game = (Game *)data;
+	Character *character = game->actualCharacter;
+
+	AreaSetMovArea(character->moveArea, character, game->cursor);
+	game->menu->colorRow = -1;
+	
 	return 0;
 }
 
@@ -143,6 +153,8 @@ Interface* InterfaceConstructor(int numBoxesW, Game *game)
 	MenuAddSubMenu(menu, itemsText, 3, this->MenuItemsFunc, this->dataItemsFunc);
 	MenuAddSubMenu(menu, NULL, 0, NULL, NULL);
 	menu->visible = 0;
+	menu->MenuBack = &Back;
+	menu->menuBackData = game;
 	this->menu = menu;
 	
 	// Construt the menu text box

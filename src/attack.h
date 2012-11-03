@@ -14,30 +14,22 @@
  * along with Sons of battle. if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _GAME_H_
-#define _GAME_H_
+#ifndef _ATTACK_H_
+#define _ATTACK_H_
 
-#include "list.h"
-#include "characters.h"
-#include "player.h"
-#include "cursor.h"
-#include "menu.h"
+#include "game.h"
 
-typedef struct Game {
-	struct list_head listCharacters;
-	Character *actualCharacter;
-	Player 	  *player1, *player2;
-	Map 	  *map;
-	Menu 	  *menu;
-	Cursor 	  *cursor;
-	int 	  numChar;
-	int 	  numChecks;
-} Game;
+/**********************************************************
+ *** STRUCTS
+ **********************************************************/
+typedef struct Attack{
 
-extern Game* GameConstructor(Player *player1, Player *player2, Map *map);
-extern int GameMoveCharacters(Game *game, Map *map);
-extern int GameDrawCharacters(Game *game, SDL_Surface *screen, Map *map);
-extern void GameDestructor(Game *game);
-extern void GameActionChar(Game *game, Cursor *cursor);
+} Attack;
 
-#endif // _GAMES_H_
+/**********************************************************
+ *** METHODS
+ **********************************************************/
+extern Attack* AttackConstructor();
+extern void AttackDestructor(Attack *this);
+
+#endif // _ATTACK_H_

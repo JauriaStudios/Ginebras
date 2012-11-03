@@ -76,6 +76,8 @@ Menu* MenuConstructor(char **root, int numRows, int *endBranch, int numSubMenus,
 	this->actualMenuRows = this->numRows;
 	this->isRoot = 1;
 
+	this->colorRow = -1;
+
 	return this;
 }
 
@@ -163,6 +165,7 @@ int MenuOk(Menu *this)
 		if(this->MenuSubCallBacks[this->previusPosition][this->position]){
 			// Call callback with the data
 			this->MenuSubCallBacks[this->previusPosition][this->position](this->menuRootData[this->position]);
+			this->colorRow = this->position;
 		}
 	}
 
@@ -178,9 +181,8 @@ int	MenuBack(Menu *this)
 		this->actualMenu = this->previusMenu;
 		this->actualMenuRows = this->previusMenuRows;
 		this->position = this->previusPosition;
-		
 		this->isRoot = 1;
-	}	
+	}
 
 	return 0;
 }
@@ -204,4 +206,19 @@ int MenuDown(Menu *this)
 		this->actualMenu[this->position][1] = '*';
 	}	
 	return 0;
+}
+
+void MenuClose(Menu *this)
+{
+	// Variable definition section
+	int i; 
+
+	this->visible = 0;
+	MenuBack(this);
+
+	// Back callback
+	this->MenuBack(this->menuBackData);
+	for(i = 0; i <= this->position+1; i++)
+		MenuUp(this);
+
 }
