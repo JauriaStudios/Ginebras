@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character name="Turboss">
+
+ <stats>
+  <strength value="10">
+  <agility value="20">
+  <vitality value="70">
+  <intelligence value="140">
+  <spirit value="100">
+ </stats>
+
+ <attributes>
+  <life value="1700"/>
+  <mana value="250"/>
+  <vigor value="0"/>
+ </attributea>
+
+ <attacks>
+  <melee value="0"/>
+  <distnce value="0"/>
+  <magic value="0"/>
+ </attacks>
+
+ <defense>
+  <melee value="0"/>
+  <magic value="0"/>
+ </defense>
+
+ <other>
+  <critic value="0"/>
+  <evasion value="0"/>
+ </other>
+
+ <spritesheet name="walk" spritewidth="64" spriteheight="64">
+  <image source="turbossWalk.png"/>
+ </spritesheet>
+
+ <spritesheet name="spell" spritewidth="64" spriteheight="64">
+  <image source="turbossSpell.png"/>
+ </spritesheet>
+
+ <spritesheet name="slash" spritewidth="192" spriteheight="192">
+  <image source="turbossSlash.png"/>
+ </spritesheet>
+
+</character>
