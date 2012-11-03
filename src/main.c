@@ -156,7 +156,8 @@ int main(int argc, char **argv)
 
 	// Create a cursor
 	cursor = CursorConstructor(game->actualCharacter->rcDest.x, game->actualCharacter->rcDest.y);	
-	
+	game->cursor = cursor;
+
 	// Create a timer
 	timer = TimerConstructor();
 
@@ -240,6 +241,9 @@ int main(int argc, char **argv)
 
 void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *cursor, Map *map, Menu *menu)
 {
+	// Variable definition section
+	int i;
+
 	switch (event.type) {
 		/* close button clicked */
 		case SDL_QUIT:
@@ -319,6 +323,9 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 					if (modeMenu == 1){
 						modeMenu = 0;
 						menu->visible = 0;
+						MenuBack(menu);
+						for(i = 0; i <= menu->position+1; i++)
+							MenuUp(menu);
 					}else{
 						modeMenu = 1;
 						menu->visible = 1;

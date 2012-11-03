@@ -32,7 +32,12 @@ Cursor* CursorConstructor(int x0, int y0)
 	cursor->rcDest.y = y0 + 32;	
 
 	cursor->free = 0;
-	
+
+	cursor->collisionArea = NULL;
+
+	// Set initial value
+	cursor->previousCoordX = 2;
+
 	return cursor;
 }
 
@@ -101,7 +106,14 @@ void CursorSetCollisionArea(Cursor *cursor, int area)
 	cursor->coordX = area;
 	cursor->coordY = area;
 	cursor->sideLength = sizeSide;	
-		
+/*	
+	if(cursor->collisionArea){
+		// Free collision area
+		for(i = 0; i < sizeSide; i++)
+			free(cursor->collisionArea[i]);
+		free(cursor->collisionArea);
+	}
+*/
 	// Alloc move allowed area for the cursor
 	cursor->collisionArea = (int **)malloc(sizeof(int*) * sizeSide);
 	for(i = 0; i < sizeSide; i++)
@@ -120,11 +132,4 @@ void CursorSetCollisionArea(Cursor *cursor, int area)
 		}
 		//printf("\n");
 	}
-
-/*
-	// Free collision area
-	for(i = 0; i < sizeSide; i++)
-		free(cursor->collisionArea[i]);
-	free(cursor->collisionArea);
-*/
 }

@@ -27,19 +27,30 @@
 /**********************************************************
  **** STRUCTS 
  **********************************************************/
+struct Character;
+
+typedef enum StateArea{
+	ATTACK,
+	MOVEMENT,
+	NONE,
+} StateArea;
+
 typedef struct Area{
 	SDL_Surface *tile; 
 	SDL_Rect     rcDest;
 	int 		 radius;
+	StateArea	 state;
 } Area;
 
 /**********************************************************
  **** METHODS 
  **********************************************************/
 extern Area* AreaConstructor(int x0, int y0, int radius);
-extern void AreaDestructor(Area *this);
-extern void AreaSetPosition(Area *this, int x, int y);
-extern void AreaDraw(Area *this, Map *map, Cursor *cursor);
-int** AreaGetShade(int radius);
+extern void  AreaDestructor(Area *this);
+extern void  AreaSetPosition(Area *this, int x, int y);
+extern void  AreaDraw(Area *this, Map *map, Cursor *cursor);
+extern int** AreaGetShade(int radius);
+extern void  AreaSetAttackArea(Area *this, struct Character *character, int radius, Cursor *cursor);
+extern void AreaSetMovArea(Area *this, struct Character *character, Cursor *cursor);
 
 #endif // _AREA_H_

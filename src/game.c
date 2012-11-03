@@ -137,6 +137,9 @@ void GameActionChar(Game *game, Cursor *cursor)
 			AreaSetPosition(tmp->moveArea, tmp->rcDest.x, tmp->rcDest.y);
 			CursorSetPosition(cursor, tmp->rcDest.x, tmp->rcDest.y);
 			CursorSetCollisionArea(cursor, tmp->movement);
+			tmp->rcInitTurn.x = tmp->rcDest.x;
+			tmp->rcInitTurn.y = tmp->rcDest.y;
+
 			break;
 		}
 	}

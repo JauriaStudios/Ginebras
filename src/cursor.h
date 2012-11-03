@@ -29,6 +29,7 @@ typedef struct Cursor{
 	SDL_Rect     rcDest; 
 	int 		 **collisionArea;
 	int 		 coordX, coordY;
+	int 		 previousCoordX, previousCoordY; 
 	int			 sideLength;
 	int 		 free;
 } Cursor;

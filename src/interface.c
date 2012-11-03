@@ -47,10 +47,13 @@ int Attack(void *data)
 {
 	Game *game = (Game *)data;
 	Character *character = game->actualCharacter;
+	int aRadius = 1;
 
-	if(CharacterCheckEnemy(game->actualCharacter, game->map, 1))
-		CharacterSetAttack(character, SLASH192);
-
+	// Construct area attack
+	if(CharacterCheckEnemy(character, game->map, aRadius)){
+		AreaSetAttackArea(character->moveArea, character, aRadius, game->cursor);
+		//CharacterSetAttack(character, SLASH192);
+	}
 	return 0;
 }
 
@@ -60,6 +63,8 @@ int Defend(void *data)
 	Character *character = game->actualCharacter;
 
 	CharacterSetAttack(character, SPELL);
+
+	AreaSetMovArea(character->moveArea, character, game->cursor);
 
 	return 0;
 }

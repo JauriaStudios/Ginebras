@@ -27,6 +27,7 @@ typedef struct Game {
 	Character *actualCharacter;
 	Player *player1, *player2;
 	Map *map;
+	Cursor *cursor;
 	int numChar;
 	int numChecks;
 } Game;

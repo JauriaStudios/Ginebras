@@ -79,6 +79,8 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	// Set sprite initial position
 	character->rcDest.x = x0;
 	character->rcDest.y = y0;
+	character->rcInitTurn.x = x0;
+	character->rcInitTurn.y = y0;
 
 	// Set initial animation sprite frame
 	character->rcSrc.x = 0;

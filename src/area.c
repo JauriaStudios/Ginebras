@@ -15,6 +15,7 @@
  */
 
 #include "area.h"
+#include "characters.h"
 
 Area* AreaConstructor(int x0, int y0, int radius)
 {
@@ -39,7 +40,9 @@ Area* AreaConstructor(int x0, int y0, int radius)
 	// Set sprite initial position
 	this->rcDest.x = x0 - ((radius-1)*32+16);
 	this->rcDest.y = y0 - ((radius-1)*32);
-	
+
+	this->state = MOVEMENT;
+
 	return this;
 }
 
@@ -106,4 +109,38 @@ int** AreaGetShade(int radius)
 	}
 
 	return shade;
+}
+
+void AreaSetAttackArea(Area *this, Character *character, int radius, Cursor *cursor)
+{
+	if(this->state == MOVEMENT){
+		this->radius = radius;
+		cursor->previousCoordX = cursor->coordX;
+		cursor->previousCoordY = cursor->coordY;
+		AreaSetPosition(this, character->rcDest.x, character->rcDest.y);
+		CursorSetPosition(cursor, character->rcDest.x, character->rcDest.y);
+		CursorSetCollisionArea(cursor, radius);
+		this->state = ATTACK; 
+	}
+}
+
+void AreaSetMovArea(Area *this, Character *character, Cursor *cursor)
+{
+	if(this->state == ATTACK){
+		// Save new radius
+		this->radius = character->movement;
+
+		// Set area position
+		AreaSetPosition(this, character->rcInitTurn.x, character->rcInitTurn.y);
+
+		// Set cursor position
+		CursorSetPosition(cursor, character->rcInitTurn.x, character->rcInitTurn.y);
+		CursorSetCollisionArea(cursor, this->radius);
+		cursor->coordX = cursor->previousCoordX;
+		cursor->coordY = cursor->previousCoordY;	
+		CursorSetPosition(cursor, character->rcDest.x, character->rcDest.y);
+		
+		// Change state
+		this->state = MOVEMENT;
+	}
 }

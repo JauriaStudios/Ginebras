@@ -59,7 +59,7 @@ typedef struct Character{
 	SDL_Surface* sprite192Slash;
 	SDL_Surface* spriteSpell; 
 	SDL_Rect	 rcSrc, rcSrcAttack;
-	SDL_Rect     rcDest;
+	SDL_Rect     rcDest, rcInitTurn;
 	
 	DestinationPoint destinationPoint;
 	int velocity;

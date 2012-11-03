@@ -22,6 +22,7 @@
 #include "map.h"
 #include "menu.h"
 #include "game.h"
+#include "area.h"
 
 #define MAX_MENU_FUNC 4
 
