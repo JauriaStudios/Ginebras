@@ -29,6 +29,7 @@
  <other>
   <critic value="0"/>
   <evasion value="0"/>
+  <move value="10"/>
  </other>
 
  <spritesheet name="walk" spritewidth="64" spriteheight="64">
