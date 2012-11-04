@@ -17,6 +17,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "cursor.h"
+#include "characters.h"
 
 Cursor* CursorConstructor(int x0, int y0)
 {
@@ -132,4 +133,23 @@ void CursorSetCollisionArea(Cursor *cursor, int area)
 		}
 		//printf("\n");
 	}
+}
+
+int CursorCheckEnemy(Cursor *cursor, Map *map, Character *character)
+{
+	// Variable definition section
+	int coordX, coordY;
+	int charX, charY;
+
+	// Get actual character position
+	CharacterGetCoor(character, &charX, &charY);
+
+	// Get cursor coord
+	GetCoor(cursor->rcDest.x, cursor->rcDest.y, &coordX, &coordY);
+
+	
+	if(map->charPosition[coordY][coordX] && ((charX != coordX) || (charY != coordY)))
+		return 1;
+	else
+		return 0;
 }

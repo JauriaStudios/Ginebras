@@ -22,6 +22,8 @@
 #include "gameUtilities.h"
 #include "map.h"
 
+struct Character;
+
 typedef struct Cursor{
 
 	SDL_Surface* sprite;
@@ -40,5 +42,6 @@ extern void CursorDraw(Cursor* cursor, Map *map);
 extern void CursorMove(Cursor* cursor, Orientation orientation);
 extern void CursorSetPosition(Cursor *cursor, int x, int y);
 extern void CursorSetCollisionArea(Cursor *cursor, int area);
+int CursorCheckEnemy(Cursor *cursor, Map *map, struct Character *character);
 
 #endif // _CURSOR_H_

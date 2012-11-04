@@ -326,7 +326,8 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 								break;
 							}
 						case ATTACK:
-							CharacterSetAttack(game->actualCharacter, SLASH192);
+							if(CursorCheckEnemy(cursor, map, game->actualCharacter))
+								CharacterSetAttack(game->actualCharacter, SLASH192);
 							//MenuClose(menu);
 							break;
 						default:

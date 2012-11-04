@@ -387,7 +387,7 @@ void CharacterAttack(Character *character)
 	
 }
 
-int CharacterCheckEnemy(Character *character, Map *map, int radius)
+int CharacterCheckEnemy(Character *character, Map *map, int radius, int *xFind, int *yFind)
 {
 	// Variable definition section
 	int i, j, x, y, charX, charY;
@@ -406,6 +406,8 @@ int CharacterCheckEnemy(Character *character, Map *map, int radius)
 	for(i = 0; i < sideLen; i++){
 		for(j = 0; j < sideLen; j++){
 			if(map->charPosition[y+i][x+j] && shade[i][j] && (i != radius || j != radius)){
+				*yFind = y+i;
+				*xFind = x+j; 
 				// Free Submenus
     			for(i = 0; i < sideLen; i++)
     				free(shade[i]);

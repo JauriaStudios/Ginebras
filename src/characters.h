@@ -114,6 +114,6 @@ extern void CharacterDraw(Character* character, SDL_Surface* screen, Map *map);
 extern void CharacterSetAttack(Character *character, AttackType type);
 extern void CharacterAttack(Character* character);
 extern void CharacterGetCoor(Character *character, int *x, int *y);
-extern int  CharacterCheckEnemy(Character *character, Map *map, int radius);
+extern int  CharacterCheckEnemy(Character *character, Map *map, int radius, int *xFind, int *yFind);
 
 #endif //_CHARACTER_H_

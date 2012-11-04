@@ -47,13 +47,13 @@ int Attack(void *data)
 {
 	Game *game = (Game *)data;
 	Character *character = game->actualCharacter;
-	int aRadius = 1;
+	int aRadius = 1, x, y;
 
 	// Construct area attack
-	if(CharacterCheckEnemy(character, game->map, aRadius)){
+	if(CharacterCheckEnemy(character, game->map, aRadius, &x, &y)){
 		AreaSetAttackArea(character->moveArea, character, aRadius, game->cursor);
+		//CursorSetPosition(game->cursor, x, y);	
 		game->menu->colorRow = game->menu->position;
-		//CharacterSetAttack(character, SLASH192);
 	}
 	return 0;
 }
