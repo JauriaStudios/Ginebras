@@ -228,7 +228,14 @@ void TextboxCreateWindow(Textbox * textbox)
 
 void TextboxDestructor(Textbox * textbox)
 {
-	
+	// Free image
+	//if(textbox->image)
+		//SDL_FreeSurface(textbox->image);
+
+	// Free menu
+	//if(textbox->menu)
+	//	MenuDestructor(textbox->menu);
+
 	//Free the text_surface surface
 	SDL_FreeSurface(textbox->background);
 	SDL_FreeSurface(textbox->bgTileset);

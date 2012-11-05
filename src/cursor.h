@@ -28,7 +28,7 @@ typedef struct Cursor{
 
 	SDL_Surface* sprite;
 	SDL_Rect	 rcSrc;
-	SDL_Rect     rcDest; 
+	SDL_Rect     rcDest, rcPrevious; 
 	int 		 **collisionArea;
 	int 		 coordX, coordY;
 	int 		 previousCoordX, previousCoordY; 
@@ -42,6 +42,8 @@ extern void CursorDraw(Cursor* cursor, Map *map);
 extern void CursorMove(Cursor* cursor, Orientation orientation);
 extern void CursorSetPosition(Cursor *cursor, int x, int y);
 extern void CursorSetCollisionArea(Cursor *cursor, int area);
-int CursorCheckEnemy(Cursor *cursor, Map *map, struct Character *character);
+extern int  CursorCheckEnemy(Cursor *cursor, Map *map, struct Character *character);
+extern void CursorSetFree(Cursor *cursor);
+extern void CursorSetNonFree(Cursor *cursor, struct Character *character);
 
 #endif // _CURSOR_H_

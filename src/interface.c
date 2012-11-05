@@ -173,6 +173,7 @@ void InterfaceDestructor(Interface *this)
 
 	// Free boxes
 	list_for_each_entry_safe(tmp, tmp2, &this->listBoxesW, list) {
+		//printf("free %s\n", tmp->name);
 		list_del(&tmp->list);
 		TextboxDestructor(tmp);
 	}

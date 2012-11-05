@@ -132,12 +132,12 @@ void MenuDestructor(Menu *this)
             free(this->subMenus[i][j]);
     free(this->subMenus);        
 
+
     // Free root text
     for(i = 0; i < MAX_ROWS; i++)
         free(this->root[i]);
     free(this->root);
 
-	free(this->subMenus);
 	free(this->numRowsSubMenu);
 	free(this);
 }
@@ -165,7 +165,6 @@ int MenuOk(Menu *this)
 		if(this->MenuSubCallBacks[this->previusPosition][this->position]){
 			// Call callback with the data
 			this->MenuSubCallBacks[this->previusPosition][this->position](this->menuRootData[this->position]);
-			this->colorRow = this->position;
 		}
 	}
 
@@ -220,5 +219,4 @@ void MenuClose(Menu *this)
 	this->MenuBack(this->menuBackData);
 	for(i = 0; i <= this->position+1; i++)
 		MenuUp(this);
-
 }

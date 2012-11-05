@@ -147,9 +147,25 @@ int CursorCheckEnemy(Cursor *cursor, Map *map, Character *character)
 	// Get cursor coord
 	GetCoor(cursor->rcDest.x, cursor->rcDest.y, &coordX, &coordY);
 
-	
 	if(map->charPosition[coordY][coordX] && ((charX != coordX) || (charY != coordY)))
 		return 1;
 	else
 		return 0;
+}
+
+void CursorSetFree(Cursor *cursor)
+{
+	cursor->free = 1;
+	cursor->previousCoordX = cursor->coordX;
+	cursor->previousCoordY = cursor->coordY;
+	cursor->rcPrevious.x = cursor->rcDest.x;
+	cursor->rcPrevious.y = cursor->rcDest.y;
+}
+
+void CursorSetNonFree(Cursor *cursor, Character *character)
+{
+	cursor->free = 0;
+	cursor->coordX = cursor->previousCoordX;
+	cursor->coordY = cursor->previousCoordY;
+	CursorSetPosition(cursor, cursor->rcPrevious.x-16, cursor->rcPrevious.y-32);
 }

@@ -366,16 +366,10 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 					break;
 				case SDLK_f:
 					if(cursor->free){
-						// Set cursor on character position
-						CursorSetPosition(cursor, game->actualCharacter->rcDest.x, game->actualCharacter->rcDest.y);
-				
-						// Set cursor in the middle of the collision matrix
-						cursor->coordX = (cursor->sideLength-1)/2;
-						cursor->coordY = (cursor->sideLength-1)/2;	
-			
-						cursor->free = 0;
-					}else
-						cursor->free = 1;
+						CursorSetNonFree(cursor, game->actualCharacter);
+					}else{
+						CursorSetFree(cursor);
+					}
 					break;
 				default:
 					break;
