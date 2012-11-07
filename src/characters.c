@@ -23,7 +23,7 @@ typedef enum OrientCollision {
 	SOUTH_EAST,
 } OrientCollision;
 
-Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int attackRadius)
+Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int attackRadius, int player)
 {
 	Character* character;
 	character = (Character *)malloc(sizeof(Character));
@@ -63,6 +63,9 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 		printf("Character constructor ERROR: couldn't load character Spell sprite\n");
 		return NULL;
 	}
+
+	// Set player
+	character->player = player;
 
 	// Set movement
 	character->movement = movement;
@@ -164,7 +167,8 @@ void CharacterSetDestination(Character* character, Cursor* cursor, Map *map)
 	
 	// Set to 0 character position
 	GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
-	map->charPosition[coordY][coordX] = 0;
+	map->charPosition[character->player][coordY][coordX] = 0;
+	map->charPosition[0][coordY][coordX] = 0;
 
 	// Set destination point
 	character->destinationPoint.x = cursor->rcDest.x - 16;
@@ -262,14 +266,14 @@ void CharacterMove(Character *character, Map *map)
 				&coordSeX, &coordSeY);
 
 		// Check collision and skip first coordenate for the initial movement
-		if(((map->charPosition[coordNwY][coordNwX] || map->collisions[coordNwY][coordNwX]) || 
-		    	(map->charPosition[coordNeY][coordNeX] || map->collisions[coordNeY][coordNeX]) ||
-		    	(map->charPosition[coordSwY][coordSwX] || map->collisions[coordSwY][coordSwX]) || 
-				(map->charPosition[coordSeY][coordSeX] || map->collisions[coordSeY][coordSeX])) && 
-		    	(!map->charPosition[firstY][firstX])){
+		if(((map->charPosition[0][coordNwY][coordNwX] || map->collisions[coordNwY][coordNwX]) || 
+		    	(map->charPosition[0][coordNeY][coordNeX] || map->collisions[coordNeY][coordNeX]) ||
+		    	(map->charPosition[0][coordSwY][coordSwX] || map->collisions[coordSwY][coordSwX]) || 
+				(map->charPosition[0][coordSeY][coordSeX] || map->collisions[coordSeY][coordSeX])) && 
+		    	(!map->charPosition[0][firstY][firstX])){
 			
 			character->actualStep = character->moveSteps;
-			
+
 			character->collision = 1;
 
 			goto fin; 
@@ -298,7 +302,8 @@ fin:
 		// Set to 0 character position
 		GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
 
-		map->charPosition[coordY][coordX] = 1;
+		map->charPosition[0][coordY][coordX] = 1;
+		map->charPosition[character->player][coordY][coordX] = 1;
 		//free(character->moveX);
 		//free(character->moveY);
 	}
@@ -393,6 +398,7 @@ int CharacterCheckEnemy(Character *character, Map *map, int radius, int *xFind, 
 	int i, j, x, y, charX, charY;
 	int **shade;
 	int sideLen = 2*radius+1;
+	int playerEnemy;
 
 	// Get character position
 	CharacterGetCoor(character, &charX, &charY);
@@ -402,10 +408,15 @@ int CharacterCheckEnemy(Character *character, Map *map, int radius, int *xFind, 
 	x = charX - radius;
 	y = charY - radius;
 
+	if(character->player == 1)
+		playerEnemy = 2;
+	else
+		playerEnemy = 1;
+
 	// Seach an enemy in the attack area
 	for(i = 0; i < sideLen; i++){
 		for(j = 0; j < sideLen; j++){
-			if(map->charPosition[y+i][x+j] && shade[i][j] && (i != radius || j != radius)){
+			if(map->charPosition[playerEnemy][y+i][x+j] && shade[i][j] && (i != radius || j != radius)){
 				*yFind = y+i;
 				*xFind = x+j; 
 				// Free Submenus

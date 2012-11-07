@@ -64,7 +64,7 @@ typedef struct Map{
 
 	// Layers data
 	int **collisions;
-	int **charPosition;
+	int ***charPosition; // charPosition index 0 p1+p2, 1 p1, 2 p2
 	
 } Map;
 

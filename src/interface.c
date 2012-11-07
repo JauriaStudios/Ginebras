@@ -147,10 +147,10 @@ Interface* InterfaceConstructor(int numBoxesW, Game *game)
 	this->dataItemsFunc[2] = NULL;
 
 	// Create menu
-    menu = MenuConstructor(menuText, 4,endBranch, 4, this->MenuRootFunc, this->dataRootFunc);
+    menu = MenuConstructor(menuText, 4,endBranch, 4, this->MenuRootFunc, (void **)this->dataRootFunc);
 	MenuAddSubMenu(menu, NULL, 0, NULL, NULL);
-	MenuAddSubMenu(menu, spellsText, 4, this->MenuSpellsFunc, this->dataSpellsFunc);
-	MenuAddSubMenu(menu, itemsText, 3, this->MenuItemsFunc, this->dataItemsFunc);
+	MenuAddSubMenu(menu, spellsText, 4, this->MenuSpellsFunc, (void **)this->dataSpellsFunc);
+	MenuAddSubMenu(menu, itemsText, 3, this->MenuItemsFunc, (void **)this->dataItemsFunc);
 	MenuAddSubMenu(menu, NULL, 0, NULL, NULL);
 	menu->visible = 0;
 	menu->MenuBack = &Back;

@@ -1,47 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<character name="Turboss">
 
- <stats>
-  <strength value="10">
-  <agility value="20">
-  <vitality value="70">
-  <intelligence value="140">
-  <spirit value="100">
- </stats>
+<game numChars="8">
+	<character name="Turboss">	
 
- <attributes>
-  <life value="1700"/>
-  <mana value="250"/>
-  <vigor value="0"/>
- </attributea>
+		<stats>
+			<strength value="10"/>
+  			<agility value="20"/>
+			<vitality value="70"/>
+			<intelligence value="140"/>
+			<spirit value="100"/>
+		</stats>
 
- <attacks>
-  <melee value="0"/>
-  <distnce value="0"/>
-  <magic value="0"/>
- </attacks>
+		<attributes>
+			<life value="1700"/>
+			<mana value="250"/>
+			<vigor value="0"/>
+		</attributea>
 
- <defense>
-  <melee value="0"/>
-  <magic value="0"/>
- </defense>
+ 		<attack>
+			<melee value="0"/>
+			<range value="0"/>
+			<magic value="0"/>
+ 		</attack>
 
- <other>
-  <critic value="0"/>
-  <evasion value="0"/>
-  <move value="10"/>
- </other>
+ 		<defense>
+			<melee value="0"/>
+  			<magic value="0"/>
+ 		</defense>
 
- <spritesheet name="walk" spritewidth="64" spriteheight="64">
-  <image source="turbossWalk.png"/>
- </spritesheet>
+ 		<other>
+  			<critic value="0"/>
+  			<evasion value="0"/>
+  			<move value="10"/>
+ 		</other>
 
- <spritesheet name="spell" spritewidth="64" spriteheight="64">
-  <image source="turbossSpell.png"/>
- </spritesheet>
+		<spell name="fire">
+			
+		</spell>
 
- <spritesheet name="slash" spritewidth="192" spriteheight="192">
-  <image source="turbossSlash.png"/>
- </spritesheet>
+ 		<spritesheet name="walk" spritewidth="64" spriteheight="64">
+  			<image source="turbossWalk.png"/>
+ 		</spritesheet>
 
-</character>
+ 		<spritesheet name="spell" spritewidth="64" spriteheight="64">
+  			<image source="turbossSpell.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="192" spriteheight="192">
+  			<image source="turbossSlash.png"/>
+ 		</spritesheet>
+
+	</character>
+</game>

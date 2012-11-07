@@ -40,7 +40,7 @@
 #define FRAMES_PER_SECOND 30
 
 static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map, Menu *menu);
-static Character** vectorCharsGen(int option, int **pos, Map *map);
+static Character** vectorCharsGen(int option, Map *map);
 
 int modeCursor    = 1;
 int gameover      = 0;
@@ -142,12 +142,12 @@ int main(int argc, char **argv)
 	}
 
 	// Generate character vector (provisional sólo para desarrollo)
-	vectorChar1 = vectorCharsGen(1, map->charPosition, map);
-	vectorChar2 = vectorCharsGen(2, map->charPosition, map);
+	vectorChar1 = vectorCharsGen(1, map);
+	vectorChar2 = vectorCharsGen(2, map);
 
 	// Create players
-	player1 = PlayerConstructor(vectorChar1, 4);
-	player2 = PlayerConstructor(vectorChar2, 4);
+	player1 = PlayerConstructor(vectorChar1, 4, 1);
+	player2 = PlayerConstructor(vectorChar2, 4, 2);
 
 	// Create game
 	game = GameConstructor(player1, player2, map);
@@ -274,25 +274,25 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 					if(modeMenu && game->actualCharacter->moveArea->state == MOVEMENT && menu->visible) 
 						MenuBack(menu); 
 					else if(modeCursor) 
-						CursorMove(cursor, ORIENT_WEST);
+						CursorMove(cursor, ORIENT_WEST, map);
 					break;
 				case SDLK_RIGHT:
 					if(modeMenu && game->actualCharacter->moveArea->state == MOVEMENT && menu->visible) 
 						MenuOk(menu);
 					else if(modeCursor) 
-						CursorMove(cursor, ORIENT_EAST);
+						CursorMove(cursor, ORIENT_EAST, map);
 					break;
 				case SDLK_UP:
 					if(modeMenu && game->actualCharacter->moveArea->state == MOVEMENT && menu->visible) 
 						MenuUp(menu);
 					else if(modeCursor) 
-						CursorMove(cursor, ORIENT_NORTH);
+						CursorMove(cursor, ORIENT_NORTH, map);
 					break;
 				case SDLK_DOWN:
 					if(modeMenu && game->actualCharacter->moveArea->state == MOVEMENT && menu->visible) 
 						MenuDown(menu);
 					else if(modeCursor)
-						CursorMove(cursor, ORIENT_SOUTH);
+						CursorMove(cursor, ORIENT_SOUTH, map);
 					break;
 				case SDLK_t:
 					if (fullScreen == 1){
@@ -389,80 +389,91 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 	}
 }
 
-Character** vectorCharsGen(int option, int **pos, Map *map)
+Character** vectorCharsGen(int option, Map *map)
 {
 	// Variable definition section
 	Character **charVector;
 	Character *character;
-	int i, j;
+	//int i, j, k;
 
 	// Alloc vector
 	charVector = (Character**)malloc(sizeof(Character *)*4);
 
 	if(option == 1){
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/bone", ORIENT_SOUTH, 16*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 7, 3, pos, 1))) {
+		if( !(character = CharacterConstructor("data/character/bone", ORIENT_SOUTH, 16*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 
+												7, 3, map->charPosition[1], 1, 1))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/chain", ORIENT_SOUTH, 14*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 6, 4, pos, 1))){
+		if( !(character = CharacterConstructor("data/character/chain", ORIENT_SOUTH, 14*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 
+												6, 4, map->charPosition[1], 1, 1))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/hat", ORIENT_SOUTH, 12*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 5, 5, pos, 1))) {
+		if( !(character = CharacterConstructor("data/character/hat", ORIENT_SOUTH, 12*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2,
+												5, 5, map->charPosition[1], 1, 1))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/leather", ORIENT_SOUTH, 10*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 2, 6, pos, 1))) {
+		if( !(character = CharacterConstructor("data/character/leather", ORIENT_SOUTH, 10*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 
+												2, 6, map->charPosition[1], 1, 1))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[3] = character;
 	}else {
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/TurBoss", ORIENT_NORTH, 15*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 7, 20, pos, 2))) {
+		if( !(character = CharacterConstructor("data/character/TurBoss", ORIENT_NORTH, 15*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 
+												7, 20, map->charPosition[2], 2, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[0] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/link", ORIENT_NORTH, 13*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 6, 2, pos, 2))){
+		if( !(character = CharacterConstructor("data/character/link", ORIENT_NORTH, 13*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2,
+												6, 2, map->charPosition[2], 2, 2))){
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[1] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/guard", ORIENT_NORTH, 11*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 5, 3, pos, 2))) {
+		if( !(character = CharacterConstructor("data/character/guard", ORIENT_NORTH, 11*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2,
+												5, 3, map->charPosition[2], 2, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[2] = character;
 
 		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/thief", ORIENT_NORTH, 9*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 2, 4, pos, 2))) {
+		if( !(character = CharacterConstructor("data/character/thief", ORIENT_NORTH, 9*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2,
+												2, 4, map->charPosition[2], 2, 2))) {
 			printf("GAME: error building a new character\n");
 			return NULL;
 		}
 		charVector[3] = character;
 	}
 
-	printf("\n");
-	for(i=0;i<map->height;i++){
-		for(j=0;j<map->width;j++)
-			printf("%d ", map->charPosition[i][j]);	
-		printf("\n");
+/*	
+	for(k=0;k<3;k++){
+		for(i=0;i<map->height;i++){
+			for(j=0;j<map->width;j++)
+				printf("%d ", map->charPosition[k][i][j]);	
+			printf("\n");
+		}
+		printf("\n\n");
 	}
-
+*/
 	return charVector;
 }

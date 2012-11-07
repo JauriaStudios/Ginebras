@@ -56,32 +56,40 @@ void CursorDraw(Cursor* cursor, Map *map)
 	SDL_BlitSurface(cursor->sprite, NULL, map->surfaceBack, &cursor->rcDest);
 }
 
-void CursorMove(Cursor* cursor, Orientation orientation)
+void CursorMove(Cursor* cursor, Orientation orientation, Map *map)
 {
+	int x, y;
+
+	GetCoor(cursor->rcDest.x, cursor->rcDest.y, &x, &y);
+
 	switch (orientation) {
 		case ORIENT_WEST:
-			if((((cursor->coordY-1) > -1) && (cursor->collisionArea[cursor->coordX][cursor->coordY - 1])) || (cursor->free)){
+			if(((((cursor->coordY-1) > -1) && (cursor->collisionArea[cursor->coordX][cursor->coordY - 1])) 
+				  && (x > 0)) || (cursor->free)){
 				cursor->rcDest.x = cursor->rcDest.x - (SPRITE_SIZE/2);
 				if(!cursor->free)
 					cursor->coordY--; 
 			}
 			break;
 		case ORIENT_EAST:
-			if((((cursor->coordY+1) < cursor->sideLength) && (cursor->collisionArea[cursor->coordX][cursor->coordY + 1])) || (cursor->free)){
+			if(((((cursor->coordY+1) < cursor->sideLength) && (cursor->collisionArea[cursor->coordX][cursor->coordY + 1])) 
+				  && (x < (map->width -1))) || (cursor->free)){
 				cursor->rcDest.x = cursor->rcDest.x + (SPRITE_SIZE/2);
 				if(!cursor->free)
 					cursor->coordY++;
 			}
 			break;
 		case ORIENT_SOUTH:
-			if((((cursor->coordX-1) > -1) && (cursor->collisionArea[cursor->coordX - 1][cursor->coordY])) || (cursor->free)){
+			if(((((cursor->coordX-1) > -1) && (cursor->collisionArea[cursor->coordX - 1][cursor->coordY])) 
+				  && (y < (map->height -1))) || (cursor->free)){
 				cursor->rcDest.y = cursor->rcDest.y + (SPRITE_SIZE/2);
 				if(!cursor->free)
 					cursor->coordX--;
 			}
 			break;
 		case ORIENT_NORTH:
-			if((((cursor->coordX+1) < cursor->sideLength) && (cursor->collisionArea[cursor->coordX + 1][cursor->coordY])) || (cursor->free)){
+			if(((((cursor->coordX+1) < cursor->sideLength) && (cursor->collisionArea[cursor->coordX + 1][cursor->coordY])) 
+				  && (y > 0)) || (cursor->free)){
 				cursor->rcDest.y = cursor->rcDest.y - (SPRITE_SIZE/2);
 				if(!cursor->free)
 					cursor->coordX++;
@@ -140,6 +148,12 @@ int CursorCheckEnemy(Cursor *cursor, Map *map, Character *character)
 	// Variable definition section
 	int coordX, coordY;
 	int charX, charY;
+	int playerEnemy;
+
+	if(character->player == 1)
+		playerEnemy = 2;
+	else
+		playerEnemy = 1;
 
 	// Get actual character position
 	CharacterGetCoor(character, &charX, &charY);
@@ -147,7 +161,7 @@ int CursorCheckEnemy(Cursor *cursor, Map *map, Character *character)
 	// Get cursor coord
 	GetCoor(cursor->rcDest.x, cursor->rcDest.y, &coordX, &coordY);
 
-	if(map->charPosition[coordY][coordX] && ((charX != coordX) || (charY != coordY)))
+	if(map->charPosition[playerEnemy][coordY][coordX] && ((charX != coordX) || (charY != coordY)))
 		return 1;
 	else
 		return 0;

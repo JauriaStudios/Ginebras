@@ -39,7 +39,7 @@ typedef struct Cursor{
 extern Cursor* CursorConstructor(int x0, int y0);
 extern void CursorDestructor(Cursor *this);
 extern void CursorDraw(Cursor* cursor, Map *map);
-extern void CursorMove(Cursor* cursor, Orientation orientation);
+extern void CursorMove(Cursor* cursor, Orientation orientation, Map *map);
 extern void CursorSetPosition(Cursor *cursor, int x, int y);
 extern void CursorSetCollisionArea(Cursor *cursor, int area);
 extern int  CursorCheckEnemy(Cursor *cursor, Map *map, struct Character *character);

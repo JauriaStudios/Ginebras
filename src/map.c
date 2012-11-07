@@ -181,8 +181,7 @@ TileSet *TileSetConstructor(xmlNodePtr cur)
 	if ((!xmlStrcmp(cur->name, (const xmlChar *)"tileset"))) {
 			
 		curChild = cur->xmlChildrenNode;
-		this->numTileSet++;
-		printf("Loading TileSet Nº %d\n", this->numTileSet);
+		printf("___Loading TileSet...\n");
 		tileSetName = xmlGetProp(cur, (xmlChar*)"name");
 		firstgid 	= xmlGetProp(cur, (xmlChar*)"firstgid");
 		tileWidth   = xmlGetProp(cur, (xmlChar*)"tilewidth");
@@ -213,10 +212,9 @@ TileSet *TileSetConstructor(xmlNodePtr cur)
 			this->surface = loadImage((char*)tileSetPath);
 		}
 		
-		printf("____________IMAGE________________ \n");
 		printf("tilesetPath: %s \n", tileSetPath);
-		printf("this->width: %d \n", this->width);
-		printf("this->height: %d \n", this->height);
+		printf("tileset width: %d \n", this->width);
+		printf("tileset height: %d \n", this->height);
 
 		if(!(this->surface = loadImage(tileSetPath))){
 			printf("ERROR tileSetConstructor: couldn't load %s image\n", tileSetPath);
@@ -253,8 +251,8 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	xmlChar * tmp = NULL;
-	Layer *layer, *tmpLayer;
-	TileSet *tileSet = NULL, *tmpTileSet = NULL; 
+	Layer *layer;
+	TileSet *tileSet = NULL; 
 	
 	// Load xml file
 	if(!(doc = xmlParseFile(mapname))){
@@ -281,14 +279,14 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 	map->tileWidth = atoi((char*)xmlGetProp(cur, (xmlChar*)"tilewidth"));
 	map->tileHeight = atoi((char*)xmlGetProp(cur, (xmlChar*)"tileheight"));
 	
-	printf("W: %d, H: %d, tW: %d, tH: %d\n", map->width, map->height, map->tileWidth, map->tileHeight);
+	printf("___Map info: W: %d, H: %d, tW: %d, tH: %d\n", map->width, map->height, map->tileWidth, map->tileHeight);
 		
 	cur = cur->xmlChildrenNode;
 	
 	// Create layer list
 	while (cur) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"tileset"))){
-			printf("dentro de tileset, cur->name: %s\n", (char *)cur->name);
+			//printf("dentro de tileset, cur->name: %s\n", (char *)cur->name);
 			tileSet = TileSetConstructor(cur);
 			list_add_tail(&tileSet->list, &map->listTileSet);
 		}
@@ -301,7 +299,7 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 	
 	cur = cur->next;
 	}
-	
+/*	
 	list_for_each_entry(tmpLayer, &map->listLayer, list){
 		printf("%s\n", (char *)tmpLayer->csvLayer);
 		printf("*************************************************************************************************************\n");
@@ -313,7 +311,7 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 		printf("%s\n", (char *)tmpTileSet->tileSetName);
 		printf("--------------------------------------------------------------------------------------------------------------\n");
 	}
-
+*/
 	map->layer = tmp;
 	
 	//xmlFreeDoc(tmp);
@@ -404,9 +402,7 @@ void MapLoad(Map * map, SDL_Surface *screen, char *file)
 	char *colsDelimiter = ",";
 
 	int i;
-	int j;
-	
-	printf("W: %d, H: %d", map->width, map->height);
+	int j, k;
 	
 	rcDest.x = 0;
 	rcDest.y = 0;
@@ -448,14 +444,21 @@ void MapLoad(Map * map, SDL_Surface *screen, char *file)
 	}
 
 	// Init char position
-	map->charPosition = (int **)malloc(sizeof(int*) * map->height);
-	for(i = 0; i < map->height; i++)
-		map->charPosition[i] = (int *)malloc(sizeof(int) * map->width);
-	
-	for(i = 0; i < map->height; i++)
-		for(j = 0; j < map->width; j++)
-			map->charPosition[i][j] = 0;
-	
+	map->charPosition = (int ***)malloc(sizeof(int**) * 3);
+	for(i = 0; i < 3; i++){
+		map->charPosition[i] = (int **)malloc(sizeof(int*) * map->height);
+		for(j = 0; j < map->height; j++)
+			map->charPosition[i][j] = (int *)malloc(sizeof(int) * map->width);
+	}
+
+	for(k = 0; k < 3; k++){
+		for(i = 0; i < map->height; i++){
+			for(j = 0; j < map->width; j++){
+				map->charPosition[k][i][j] = 0;
+			}
+		}
+	}
+
 	map->collisions = (int **)malloc(sizeof(int*) * map->height);
 	for(i = 0; i < map->height; i++)
 		map->collisions[i] = (int *)malloc(sizeof(int) * map->width);
@@ -479,16 +482,16 @@ void MapLoad(Map * map, SDL_Surface *screen, char *file)
 			}
 		}
 		
-		printf("\n********************layer: %s*********************\n", tmpLayer->name);
+		printf("___Loading layer: %s\n", tmpLayer->name);
 		
 		// Save data collisions in map
 		if(!strcmp(tmpLayer->name, "Colisiones")){
 			for(i=0; i < map->height; i++){
 				for(j=0; j < map->width; j++){
 					map->collisions[i][j] = tmpLayer->data[j][i];
-					printf("%d ", map->collisions[i][j]);
+					//printf("%d ", map->collisions[i][j]);
 				}
-			printf("\n");
+			//printf("\n");
 			}
 		}
 		LayerGetSurface(tmpLayer, map, screen);
@@ -499,10 +502,10 @@ void MapLoad(Map * map, SDL_Surface *screen, char *file)
 		sscanf(tmpLayer->name, "%s %s", nameLayer, pos);
 		
 		if(!strcmp(pos, "front")){
-			printf("NAME LAYER FRONT: %s\n", nameLayer);
+			//printf("NAME LAYER FRONT: %s\n", nameLayer);
 			overSurface(tmpLayer->imageLayer, &rcSrc, auxFront, &rcDest, map->width * map->tileWidth);		
 		}else{
-			printf("NAME LAYER BACK: %s\n", nameLayer);
+			//printf("NAME LAYER BACK: %s\n", nameLayer);
 			SDL_BlitSurface(tmpLayer->imageLayer, &rcSrc, map->surfaceBack, &rcDest);			
 			SDL_BlitSurface(tmpLayer->imageLayer, &rcSrc, map->surfaceRefresh, &rcDest);
 		}

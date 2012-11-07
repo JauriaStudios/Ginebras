@@ -51,10 +51,8 @@ extern Grid* GridConstructor(int tileSizeX, int tileSizeY)
 		for (y = 0; y < SCREEN_HEIGHT/tileSizeY; y++) {
 			rcDest.x = x * tileSizeX;
 			rcDest.y = y * tileSizeY;
-			printf("%d, %d ", x, y);
 			copySurface(this->tile, &rcSrc, this->image, &rcDest);
 		}
-		printf("\n");
 	}
 	
 	return this;

@@ -75,7 +75,7 @@ void AreaDraw(Area *this, Map *map, Cursor *cursor)
 	for(i = 0; i < cursor->sideLength; i++){
 		for(j = 0; j < cursor->sideLength; j++){
 			if((x+j) >= 0 && (y+i) >= 0 && (x+j) < map->width && (y+i) < map->height &&
-			   cursor->collisionArea[i][j] && !map->collisions[y+i][x+j] && !map->charPosition[y+i][x+j]){
+			   cursor->collisionArea[i][j] && !map->collisions[y+i][x+j] && !map->charPosition[0][y+i][x+j]){
 				rcDest.x = (x+j) * map->tileWidth;
 				rcDest.y = (y+i) * map->tileHeight;
 				SDL_BlitSurface(this->tile, NULL, map->surfaceBack, &rcDest);	

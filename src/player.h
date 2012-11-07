@@ -24,13 +24,14 @@
  **********************************************************/
 typedef struct Player {
 	Character **charVector;
+	int playerID;
 	int numChars;
 } Player;
 
 /**********************************************************
  **** METHODS 
  **********************************************************/
-extern Player* PlayerConstructor(Character **vectorChar, int numChars);
+extern Player* PlayerConstructor(Character **vectorChar, int numChars, int ID);
 extern void PlayerDestructor(Player *this);
 
 #endif // _PLAYER_H_

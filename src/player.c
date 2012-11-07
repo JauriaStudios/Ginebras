@@ -16,7 +16,7 @@
 
 #include "player.h"
 
-Player* PlayerConstructor(Character **vectorChar, int numChars)
+Player* PlayerConstructor(Character **vectorChar, int numChars, int ID)
 {
 	// Varaiable definition section
 	Player *this;
@@ -28,6 +28,8 @@ Player* PlayerConstructor(Character **vectorChar, int numChars)
 	// Initialize player
 	this->charVector = vectorChar;
 	
+	this->playerID = ID;
+
 	// CHAPUZA ALERT!
 	this->numChars = numChars;
 	

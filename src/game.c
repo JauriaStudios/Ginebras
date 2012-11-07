@@ -133,6 +133,10 @@ void GameActionChar(Game *game, Cursor *cursor)
 	list_for_each_entry(tmp, &game->listCharacters, list){
 		if(!tmp->check){
 			tmp->check = 1;
+
+			if(cursor->free)
+				CursorSetNonFree(cursor, game->actualCharacter);
+
 			game->actualCharacter = tmp;
 			//tmp->moveArea->state = NONE;
 			AreaSetPosition(tmp->moveArea, tmp->rcDest.x, tmp->rcDest.y);

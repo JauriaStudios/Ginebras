@@ -52,6 +52,34 @@ typedef enum CharacterState {
     ATTACKING,
 } CharacterState;
 
+typedef struct CharacterAttributes {
+	// Stats
+	int strength;
+	int agility;
+	int vitality;
+	int intelligence;
+	int spirit;
+
+	// Attributes
+	int life;
+	int mana;
+	int vigor;
+
+	// Attack
+	int attackMelee;
+	int attackRange;
+	int attackMagic;
+
+	// Defense
+	int defenseMelee;
+	int defenseMagic;
+
+	// Other
+	int critic;
+	int evasion;
+	int move;
+} CharacterAttributes;
+
 typedef struct Character{
 
 	SDL_Surface* sprite;
@@ -61,11 +89,15 @@ typedef struct Character{
 	SDL_Rect	 rcSrc, rcSrcAttack;
 	SDL_Rect     rcDest, rcInitTurn;
 	
+	CharacterAttributes attributes;
+
 	DestinationPoint destinationPoint;
 	int velocity;
 
 	struct list_head list;
 	struct list_head listSort;
+
+	int player;
 
     // State
     CharacterState state;
@@ -106,7 +138,7 @@ typedef struct Character{
 /**********************************************************
  **** METHODS 
  **********************************************************/
-extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int areaRadius);
+extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int areaRadius, int player);
 extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor, Map *map);
 extern void CharacterMove(Character *character, Map *map);
