@@ -189,10 +189,6 @@ int main(int argc, char **argv)
 			if(!strncmp(argv[1], Commands[i].mCommand, strlen(Commands[i].mCommand))){
 				if(Commands[i].mAction(argc, argv))
 					return -1;
-			} else{
-				printf("Uknow option %s\n",argv[1]);
-				if(Commands[0].mAction(argc, argv))
-					return -1;
 			}
 			i++;
 		}
