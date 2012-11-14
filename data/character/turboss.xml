@@ -1,54 +1,507 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <game numChars="8">
-	<character name="Turboss">	
+	<character name="Soja">	
 
 		<stats>
 			<strength value="10"/>
-  			<agility value="20"/>
-			<vitality value="70"/>
-			<intelligence value="140"/>
-			<spirit value="100"/>
+  			<agility value="170"/>
+			<vitality value="60"/>
+			<intelligence value="50"/>
+			<spirit value="10"/>
 		</stats>
 
 		<attributes>
-			<life value="1700"/>
-			<mana value="250"/>
-			<vigor value="0"/>
-		</attributea>
+			<life value="1600"/>
+			<mana value="60"/>
+			<vigor value="80"/>
+		</attributes>
 
  		<attack>
-			<melee value="0"/>
-			<range value="0"/>
-			<magic value="0"/>
+			<melee value="25"/>
+			<range value="360"/>
+			<magic value="120"/>
  		</attack>
 
  		<defense>
-			<melee value="0"/>
-  			<magic value="0"/>
+			<physic value="80"/>
+  			<magic value="45"/>
  		</defense>
 
  		<other>
-  			<critic value="0"/>
-  			<evasion value="0"/>
-  			<move value="10"/>
+  			<critic value="30"/>
+  			<evasion value="35"/>
+  			<move value="8"/>
  		</other>
 
-		<spell name="fire">
-			
-		</spell>
+		<activespells>
+			<spell1 name="Explosive arrow"/>
+			<spell2 name="Bears trap"/>
+		</activespells>
+
+		<pasives>
+			<pasive1 name="Ranger"/>
+		</pasives>
 
  		<spritesheet name="walk" spritewidth="64" spriteheight="64">
-  			<image source="turbossWalk.png"/>
+  			<image source="sojaWalk.png"/>
  		</spritesheet>
 
  		<spritesheet name="spell" spritewidth="64" spriteheight="64">
-  			<image source="turbossSpell.png"/>
+  			<image source="sojaSpell.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="64" spriteheight="64">
+  			<image source="sojaSlash.png"/>
  		</spritesheet>
 
  		<spritesheet name="slash" spritewidth="192" spriteheight="192">
-  			<image source="turbossSlash.png"/>
+  			<image source="sojaSlash192.png"/>
+ 		</spritesheet>
+		
+		<avatar>
+			<image source="viktor135.png"/>
+		</avatar>
+	</character>
+
+	<character name="Numero2">	
+
+		<stats>
+			<strength value="10"/>
+  			<agility value="170"/>
+			<vitality value="60"/>
+			<intelligence value="50"/>
+			<spirit value="10"/>
+		</stats>
+
+		<attributes>
+			<life value="1600"/>
+			<mana value="60"/>
+			<vigor value="80"/>
+		</attributes>
+
+ 		<attack>
+			<melee value="25"/>
+			<range value="360"/>
+			<magic value="120"/>
+ 		</attack>
+
+ 		<defense>
+			<physic value="80"/>
+  			<magic value="45"/>
+ 		</defense>
+
+ 		<other>
+  			<critic value="30"/>
+  			<evasion value="35"/>
+  			<move value="8"/>
+ 		</other>
+
+		<activespells>
+			<spell1 name="Explosive arrow"/>
+			<spell2 name="Bears trap"/>
+		</activespells>
+
+		<pasives>
+			<pasive1 name="Ranger"/>
+		</pasives>
+
+ 		<spritesheet name="walk" spritewidth="64" spriteheight="64">
+  			<image source="sojaWalk.png"/>
  		</spritesheet>
 
+ 		<spritesheet name="spell" spritewidth="64" spriteheight="64">
+  			<image source="sojaSpell.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="64" spriteheight="64">
+  			<image source="sojaSlash.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="192" spriteheight="192">
+  			<image source="sojaSlash192.png"/>
+ 		</spritesheet>
+		
+		<avatar>
+			<image source="viktor135.png"/>
+		</avatar>
+	</character>
+
+	<character name="Numero3">	
+
+		<stats>
+			<strength value="10"/>
+  			<agility value="170"/>
+			<vitality value="60"/>
+			<intelligence value="50"/>
+			<spirit value="10"/>
+		</stats>
+
+		<attributes>
+			<life value="1600"/>
+			<mana value="60"/>
+			<vigor value="80"/>
+		</attributes>
+
+ 		<attack>
+			<melee value="25"/>
+			<range value="360"/>
+			<magic value="120"/>
+ 		</attack>
+
+ 		<defense>
+			<physic value="80"/>
+  			<magic value="45"/>
+ 		</defense>
+
+ 		<other>
+  			<critic value="30"/>
+  			<evasion value="35"/>
+  			<move value="8"/>
+ 		</other>
+
+		<activespells>
+			<spell1 name="Explosive arrow"/>
+			<spell2 name="Bears trap"/>
+		</activespells>
+
+		<pasives>
+			<pasive1 name="Ranger"/>
+		</pasives>
+
+ 		<spritesheet name="walk" spritewidth="64" spriteheight="64">
+  			<image source="sojaWalk.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="spell" spritewidth="64" spriteheight="64">
+  			<image source="sojaSpell.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="64" spriteheight="64">
+  			<image source="sojaSlash.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="192" spriteheight="192">
+  			<image source="sojaSlash192.png"/>
+ 		</spritesheet>
+		
+		<avatar>
+			<image source="viktor135.png"/>
+		</avatar>
+	</character>
+
+	<character name="Numero4">	
+
+		<stats>
+			<strength value="10"/>
+  			<agility value="170"/>
+			<vitality value="60"/>
+			<intelligence value="50"/>
+			<spirit value="10"/>
+		</stats>
+
+		<attributes>
+			<life value="1600"/>
+			<mana value="60"/>
+			<vigor value="80"/>
+		</attributes>
+
+ 		<attack>
+			<melee value="25"/>
+			<range value="360"/>
+			<magic value="120"/>
+ 		</attack>
+
+ 		<defense>
+			<physic value="80"/>
+  			<magic value="45"/>
+ 		</defense>
+
+ 		<other>
+  			<critic value="30"/>
+  			<evasion value="35"/>
+  			<move value="8"/>
+ 		</other>
+
+		<activespells>
+			<spell1 name="Explosive arrow"/>
+			<spell2 name="Bears trap"/>
+		</activespells>
+
+		<pasives>
+			<pasive1 name="Ranger"/>
+		</pasives>
+
+ 		<spritesheet name="walk" spritewidth="64" spriteheight="64">
+  			<image source="sojaWalk.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="spell" spritewidth="64" spriteheight="64">
+  			<image source="sojaSpell.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="64" spriteheight="64">
+  			<image source="sojaSlash.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="192" spriteheight="192">
+  			<image source="sojaSlash192.png"/>
+ 		</spritesheet>
+		
+		<avatar>
+			<image source="viktor135.png"/>
+		</avatar>
+	</character>
+
+	<character name="Numero5">	
+
+		<stats>
+			<strength value="10"/>
+  			<agility value="170"/>
+			<vitality value="60"/>
+			<intelligence value="50"/>
+			<spirit value="10"/>
+		</stats>
+
+		<attributes>
+			<life value="1600"/>
+			<mana value="60"/>
+			<vigor value="80"/>
+		</attributes>
+
+ 		<attack>
+			<melee value="25"/>
+			<range value="360"/>
+			<magic value="120"/>
+ 		</attack>
+
+ 		<defense>
+			<physic value="80"/>
+  			<magic value="45"/>
+ 		</defense>
+
+ 		<other>
+  			<critic value="30"/>
+  			<evasion value="35"/>
+  			<move value="8"/>
+ 		</other>
+
+		<activespells>
+			<spell1 name="Explosive arrow"/>
+			<spell2 name="Bears trap"/>
+		</activespells>
+
+		<pasives>
+			<pasive1 name="Ranger"/>
+		</pasives>
+
+ 		<spritesheet name="walk" spritewidth="64" spriteheight="64">
+  			<image source="sojaWalk.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="spell" spritewidth="64" spriteheight="64">
+  			<image source="sojaSpell.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="64" spriteheight="64">
+  			<image source="sojaSlash.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="192" spriteheight="192">
+  			<image source="sojaSlash192.png"/>
+ 		</spritesheet>
+		
+		<avatar>
+			<image source="viktor135.png"/>
+		</avatar>
+	</character>
+
+	<character name="Numero6">	
+
+		<stats>
+			<strength value="10"/>
+  			<agility value="170"/>
+			<vitality value="60"/>
+			<intelligence value="50"/>
+			<spirit value="10"/>
+		</stats>
+
+		<attributes>
+			<life value="1600"/>
+			<mana value="60"/>
+			<vigor value="80"/>
+		</attributes>
+
+ 		<attack>
+			<melee value="25"/>
+			<range value="360"/>
+			<magic value="120"/>
+ 		</attack>
+
+ 		<defense>
+			<physic value="80"/>
+  			<magic value="45"/>
+ 		</defense>
+
+ 		<other>
+  			<critic value="30"/>
+  			<evasion value="35"/>
+  			<move value="8"/>
+ 		</other>
+
+		<activespells>
+			<spell1 name="Explosive arrow"/>
+			<spell2 name="Bears trap"/>
+		</activespells>
+
+		<pasives>
+			<pasive1 name="Ranger"/>
+		</pasives>
+
+ 		<spritesheet name="walk" spritewidth="64" spriteheight="64">
+  			<image source="sojaWalk.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="spell" spritewidth="64" spriteheight="64">
+  			<image source="sojaSpell.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="64" spriteheight="64">
+  			<image source="sojaSlash.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="192" spriteheight="192">
+  			<image source="sojaSlash192.png"/>
+ 		</spritesheet>
+		
+		<avatar>
+			<image source="viktor135.png"/>
+		</avatar>
+	</character>
+
+	<character name="Numero7">	
+
+		<stats>
+			<strength value="10"/>
+  			<agility value="170"/>
+			<vitality value="60"/>
+			<intelligence value="50"/>
+			<spirit value="10"/>
+		</stats>
+
+		<attributes>
+			<life value="1600"/>
+			<mana value="60"/>
+			<vigor value="80"/>
+		</attributes>
+
+ 		<attack>
+			<melee value="25"/>
+			<range value="360"/>
+			<magic value="120"/>
+ 		</attack>
+
+ 		<defense>
+			<physic value="80"/>
+  			<magic value="45"/>
+ 		</defense>
+
+ 		<other>
+  			<critic value="30"/>
+  			<evasion value="35"/>
+  			<move value="8"/>
+ 		</other>
+
+		<activespells>
+			<spell1 name="Explosive arrow"/>
+			<spell2 name="Bears trap"/>
+		</activespells>
+
+		<pasives>
+			<pasive1 name="Ranger"/>
+		</pasives>
+
+ 		<spritesheet name="walk" spritewidth="64" spriteheight="64">
+  			<image source="sojaWalk.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="spell" spritewidth="64" spriteheight="64">
+  			<image source="sojaSpell.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="64" spriteheight="64">
+  			<image source="sojaSlash.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="192" spriteheight="192">
+  			<image source="sojaSlash192.png"/>
+ 		</spritesheet>
+		
+		<avatar>
+			<image source="viktor135.png"/>
+		</avatar>
+	</character>
+
+	<character name="Numero8">	
+
+		<stats>
+			<strength value="10"/>
+  			<agility value="170"/>
+			<vitality value="60"/>
+			<intelligence value="50"/>
+			<spirit value="10"/>
+		</stats>
+
+		<attributes>
+			<life value="1600"/>
+			<mana value="60"/>
+			<vigor value="80"/>
+		</attributes>
+
+ 		<attack>
+			<melee value="25"/>
+			<range value="360"/>
+			<magic value="120"/>
+ 		</attack>
+
+ 		<defense>
+			<physic value="80"/>
+  			<magic value="45"/>
+ 		</defense>
+
+ 		<other>
+  			<critic value="30"/>
+  			<evasion value="35"/>
+  			<move value="8"/>
+ 		</other>
+
+		<activespells>
+			<spell1 name="Explosive arrow"/>
+			<spell2 name="Bears trap"/>
+		</activespells>
+
+		<pasives>
+			<pasive1 name="Ranger"/>
+		</pasives>
+
+ 		<spritesheet name="walk" spritewidth="64" spriteheight="64">
+  			<image source="sojaWalk.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="spell" spritewidth="64" spriteheight="64">
+  			<image source="sojaSpell.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="64" spriteheight="64">
+  			<image source="sojaSlash.png"/>
+ 		</spritesheet>
+
+ 		<spritesheet name="slash" spritewidth="192" spriteheight="192">
+  			<image source="sojaSlash192.png"/>
+ 		</spritesheet>
+		
+		<avatar>
+			<image source="viktor135.png"/>
+		</avatar>
 	</character>
 </game>

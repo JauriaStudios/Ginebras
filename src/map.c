@@ -41,7 +41,7 @@ typedef struct TileSet{
 } TileSet;
 
 /**********************************************************
- *** INTERNAL PROTOTIPES
+ *** INTERNAL PROTOTYPES
  **********************************************************/
 static Layer *LayerConstructor(xmlChar *xmlchar, int numTileswidth, int numTilesheight, char *name,SDL_Surface *screen, Map *map);
 static xmlChar* parseLayer(xmlDocPtr map, xmlNodePtr cur);
@@ -292,12 +292,13 @@ void MapParseMap(Map* map, char *mapname, SDL_Surface *screen)
 		}
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *)"layer"))){
 			tmp = parseLayer (doc, cur);
-			layer = LayerConstructor(tmp,atoi((char*)xmlGetProp(cur, (xmlChar*)"width")),atoi((char*)xmlGetProp(cur, (xmlChar*)"height")), (char*)xmlGetProp(cur, (xmlChar*)"name"), screen, map);
+			layer = LayerConstructor(tmp,atoi((char*)xmlGetProp(cur, (xmlChar*)"width")),atoi((char*)xmlGetProp(cur, (xmlChar*)"height")), 
+									     (char*)xmlGetProp(cur, (xmlChar*)"name"), screen, map);
 			list_add_tail(&layer->list, &map->listLayer);
 			//printf("%s", tmp);
 		}
 	
-	cur = cur->next;
+		cur = cur->next;
 	}
 /*	
 	list_for_each_entry(tmpLayer, &map->listLayer, list){

@@ -435,4 +435,3 @@ int CharacterCheckEnemy(Character *character, Map *map, int radius, int *xFind, 
 
 	return 0;
 }
-

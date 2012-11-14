@@ -22,6 +22,9 @@
 #include <string.h>
 #include "list.h"
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
 #include "SDL.h"
 #include "SDL_image.h"
 #include "cursor.h"
@@ -29,8 +32,10 @@
 #include "area.h"
 #include "map.h"
 
-#define NUM_SKIP_FRAMES  5
-#define COLLISIONS_DEPTH 1
+#define NUM_SKIP_FRAMES   5
+#define COLLISIONS_DEPTH  1
+#define NUM_ACTIVE_SPELLS 2
+#define NUM_PASIVE_SPELLS 1
 
 /**********************************************************
  **** STRUCTS 
@@ -71,7 +76,7 @@ typedef struct CharacterAttributes {
 	int attackMagic;
 
 	// Defense
-	int defenseMelee;
+	int defensePhysic;
 	int defenseMagic;
 
 	// Other
@@ -79,6 +84,21 @@ typedef struct CharacterAttributes {
 	int evasion;
 	int move;
 } CharacterAttributes;
+
+typedef struct CharacterSpells {
+	void *dataActiveSpells[NUM_ACTIVE_SPELLS];
+	void *dataPasiveSpells[NUM_PASIVE_SPELLS];
+	int (*activeSpells[NUM_ACTIVE_SPELLS])(void *data);
+	int (*pasiveSpells[NUM_PASIVE_SPELLS])(void *data);
+} CharacterSpells;
+
+typedef struct CharacterInput {
+	Orientation orientation;
+	int x0;
+	int y0;
+	int iniciative;
+	int player;
+} CharacterInput;
 
 typedef struct Character{
 
@@ -90,6 +110,7 @@ typedef struct Character{
 	SDL_Rect     rcDest, rcInitTurn;
 	
 	CharacterAttributes attributes;
+	CharacterSpells		spells;
 
 	DestinationPoint destinationPoint;
 	int velocity;

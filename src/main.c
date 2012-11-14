@@ -40,7 +40,6 @@
 #define FRAMES_PER_SECOND 30
 
 static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map, Menu *menu);
-static Character** vectorCharsGen(int option, Map *map);
 
 int modeCursor    = 1;
 int gameover      = 0;
@@ -60,15 +59,12 @@ int main(int argc, char **argv)
 
 	Intro *intro;	
 	Game *game;
-	Player *player1, *player2;
 	Map *map;
 	Timer *timer;
 	Cursor *cursor;
 	Interface *interface;
 	Grid *grid;	
 	Audio *introSound;
-
-	Character **vectorChar1, **vectorChar2;
 
 	// Default map to load
 	char *mapName = "Pueblo60x80.tmx";
@@ -96,7 +92,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	// end of arguments
+
 	// initialize SDL Video & Audio mixer
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
 		fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
@@ -108,7 +104,7 @@ int main(int argc, char **argv)
 	
 	// create window 
 	if(fullScreen == 1)
-		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF| SDL_FULLSCREEN);
+		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
 	else
 		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF);
 	
@@ -141,16 +137,8 @@ int main(int argc, char **argv)
 		printf("Main ERROR: impossible load data/Selector.png\n");
 	}
 
-	// Generate character vector (provisional sólo para desarrollo)
-	vectorChar1 = vectorCharsGen(1, map);
-	vectorChar2 = vectorCharsGen(2, map);
-
-	// Create players
-	player1 = PlayerConstructor(vectorChar1, 4, 1);
-	player2 = PlayerConstructor(vectorChar2, 4, 2);
-
 	// Create game
-	game = GameConstructor(player1, player2, map);
+	game = GameConstructor(map, "data/character/turboss.xml");
 
 	// Create game interface
 	interface = InterfaceConstructor(8, game);
@@ -387,93 +375,4 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 		default:
 			break;
 	}
-}
-
-Character** vectorCharsGen(int option, Map *map)
-{
-	// Variable definition section
-	Character **charVector;
-	Character *character;
-	//int i, j, k;
-
-	// Alloc vector
-	charVector = (Character**)malloc(sizeof(Character *)*4);
-
-	if(option == 1){
-		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/bone", ORIENT_SOUTH, 16*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 
-												7, 3, map->charPosition[1], 1, 1))) {
-			printf("GAME: error building a new character\n");
-			return NULL;
-		}
-		charVector[0] = character;
-
-		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/chain", ORIENT_SOUTH, 14*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 
-												6, 4, map->charPosition[1], 1, 1))){
-			printf("GAME: error building a new character\n");
-			return NULL;
-		}
-		charVector[1] = character;
-
-		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/hat", ORIENT_SOUTH, 12*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2,
-												5, 5, map->charPosition[1], 1, 1))) {
-			printf("GAME: error building a new character\n");
-			return NULL;
-		}
-		charVector[2] = character;
-
-		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/leather", ORIENT_SOUTH, 10*SPRITE_SIZE-(16), 4*SPRITE_SIZE/2, 
-												2, 6, map->charPosition[1], 1, 1))) {
-			printf("GAME: error building a new character\n");
-			return NULL;
-		}
-		charVector[3] = character;
-	}else {
-		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/TurBoss", ORIENT_NORTH, 15*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2, 
-												7, 20, map->charPosition[2], 2, 2))) {
-			printf("GAME: error building a new character\n");
-			return NULL;
-		}
-		charVector[0] = character;
-
-		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/link", ORIENT_NORTH, 13*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2,
-												6, 2, map->charPosition[2], 2, 2))){
-			printf("GAME: error building a new character\n");
-			return NULL;
-		}
-		charVector[1] = character;
-
-		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/guard", ORIENT_NORTH, 11*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2,
-												5, 3, map->charPosition[2], 2, 2))) {
-			printf("GAME: error building a new character\n");
-			return NULL;
-		}
-		charVector[2] = character;
-
-		// Build a new Character
-		if( !(character = CharacterConstructor("data/character/thief", ORIENT_NORTH, 9*SPRITE_SIZE-(16), 7*SPRITE_SIZE/2,
-												2, 4, map->charPosition[2], 2, 2))) {
-			printf("GAME: error building a new character\n");
-			return NULL;
-		}
-		charVector[3] = character;
-	}
-
-/*	
-	for(k=0;k<3;k++){
-		for(i=0;i<map->height;i++){
-			for(j=0;j<map->width;j++)
-				printf("%d ", map->charPosition[k][i][j]);	
-			printf("\n");
-		}
-		printf("\n\n");
-	}
-*/
-	return charVector;
 }

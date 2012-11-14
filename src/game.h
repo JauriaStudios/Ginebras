@@ -34,7 +34,7 @@ typedef struct Game {
 	int 	  numChecks;
 } Game;
 
-extern Game* GameConstructor(Player *player1, Player *player2, Map *map);
+extern Game* GameConstructor(Map *map, char *fileGame);
 extern int GameMoveCharacters(Game *game, Map *map);
 extern int GameDrawCharacters(Game *game, SDL_Surface *screen, Map *map);
 extern void GameDestructor(Game *game);
