@@ -39,8 +39,9 @@
 
 #define FRAMES_PER_SECOND 30
 
-static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map, Menu *menu);
-
+/**********************************************************
+ **** GLOBAL VARIABLES
+ **********************************************************/
 int modeCursor    = 1;
 int gameover      = 0;
 int showGrid      = 0;
@@ -50,13 +51,122 @@ int fullScreen    = 1;
 int modeMenu      = 0;
 int flag		  = 0;
 
+char *mapName;
+char buffMapName[40];
+
+/**********************************************************
+ **** TYPES
+ **********************************************************/
+typedef struct gameCommand {
+	const char* mCommand;
+	const char* mDesc;
+	int (*mAction)(int argc, char** argv);
+} gameCommand;
+
+/**********************************************************
+ **** PROTOTYPES
+ **********************************************************/
+static int PrintHelp(int argc, char** argv);
+static int Test(int argc, char** argv);
+static int LoadMap(int argc, char** argv);
+static int Skip(int argc, char** argv);
+static int WindowMode(int argc, char** argv);
+static void HandleEvent(SDL_Event event, SDL_Surface* screen, Game *game, Cursor *cursor, Map *map, Menu *menu);
+
+/**********************************************************
+ **** COMMANDS
+ **********************************************************/
+static gameCommand Commands[] =
+{
+	{.mCommand = "--help", .mDesc = "Prints help", .mAction = PrintHelp},
+	{.mCommand = "--test", .mDesc ="Tests", .mAction = Test},
+	{.mCommand = "--map", .mDesc = "Load specific map", .mAction = LoadMap},
+	{.mCommand = "--skip", .mDesc = "Skip intro", .mAction = Skip},
+	{.mCommand = "--window", .mDesc = "Starts in window mode", .mAction = WindowMode},
+	{}
+};
+
+/**********************************************************
+ **** INTERNAL METHODS
+ **********************************************************/
+int PrintHelp(int argc, char** argv)
+{
+	printf ("Sons of battle Development version \"Ginebras\" ( http://jauria.mooo.com/redmine )\n");
+	printf ("Usage: ginebras [Options]\n");
+	printf ("OPTIONS:\n");
+
+	int i;
+
+	for (i = 0; i < 5; i++) {
+		printf (" %s: %s\n", Commands[i].mCommand, Commands[i].mDesc);
+	}
+
+	printf ("EXAMPLES:\n");
+	printf ("  ginebras --map arena.tmx\n");
+	return -1;
+}
+
+int Test(int argc, char** argv)
+{
+	printf("Test ok \n");
+	return -1;
+}
+
+int LoadMap(int argc, char** argv)
+{	
+
+	// Check Parameters
+	if (argc == 2) {
+		printf("ERROR: No map name especified, read help to see more \n");
+		return -1;
+	}
+	else if (argc > 3) {
+		printf("ERROR: Too few parameters, read help to see more \n");
+		return -1;
+	}
+
+	mapName = argv[2];
+	return 0;
+}
+
+int Skip(int argc, char** argv)
+{	
+
+	// Check Parameters
+	if (argc < 2) {
+		printf("ERROR: Too few parameters, read help to see more \n");
+		return -1;
+	}
+
+	printf("Skip ok \n");
+	skipIntro = 1;
+	return 0;
+}
+
+int WindowMode(int argc, char** argv)
+{	
+
+	// Check Parameters
+	if (argc < 2) {
+		printf("ERROR: Too few parameters, read help to see more \n");
+		return -1;
+	}
+
+	printf("Window ok \n");
+	fullScreen = 0;
+	return 0;
+}
+
+/**********************************************************
+ **** MAIN
+ **********************************************************/
 int main(int argc, char **argv)
 {
 	// Variable definition section
 	SDL_Surface *screen, *selector;
 	SDL_Rect rcSelector;
 	SDL_Event event;	
-
+	
 	Intro *intro;	
 	Game *game;
 	Map *map;
@@ -65,31 +175,22 @@ int main(int argc, char **argv)
 	Interface *interface;
 	Grid *grid;	
 	Audio *introSound;
-
+	
 	// Default map to load
-	char *mapName = "Pueblo60x80.tmx";
-	char mapNameBuff[40];
-
+	mapName = "Pueblo60x80.tmx";
+	
 	// handle main arguments
-	if (argc > 1) {
-		int i ;
-		for (i = 1; i < argc; i++) {
-			if (!strcasecmp(argv[i], "--window")) {
-				fullScreen = 0;
+	int i = 0;
+	
+	// Check
+	if(argc > 1) {
+		// Find command
+		while(Commands[i].mAction) {
+			if(!strncmp(argv[1], Commands[i].mCommand, strlen(Commands[i].mCommand))){
+				if(Commands[i].mAction(argc, argv))
+					return -1;
 			}
-			if (!strcasecmp(argv[i], "--skip")) {
-				skipIntro = 1;
-			}
-			if (!strcasecmp(argv[i], "--map")) {
-				mapName = argv[i+1];
-			}
-			if (!strcasecmp(argv[i], "--help")) {
-				printf( "usage: %s --map mapname # Load especified map\n", argv[0] );
-				printf( "usage: %s --skip # Skip intro \n", argv[0] );
-				printf( "usage: %s --window # start in window mode \n", argv[0] );
-				printf( "usage: %s --help # show this help \n", argv[0] );
-				return -1;
-			}
+			i++;
 		}
 	}
 
@@ -99,14 +200,14 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	
-	// set the title bar 
+	// set the title bar
 	SDL_WM_SetCaption("The legend of Ginebras - Jauria Studios", "Jauria Studios");
 	
-	// create window 
-	if(fullScreen == 1)
-		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
-	else
-		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF);
+	// create sdl window 
+	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF| SDL_FULLSCREEN);
+
+	if(!fullScreen)
+		SDL_WM_ToggleFullScreen(screen);
 	
 	// set keyboard repeat 
 	SDL_EnableKeyRepeat(70, 70); // SDL_DEFAULT_REPEAT_INTERVAL
@@ -116,7 +217,7 @@ int main(int argc, char **argv)
 	AudioLoadFile(introSound, "data/sound/intro.wav");
 	
 	// Game Intro
-	if(skipIntro == 0){
+	if(!skipIntro){
 		SDL_Delay(1000);
 
 		AudioPlaySound(introSound);
@@ -126,8 +227,8 @@ int main(int argc, char **argv)
 	}
 
 	// Load background
-	sprintf(mapNameBuff,"data/%s",mapName);
-	map = MapConstructor(screen, mapNameBuff);
+	sprintf(buffMapName,"data/%s",mapName);
+	map = MapConstructor(screen, buffMapName);
 
 	// Load grid
 	grid = GridConstructor(map->tileWidth, map->tileHeight);
@@ -241,6 +342,9 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+/**********************************************************
+ **** HANDLE EVENTS
+ **********************************************************/
 void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *cursor, Map *map, Menu *menu)
 {
 	// Variable definition section
