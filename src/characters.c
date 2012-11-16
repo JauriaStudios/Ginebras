@@ -106,10 +106,10 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	character->destinationPoint.y = y0;
 	
 	// Set initial state
-	character->moving = 0;
+	character->moving 	  = 0;
 	character->actualStep = 0;
 	character->moveSteps  = 0;
-	character->moveState = 0;
+	character->moveState  = 0;
 
 	// Set linked list
 	INIT_LIST_HEAD(&character->list);
@@ -126,10 +126,10 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	character->rcSrcAttack.h = SPRITE_SIZE;
 	
 	// Set attack atributes
-	character->attackState = 0;
-	character->attacking = 0;
+	character->attackState 		= 0;
+	character->attacking 		= 0;
 	character->actualAttackStep = 0;
-	character->attackRadius = attackRadius;
+	character->attackRadius 	= attackRadius;
 
 	return character;
 }
@@ -147,6 +147,22 @@ void CharacterDestructor(Character *character)
 	
 	// Free character
 	free(character);
+}
+
+CharacterInput* CharacterFillConfigure(Orientation orientation, int x0, int y0, int iniciative, int player)
+{
+	// Variable definition section
+	CharacterInput *charInput;
+
+	charInput = (CharacterInput *) malloc(sizeof(CharacterInput));
+
+	charInput->orientation = orientation;
+	charInput->x0 		   = x0; 
+	charInput->y0 		   = y0;
+    charInput->iniciative  = iniciative;
+	charInput->player	   = player;
+
+	return charInput;
 }
 
 void CharacterSetDestination(Character* character, Cursor* cursor, Map *map)

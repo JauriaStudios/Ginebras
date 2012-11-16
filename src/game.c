@@ -21,6 +21,7 @@
  **********************************************************/
 static Character** GameVectorCharsGen(int option, Map *map);
 static int GameParseData(Game *game, char *filename);
+static void GameConfigureCharactersInput(Game *this); 
 
 /**********************************************************
  *** METHOD IMPLEMENTATION

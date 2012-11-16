@@ -160,6 +160,7 @@ typedef struct Character{
  **** METHODS 
  **********************************************************/
 extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int areaRadius, int player);
+extern Character* CharacterConstructor2(CharacterAttributes *attributes, CharacterInput *input);
 extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor, Map *map);
 extern void CharacterMove(Character *character, Map *map);
@@ -168,5 +169,6 @@ extern void CharacterSetAttack(Character *character, AttackType type);
 extern void CharacterAttack(Character* character);
 extern void CharacterGetCoor(Character *character, int *x, int *y);
 extern int  CharacterCheckEnemy(Character *character, Map *map, int radius, int *xFind, int *yFind);
+extern CharacterInput* CharacterFillConfigure(Orientation orientation, int x0, int y0, int iniciative, int player);
 
 #endif //_CHARACTER_H_
