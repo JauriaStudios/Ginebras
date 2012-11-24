@@ -31,6 +31,7 @@
 #include "gameUtilities.h"
 #include "area.h"
 #include "map.h"
+#include "projectile.h"
 
 #define NUM_SKIP_FRAMES   5
 #define COLLISIONS_DEPTH  1
@@ -154,13 +155,16 @@ typedef struct Character{
 	int orientCol;
 	int collision;
 
+	// Projectile
+	Projectile *projectile;
+
 } Character;
 
 /**********************************************************
  **** METHODS 
  **********************************************************/
 extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int areaRadius, int player);
-extern Character* CharacterConstructor2(CharacterAttributes *attributes, CharacterInput *input);
+extern Character* CharacterConstructor2(xmlNodePtr cur, CharacterInput input, Map *map);
 extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor, Map *map);
 extern void CharacterMove(Character *character, Map *map);

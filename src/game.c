@@ -16,12 +16,23 @@
 
 #include "game.h"
 
+CharacterInput charData[] = {
+	{.orientation= ORIENT_SOUTH, .x0 = 16*SPRITE_SIZE-(16), .y0 = 4*SPRITE_SIZE/2, .iniciative = 6, .player = 1},
+	{.orientation= ORIENT_SOUTH, .x0 = 14*SPRITE_SIZE-(16), .y0 = 4*SPRITE_SIZE/2, .iniciative = 3, .player = 1},
+	{.orientation= ORIENT_SOUTH, .x0 = 12*SPRITE_SIZE-(16), .y0 = 4*SPRITE_SIZE/2, .iniciative = 2, .player = 1},
+	{.orientation= ORIENT_SOUTH, .x0 = 10*SPRITE_SIZE-(16), .y0 = 4*SPRITE_SIZE/2, .iniciative = 4, .player = 1},
+	{.orientation= ORIENT_NORTH, .x0 = 15*SPRITE_SIZE-(16), .y0 = 7*SPRITE_SIZE/2, .iniciative = 5, .player = 2},
+	{.orientation= ORIENT_NORTH, .x0 = 13*SPRITE_SIZE-(16), .y0 = 7*SPRITE_SIZE/2, .iniciative = 5, .player = 2},
+	{.orientation= ORIENT_NORTH, .x0 = 11*SPRITE_SIZE-(16), .y0 = 7*SPRITE_SIZE/2, .iniciative = 4, .player = 2},
+	{.orientation= ORIENT_NORTH, .x0 =  9*SPRITE_SIZE-(16), .y0 = 7*SPRITE_SIZE/2, .iniciative = 1, .player = 2},
+	{}
+};
+
 /**********************************************************
  *** INTERNAL PROTOTYPES
  **********************************************************/
 static Character** GameVectorCharsGen(int option, Map *map);
-static int GameParseData(Game *game, char *filename);
-static void GameConfigureCharactersInput(Game *this); 
+static Character** GameParseData(Game *game, char *filename, Map *map);
 
 /**********************************************************
  *** METHOD IMPLEMENTATION
@@ -32,29 +43,44 @@ Game* GameConstructor(Map *map, char *fileGame)
 	Game *game;
 	Player *player1, *player2;
 	Character *tmp, *max = NULL;
-	Character **charVector;
-	Character **vectorChar1, **vectorChar2;
+	Character **vectorChar, **vectorChar1, **vectorChar2;
 	int i, j, add;
-	int numChars = 4 + 4;
+	//int numChars = 4 + 4;
 
 	// Alloc game
 	game = (Game *)malloc(sizeof(Game));
 	
-	GameParseData(game, fileGame);
+	//game->characters = 
+	vectorChar = GameParseData(game, fileGame, map);
 
 	// Generate character vector (provisional sólo para desarrollo)
-	vectorChar1 = GameVectorCharsGen(1, map);
-	vectorChar2 = GameVectorCharsGen(2, map);
+	//vectorChar1 = GameVectorCharsGen(1, map);
+	//vectorChar2 = GameVectorCharsGen(2, map);
+
+	vectorChar1 = (Character **)malloc(sizeof(Character*) * game->numChar/2);
+	vectorChar2 = (Character **)malloc(sizeof(Character*) * game->numChar/2);
+
+	for(i = 0; i < game->numChar/2; i++)
+		vectorChar1[i] = vectorChar[i];
+	
+	for(j = 0; j < game->numChar/2; j++){
+		vectorChar2[j] = vectorChar[i];
+		i++;
+	}
 
 	// Create players
 	player1 = PlayerConstructor(vectorChar1, 4, 1);
 	player2 = PlayerConstructor(vectorChar2, 4, 2);
 
+	game->player1 = player1;
+	game->player2 = player2;
+
 	game->map = map;
 
 	// Alloc player1 and player2 characters
-	charVector = (Character**)malloc(sizeof(Character *) * (numChars));
+	//charVector = (Character**)malloc(sizeof(Character *) * (numChars));
 
+	/*
 	for(i = 0; i < player1->numChars; i++)
 		charVector[i] = player1->charVector[i];
 	
@@ -62,25 +88,27 @@ Game* GameConstructor(Map *map, char *fileGame)
 		charVector[i] = player2->charVector[j];
 		i++;
 	}
+	*/
 	
 	// Game initialization
-	game->numChar = numChars;
+	//game->numChar = numChars;
 	INIT_LIST_HEAD(&game->listCharacters);
 	game->numChecks = 0;
 
 	// Save sorted characters in the list
 	add = 0;
-	while(add != numChars){
-		for(j = 0; j < numChars; j++){
-			if(!charVector[j]->check){
-				max = charVector[j];
+	while(add != game->numChar){
+		for(j = 0; j < game->numChar; j++){
+			if(!vectorChar[j]->check){
+				max = vectorChar[j];
 				goto yes;
 			}
 		}	
 yes:
-		for(i = 0; i < numChars; i++){
-			if((charVector[i]->iniciative > max->iniciative) && (!charVector[i]->check)){
-				max = charVector[i];
+
+		for(i = 0; i < game->numChar; i++){
+			if((vectorChar[i]->iniciative > max->iniciative) && (!vectorChar[i]->check)){
+				max = vectorChar[i];
 			}
 		}
 		list_add_tail(&max->list, &game->listCharacters);
@@ -95,6 +123,7 @@ yes:
 	game->actualCharacter = list_first_entry(&game->listCharacters, Character, list);
 	game->actualCharacter->check = 1;
 
+printf("ACTUALCHARACTER %d\n", game->actualCharacter->iniciative);
 	return game;
 }
 
@@ -177,37 +206,44 @@ void GameActionChar(Game *game, Cursor *cursor)
 /**********************************************************
  *** INTERNAL METHOD IMPLEMENTATION
  **********************************************************/
-int GameParseData(Game *game, char *filename)
+Character** GameParseData(Game *game, char *filename, Map *map)
 {
 	// Variable definition section
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	//xmlChar * tmp = NULL;
 	int numChars;
+	Character **charVector;
+	int i = 0;
 
 	// Load xml file
 	if(!(doc = xmlParseFile(filename))){
 		printf("CharacteParseData ERROR: file %s not parsed successfully\n", filename);
-		return -1;
+		return NULL;
 	}
 
-	// Get xml root	
+	// Get xml root
 	if (!(cur = xmlDocGetRootElement(doc))) {
 		printf("CharacteParseData ERROR: empty root character\n");
 		xmlFreeDoc(doc);
-		return -1;
+		return NULL;
 	}
-	
+
 	// Exist general characters info
 	if (xmlStrcmp(cur->name, (const xmlChar *) "game")) {
 		printf("CharacteParseData ERROR: document of the wrong type, root node != game\n");
 		xmlFreeDoc(doc);
-		return -1;
+		return NULL;
 	}
 
 	numChars = atoi((char*)xmlGetProp(cur, (xmlChar*)"numChars"));
 
+	game->numChar = numChars;
+
 	printf("PARSECHARS, numChars: %d\n", numChars);
+
+	// Alloc vector
+	charVector = (Character**)malloc(sizeof(Character *)*numChars);
 
 	cur = cur->xmlChildrenNode;
 
@@ -215,11 +251,13 @@ int GameParseData(Game *game, char *filename)
 	while (cur) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"character"))){
 			printf("*\n");	
+			charVector[i] = CharacterConstructor2(cur, charData[i], map);
+			i++;
 		}
-	
 		cur = cur->next;
 	}
-	return 0;
+
+	return charVector;
 }
 
 Character** GameVectorCharsGen(int option, Map *map)

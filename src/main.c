@@ -36,6 +36,7 @@
 #include "grid.h"
 #include "menu.h"
 #include "audio.h"
+#include "projectile.h"
 
 #define FRAMES_PER_SECOND 30
 
@@ -315,7 +316,7 @@ int main(int argc, char **argv)
 			flag = 0;
 			modeMenu = 0;
 			MenuClose(interface->menu);
-			GameActionChar(game, cursor);
+			//GameActionChar(game, cursor); // CHAPUZA ALERT
 		}
 
 		// Update the screen 
@@ -432,6 +433,7 @@ void HandleEvent(SDL_Event event, SDL_Surface *screen, Game *game, Cursor *curso
 					break;
 				case SDLK_a:
 					CharacterSetAttack(game->actualCharacter, SLASH);
+					game->actualCharacter->projectile->action = 1;
 					break;
 				case SDLK_s:
 					CharacterSetAttack(game->actualCharacter, SLASH192);

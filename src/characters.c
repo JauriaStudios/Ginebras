@@ -131,6 +131,207 @@ Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int 
 	character->actualAttackStep = 0;
 	character->attackRadius 	= attackRadius;
 
+	character->projectile = ProjectileConstructor("data/arrow.png");
+
+	return character;
+}
+
+Character* CharacterConstructor2(xmlNodePtr cur, CharacterInput input, Map *map)
+{
+	
+	Character* character;
+	xmlNodePtr attributes, sprites;
+	xmlChar *nameSprite;
+	int coordX, coordY;
+	int attackRadius = 1; // CHAPUZA ALERT
+
+	character = (Character *)malloc(sizeof(Character));
+
+	attributes = cur->xmlChildrenNode;
+	attributes = attributes->next;
+	
+	// Parse xml
+	while (attributes) {
+		
+		if ((!xmlStrcmp(attributes->name, (const xmlChar *)"stats"))){
+			character->attributes.strength 	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"strength"));
+			character->attributes.agility 	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"agility"));
+			character->attributes.vitality 	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"vitality"));
+			character->attributes.intelligence 	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"intelligence"));
+			character->attributes.spirit 	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"spirit"));
+			printf("stats\n");
+
+		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"attributes"))){
+			character->attributes.life  	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"life"));
+			character->attributes.mana  	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"mana"));
+			character->attributes.vigor 	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"vigor"));
+			printf("attributes\n");
+
+		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"attack"))){
+			character->attributes.attackMelee  	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"melee"));
+			character->attributes.attackRange  	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"range"));
+			character->attributes.attackMagic  	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"magic"));
+			printf("attack\n");
+
+		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"defense"))){
+			character->attributes.defensePhysic  = atoi((char *)xmlGetProp(attributes, (xmlChar*)"physic"));
+			character->attributes.defenseMagic   = atoi((char *)xmlGetProp(attributes, (xmlChar*)"magic"));
+			printf("defense\n");
+
+		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"other"))){
+			character->attributes.critic 	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"critic"));
+			character->attributes.evasion 	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"evasion"));
+			character->attributes.move	  	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"move"));
+			printf("other\n");
+
+		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"activespells"))){
+			//character->spells.  = atoi((char *)xmlGetProp(cur, (xmlChar*)"spell1"));
+			//character->spells.  = atoi((char *)xmlGetProp(cur, (xmlChar*)"spell2"));
+			printf("activespells\n");
+
+		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"pasives"))){
+			printf("pasives\n");
+
+		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"spritesheet"))){
+			printf("spritesheet\n");
+			nameSprite = xmlGetProp(attributes, (xmlChar*)"name");
+
+			if((!xmlStrcmp(nameSprite, (const xmlChar *)"walk"))){
+				// Parse walk sprite
+				printf("  walk\n");
+
+				sprites = attributes->xmlChildrenNode;
+				sprites = sprites->next;
+
+				if((!xmlStrcmp(sprites->name, (const xmlChar *)"image"))){
+					if(!(character->sprite = loadImage((char *)xmlGetProp(sprites, (xmlChar*)"source")))){
+						printf("CharacterConstructor ERROR: impossible load %s image\n", (char *)xmlGetProp(sprites, (xmlChar*)"source"));	
+						return NULL;
+					}
+					printf("  SRC: %s image\n", (char *)xmlGetProp(sprites, (xmlChar*)"source"));	
+				}
+			}else if ((!xmlStrcmp(nameSprite, (const xmlChar *)"spell"))){
+				// Parse spell sprite
+				printf("  spell\n");
+
+				sprites = attributes->xmlChildrenNode;
+				sprites = sprites->next;
+
+				if((!xmlStrcmp(sprites->name, (const xmlChar *)"image"))){
+					if(!(character->spriteSpell = loadImage((char *)xmlGetProp(sprites, (xmlChar*)"source")))){
+						printf("CharacterConstructor ERROR: impossible load %s image\n", (char *)xmlGetProp(sprites, (xmlChar*)"source"));	
+						return NULL;
+					}
+					printf("  SRC: %s image\n", (char *)xmlGetProp(sprites, (xmlChar*)"source"));	
+				}
+			}else if ((!xmlStrcmp(nameSprite, (const xmlChar *)"slash"))){
+				printf("  slash\n");
+
+				sprites = attributes->xmlChildrenNode;
+				sprites = sprites->next;
+
+				if((!xmlStrcmp(sprites->name, (const xmlChar *)"image"))){
+					if(!(character->spriteSlash = loadImage((char *)xmlGetProp(sprites, (xmlChar*)"source")))){
+						printf("CharacterConstructor ERROR: impossible load %s image\n", (char *)xmlGetProp(sprites, (xmlChar*)"source"));	
+						return NULL;
+					}
+					printf("  SRC: %s image\n", (char *)xmlGetProp(sprites, (xmlChar*)"source"));	
+				}
+			}else if ((!xmlStrcmp(nameSprite, (const xmlChar *)"slash192"))){
+				printf("  slash192\n");
+
+				sprites = attributes->xmlChildrenNode;
+				sprites = sprites->next;
+
+				if((!xmlStrcmp(sprites->name, (const xmlChar *)"image"))){
+					if(!(character->sprite192Slash = loadImage((char *)xmlGetProp(sprites, (xmlChar*)"source")))){
+						printf("CharacterConstructor ERROR: impossible load %s image\n", (char *)xmlGetProp(sprites, (xmlChar*)"source"));	
+						return NULL;
+					}
+					printf("  SRC: %s image\n", (char *)xmlGetProp(sprites, (xmlChar*)"source"));	
+				}
+			}
+
+
+		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"avatar"))){
+			printf("avatar\n");
+
+		}
+		attributes = attributes->next;
+	}
+	
+	// Set player
+	character->player = input.player;
+
+	printf("MOVE: %d (%d,%d)\n", character->attributes.move, input.x0, input.y0);
+
+	character->movement = character->attributes.move;
+
+	// Set movement
+	if (!(character->moveArea = AreaConstructor(input.x0, input.y0, character->attributes.move))){
+		SDL_FreeSurface(character->sprite);
+		SDL_FreeSurface(character->spriteSlash);
+		printf("Character constructor ERROR: couldn't create movement area\n");
+		return NULL;
+	}
+	
+    // Set initial state
+    character->state = MOVING;
+
+	// Set sprite initial position
+	character->rcDest.x 	= input.x0;
+	character->rcDest.y 	= input.y0;
+	character->rcInitTurn.x = input.x0;
+	character->rcInitTurn.y = input.y0;
+
+	// Set initial animation sprite frame
+	character->rcSrc.x = 0;
+	character->rcSrc.y = input.orientation * SPRITE_SIZE;
+	character->rcSrc.w = SPRITE_SIZE;
+	character->rcSrc.h = SPRITE_SIZE;
+	
+	// Set initial character position
+	GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
+	map->charPosition[character->player][coordY][coordX] = 1;
+
+	// Set initial orientation
+	character->moveOrient = input.orientation;
+		
+	// Set initial velocity
+	character->velocity = 5;
+
+	// Set initial destination point
+	character->destinationPoint.x = input.x0;
+	character->destinationPoint.y = input.y0;
+	
+	// Set initial state
+	character->moving 	  = 0;
+	character->actualStep = 0;
+	character->moveSteps  = 0;
+	character->moveState  = 0;
+
+	// Set linked list
+	INIT_LIST_HEAD(&character->list);
+	INIT_LIST_HEAD(&character->listSort);
+
+	// Set initial turn variables
+	character->check = 0;
+	character->iniciative = input.iniciative;
+
+	// Set initial attack variables
+	character->rcSrcAttack.x = 0;
+	character->rcSrcAttack.y = input.orientation * SPRITE_SIZE;
+	character->rcSrcAttack.w = SPRITE_SIZE;
+	character->rcSrcAttack.h = SPRITE_SIZE;
+	
+	// Set attack atributes
+	character->attackState 		= 0;
+	character->attacking 		= 0;
+	character->actualAttackStep = 0;
+	character->attackRadius 	= attackRadius;
+
+	character->projectile = ProjectileConstructor("data/arrow.png");
+
 	return character;
 }
 
@@ -302,7 +503,7 @@ void CharacterMove(Character *character, Map *map)
 		// Animation
 		character->rcSrc.y = character->moveOrient * SPRITE_SIZE;
 		if(character->skipFrames >= NUM_SKIP_FRAMES) {
-			if (character->moveState == 4)
+			if (character->moveState == 3)
 				character->moveState = 1;
 			else
 				character->moveState++;
@@ -344,6 +545,8 @@ void CharacterDraw(Character* character, SDL_Surface* screen, Map *map)
 		}
 	}else
 		SDL_BlitSurface(character->sprite, &character->rcSrc, map->surfaceBack, &character->rcDest);	
+	
+	ProjectileDraw(character->projectile, map);
 }
 
 void CharacterSetAttack(Character *character, AttackType type)
@@ -357,7 +560,7 @@ void CharacterSetAttack(Character *character, AttackType type)
 	character->attackType 		= type;
 	switch(type){
 		case SLASH:
-			character->attackSteps = 4;
+			character->attackSteps = 3; // +1
 			break;
 		case SPELL:
 			character->attackSteps = 3;
@@ -373,6 +576,8 @@ void CharacterSetAttack(Character *character, AttackType type)
 void CharacterAttack(Character *character)
 {
 	int spriteSize = SPRITE_SIZE;
+	int x, y;
+	
 
 	if((character->attackType == SLASH) || (character->attackType == SPELL)){
 		spriteSize = SPRITE_SIZE;
@@ -403,6 +608,41 @@ void CharacterAttack(Character *character)
 		character->attackState = 0;
 		character->attacking = 0;
 		character->state = STOP;
+		switch(character->moveOrient){
+			case ORIENT_NORTH:
+				x = 0;
+				y = -32*10;
+				character->projectile->rcSrc.x = 0;
+				character->projectile->rcSrc.y = 0 * PROJECTILE_TILE_SIZE;
+				break;
+			case ORIENT_SOUTH:
+				x = 0;
+				y = 32*10;
+				character->projectile->rcSrc.x = 0;
+				character->projectile->rcSrc.y = 2 * PROJECTILE_TILE_SIZE;
+				break;
+			case ORIENT_EAST:
+				x = 32*10;
+				y = 0;
+				character->projectile->rcSrc.x = 0;
+				character->projectile->rcSrc.y = 3 * PROJECTILE_TILE_SIZE;
+				break;
+			case ORIENT_WEST:
+				x = -32*10;
+				y = 0;
+				character->projectile->rcSrc.x = 0;
+				character->projectile->rcSrc.y = 1 * PROJECTILE_TILE_SIZE;
+				break;
+			default:
+				x = 0;
+				y = 0;
+				character->projectile->rcSrc.x = 0;
+				character->projectile->rcSrc.y = 0;
+				break;
+		}
+		if(character->projectile->action){
+			ProjectileSetTrajectory(character->projectile, character, character->rcDest.x + x, character->rcDest.y + y);
+		}
 	}
 	character->rcSrcAttack.x = character->attackState * spriteSize;
 	

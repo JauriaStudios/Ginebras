@@ -32,6 +32,8 @@ typedef struct Game {
 	Cursor 	  *cursor;
 	int 	  numChar;
 	int 	  numChecks;
+
+	Character **characters; 
 } Game;
 
 extern Game* GameConstructor(Map *map, char *fileGame);
