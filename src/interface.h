@@ -23,6 +23,7 @@
 #include "menu.h"
 #include "game.h"
 #include "area.h"
+#include "characters.h"
 
 #define MAX_MENU_FUNC 4
 
@@ -54,7 +55,7 @@ typedef struct Interface{
  *** METHODS
  **********************************************************/
 extern Interface* InterfaceConstructor(int numBoxesW, Game *game);
-extern void InterfaceDraw(Interface *this, SDL_Surface *screen);
+extern void InterfaceDraw(Interface *this, SDL_Surface *screen, SDL_Surface *image, Game *game);
 extern void InterfaceDestructor(Interface *this);
 
 #endif // _INTERFACE_H_

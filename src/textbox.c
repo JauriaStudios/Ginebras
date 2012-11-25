@@ -27,11 +27,10 @@ TTF_Font* loadFont(char* file, int ptsize)
 	return tmpfont;
 }
 
-Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text, int rows, char *image, Menu *menu)
+Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text, int rows, SDL_Surface *image, Menu *menu)
 {
 	// Variable definition section
 	Textbox * textbox;
-	SDL_Rect rcSrcImg, rcDestImg;
 
 	// Alloc map
 	textbox = (Textbox *)malloc(sizeof(Textbox));
@@ -86,20 +85,19 @@ Textbox *TextboxConstructor(char *name ,int x, int y, int w, int h, char **text,
 	// Create window Test
 	TextboxCreateWindow(textbox);
 
+
 	// Load image
 	if(image){
-		rcSrcImg.x = 0;
-		rcSrcImg.y = 0;
-		rcSrcImg.w = 135;
-		rcSrcImg.h = 135;
-		rcDestImg.x = 10;
-		rcDestImg.y = 5;
-		if(!(textbox->image = loadImage(image))){
-			printf("Text Box constructor ERROR: impossible load %s\n", image);
-			return NULL;
-		}
-		
-		overSurface(textbox->image, &rcSrcImg, textbox->background, &rcDestImg, 135);
+		textbox->rcSrcImg.x = 0;
+		textbox->rcSrcImg.y = 0;
+		textbox->rcSrcImg.w = 135;
+		textbox->rcSrcImg.h = 135;
+		textbox->rcDestImg.x = 10;
+		textbox->rcDestImg.y = 5;
+
+		textbox->image = image;
+		SDL_BlitSurface(textbox->image, &textbox->rcSrcImg, textbox->background, &textbox->rcDestImg);
+		//overSurface(textbox->image, &textbox->rcSrcImg, textbox->background, &textbox->rcDestImg, 135);
 	}
 
 	// Load menu
@@ -127,12 +125,17 @@ void TextboxUpdate(Textbox * textbox, int scrollX, int scrollY)
 	//textbox->textMsg = tmpMsg;
 }
 
-int TextboxDraw(Textbox *textbox, SDL_Surface* screen)
+int TextboxDraw(Textbox *textbox, SDL_Surface* screen, SDL_Surface *image, Game *game)
 {
 	int i;
 	SDL_Surface *message = NULL;
 	SDL_Rect rcDest;
 
+	if(textbox->image){
+		SDL_BlitSurface(textbox->refreshBackground, NULL, textbox->background, NULL);
+		SDL_BlitSurface(image, &textbox->rcSrcImg, textbox->background, &textbox->rcDestImg);
+		//overSurface(image, &textbox->rcSrcImg, textbox->background, &textbox->rcDestImg, 135);
+	}
 
 	// Set menu text
 	if(textbox->menu){
@@ -146,6 +149,7 @@ int TextboxDraw(Textbox *textbox, SDL_Surface* screen)
 
 		rcDest.x = textbox->rcDestText.x;
 		rcDest.y = textbox->rcDestText.y;
+
 		for(i = 0; (i < textbox->rows) && textbox->textMsg; i++){
 			if(textbox->menu && (i == textbox->menu->colorRow)){
 				message = TTF_RenderText_Solid(textbox->fontMono, textbox->textMsg[i], textbox->textHigh);
@@ -178,6 +182,8 @@ void TextboxCreateWindow(Textbox * textbox)
 	temp = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, (width+1)*16, (height+1)*16, 32, 0, 0, 0, 0x000000FF);
 	
 	textbox->background = SDL_DisplayFormatAlpha(temp);
+
+	textbox->refreshBackground = SDL_DisplayFormatAlpha(temp);	
 	
 	for (i = 0; i <= width; i++){
 		for (j = 0; j <= height; j++){
@@ -222,6 +228,7 @@ void TextboxCreateWindow(Textbox * textbox)
 			
 			// apply tiles to textbox background
 			copySurface(textbox->bgTileset, &textbox->rcSrcTile, textbox->background, &textbox->rcDestTile);
+			copySurface(textbox->bgTileset, &textbox->rcSrcTile, textbox->refreshBackground, &textbox->rcDestTile);
 		}
 	}
 }

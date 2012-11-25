@@ -71,6 +71,11 @@ typedef struct CharacterAttributes {
 	int mana;
 	int vigor;
 
+	// Attributes
+	int lifeTotal;
+	int manaTotal;
+	int vigorTotal;
+
 	// Attack
 	int attackMelee;
 	int attackRange;
@@ -107,11 +112,14 @@ typedef struct Character{
 	SDL_Surface* spriteSlash;
 	SDL_Surface* sprite192Slash;
 	SDL_Surface* spriteSpell; 
+	SDL_Surface* avatar; 
 	SDL_Rect	 rcSrc, rcSrcAttack;
 	SDL_Rect     rcDest, rcInitTurn;
 	
 	CharacterAttributes attributes;
 	CharacterSpells		spells;
+
+	char name[50];
 
 	DestinationPoint destinationPoint;
 	int velocity;
@@ -158,13 +166,18 @@ typedef struct Character{
 	// Projectile
 	Projectile *projectile;
 
+	// Text for the interface
+	char **text;
+
+	// State
+	char status[50];
+
 } Character;
 
 /**********************************************************
  **** METHODS 
  **********************************************************/
-extern Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int areaRadius, int player);
-extern Character* CharacterConstructor2(xmlNodePtr cur, CharacterInput input, Map *map);
+extern Character* CharacterConstructor(xmlNodePtr cur, CharacterInput input, Map *map);
 extern void CharacterDestructor(Character *character);
 extern void CharacterSetDestination(Character* character, Cursor* cursor, Map *map);
 extern void CharacterMove(Character *character, Map *map);

@@ -16,6 +16,9 @@
 
 #include "characters.h"
 
+#define NUM_ROWS_ATT 6
+#define BUFFER_LEN	 50
+
 typedef enum OrientCollision {
 	NORTH_WEST,
 	NORTH_EAST,
@@ -23,129 +26,19 @@ typedef enum OrientCollision {
 	SOUTH_EAST,
 } OrientCollision;
 
-Character* CharacterConstructor(char* file, Orientation or, int x0, int y0, int iniciative, int movement, int **pos, int attackRadius, int player)
+Character* CharacterConstructor(xmlNodePtr cur, CharacterInput input, Map *map)
 {
-	Character* character;
-	character = (Character *)malloc(sizeof(Character));
-	char spriteMove[75];
-	char spriteSlash[75];
-	char sprite192Slash[75];
-	char spriteSpell[75];
-	int coordX, coordY;
-
-	sprintf(spriteMove, "%sWalk.png", file);
-	// Load movement sprites
-	if (!(character->sprite = loadImage(spriteMove))){
-		printf("Character constructor ERROR: couldn't load character Walk sprite\n");
-		return NULL;
-	}
-	
-	sprintf(spriteSlash, "%sSlash.png", file);
-	// Load slash sprites
-	if (!(character->spriteSlash = loadImage(spriteSlash))){
-		SDL_FreeSurface(character->sprite);
-		printf("Character constructor ERROR: couldn't load character Slash sprite\n");
-		return NULL;
-	}
-
-	sprintf(sprite192Slash, "%s192Slash.png", file);
-	// Load 192 slash sprite 	
-	if (!(character->sprite192Slash = loadImage(sprite192Slash))){
-		SDL_FreeSurface(character->sprite);
-		printf("Character constructor ERROR: couldn't load character Slash192 sprite\n");
-		return NULL;
-	}
-
-	sprintf(spriteSpell, "%sSpell.png", file);
-	// Load spell sprite 	
-	if (!(character->spriteSpell = loadImage(spriteSpell))){
-		SDL_FreeSurface(character->sprite);
-		printf("Character constructor ERROR: couldn't load character Spell sprite\n");
-		return NULL;
-	}
-
-	// Set player
-	character->player = player;
-
-	// Set movement
-	character->movement = movement;
-	if (!(character->moveArea = AreaConstructor(x0, y0, movement))){
-		SDL_FreeSurface(character->sprite);
-		SDL_FreeSurface(character->spriteSlash);
-		printf("Character constructor ERROR: couldn't create movement area\n");
-		return NULL;
-	}
-	
-    // Set initial state
-    character->state = MOVING;
-
-	// Set sprite initial position
-	character->rcDest.x = x0;
-	character->rcDest.y = y0;
-	character->rcInitTurn.x = x0;
-	character->rcInitTurn.y = y0;
-
-	// Set initial animation sprite frame
-	character->rcSrc.x = 0;
-	character->rcSrc.y = or * SPRITE_SIZE;
-	character->rcSrc.w = SPRITE_SIZE;
-	character->rcSrc.h = SPRITE_SIZE;
-	
-	// Set initial character position
-	GetCoor(character->rcDest.x + 16, character->rcDest.y + 32, &coordX, &coordY);
-	pos[coordY][coordX] = 1;
-
-	// Set initial orientation
-	character->moveOrient = or;
-		
-	// Set initial velocity
-	character->velocity = 5;
-
-	// Set initial destination point
-	character->destinationPoint.x = x0;
-	character->destinationPoint.y = y0;
-	
-	// Set initial state
-	character->moving 	  = 0;
-	character->actualStep = 0;
-	character->moveSteps  = 0;
-	character->moveState  = 0;
-
-	// Set linked list
-	INIT_LIST_HEAD(&character->list);
-	INIT_LIST_HEAD(&character->listSort);
-
-	// Set initial turn variables
-	character->check = 0;
-	character->iniciative = iniciative;
-
-	// Set initial attack variables
-	character->rcSrcAttack.x = 0;
-	character->rcSrcAttack.y = or * SPRITE_SIZE;
-	character->rcSrcAttack.w = SPRITE_SIZE;
-	character->rcSrcAttack.h = SPRITE_SIZE;
-	
-	// Set attack atributes
-	character->attackState 		= 0;
-	character->attacking 		= 0;
-	character->actualAttackStep = 0;
-	character->attackRadius 	= attackRadius;
-
-	character->projectile = ProjectileConstructor("data/arrow.png");
-
-	return character;
-}
-
-Character* CharacterConstructor2(xmlNodePtr cur, CharacterInput input, Map *map)
-{
-	
+	// Variable definition section
 	Character* character;
 	xmlNodePtr attributes, sprites;
 	xmlChar *nameSprite;
 	int coordX, coordY;
 	int attackRadius = 1; // CHAPUZA ALERT
+	int i;
 
 	character = (Character *)malloc(sizeof(Character));
+
+	strcpy(character->name, (char *)xmlGetProp(cur, (xmlChar*)"name"));
 
 	attributes = cur->xmlChildrenNode;
 	attributes = attributes->next;
@@ -165,7 +58,8 @@ Character* CharacterConstructor2(xmlNodePtr cur, CharacterInput input, Map *map)
 			character->attributes.life  	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"life"));
 			character->attributes.mana  	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"mana"));
 			character->attributes.vigor 	   	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"vigor"));
-			printf("attributes\n");
+			printf("attributes: %d %d %d", character->attributes.life, character->attributes.mana, character->attributes.vigor);
+			printf("\n");
 
 		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"attack"))){
 			character->attributes.attackMelee  	 = atoi((char *)xmlGetProp(attributes, (xmlChar*)"melee"));
@@ -255,15 +149,21 @@ Character* CharacterConstructor2(xmlNodePtr cur, CharacterInput input, Map *map)
 
 		} else if ((!xmlStrcmp(attributes->name, (const xmlChar *)"avatar"))){
 			printf("avatar\n");
-
+				if(!(character->avatar = loadImage((char *)xmlGetProp(attributes, (xmlChar*)"source")))){
+					printf("CharacterConstructor ERROR: impossible load %s image\n", (char *)xmlGetProp(attributes, (xmlChar*)"source"));	
+					return NULL;
+				}
+				printf("  SRC: %s image\n", (char *)xmlGetProp(attributes, (xmlChar*)"source"));
 		}
 		attributes = attributes->next;
 	}
 	
+	character->attributes.lifeTotal  = character->attributes.life;	
+	character->attributes.manaTotal  = character->attributes.mana;
+	character->attributes.vigorTotal = character->attributes.vigor;
+
 	// Set player
 	character->player = input.player;
-
-	printf("MOVE: %d (%d,%d)\n", character->attributes.move, input.x0, input.y0);
 
 	character->movement = character->attributes.move;
 
@@ -331,6 +231,21 @@ Character* CharacterConstructor2(xmlNodePtr cur, CharacterInput input, Map *map)
 	character->attackRadius 	= attackRadius;
 
 	character->projectile = ProjectileConstructor("data/arrow.png");
+
+	strcpy(character->status, "none");	
+
+	// Alloc text for the interface
+	character->text = (char**)malloc(sizeof(char*) * NUM_ROWS_ATT);
+	for(i = 0; i < NUM_ROWS_ATT; i++)
+		character->text[i] = (char*)malloc(sizeof(char) * BUFFER_LEN);
+		
+	// Fill the text
+	sprintf(character->text[0], "%s", 			character->name);
+	sprintf(character->text[1], "Life: %d/%d", 	character->attributes.life,  character->attributes.lifeTotal);
+	sprintf(character->text[2], "Mana: %d/%d", 	character->attributes.mana,  character->attributes.manaTotal);
+	sprintf(character->text[3], "Vigor: %d/%d", character->attributes.vigor, character->attributes.vigorTotal);
+	sprintf(character->text[4], "Mov: %d", 		character->attributes.move);
+	sprintf(character->text[5], "Status: %s", 	character->status);
 
 	return character;
 }

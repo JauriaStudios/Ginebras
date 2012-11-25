@@ -24,6 +24,12 @@
  *** PUBLIC METHODS IMPLEMENTATION
  **********************************************************/
 
+typedef enum typeSound {
+	BOW=0,
+	RUN,
+	SWORD,
+} typeSound;
+
 Audio* AudioConstructor()
 {
 	// Variable definition section

@@ -307,7 +307,7 @@ int main(int argc, char **argv)
 
 		// Draw interface
 		if(showInterface)
-			InterfaceDraw(interface, screen);
+			InterfaceDraw(interface, screen, game->actualCharacter->avatar, game);
 
 		// Check character end turn
 		if(game->actualCharacter->attacking)

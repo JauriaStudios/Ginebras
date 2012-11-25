@@ -25,19 +25,19 @@ char *text[] = {"Link",
 				"Mov: 10",
 				"State: none"};
 
-char *menuText[] = {" * Attack", 
-					"   Spells", 
-					"   Items", 
-					"   Defend"};
+char *menuText[] = 	 {" * Attack", 
+					  "   Spells", 
+					  "   Items", 
+					  "   Defend"};
 
 char *spellsText[] = {" * Fire", 
 					  "   Ice", 
 					  "   Lighthing", 
 					  "   Shield"};
 
-char *itemsText[] = {" * Lol potion", 
-					 "   Mana potion", 
-					 "   Remedy"};
+char *itemsText[] =  {" * Lol potion", 
+					  "   Mana potion", 
+					  "   Remedy"};
 
 int endBranch[4] = {1, 0, 0, 1}; // this mean that the selected branch has or not has a submenu
 
@@ -85,6 +85,7 @@ Interface* InterfaceConstructor(int numBoxesW, Game *game)
     Interface *this;
 	Textbox *box;
 	Menu *menu;
+	Character *tmp;
 	int i;
 
 	this = (Interface *)malloc(sizeof(Interface));
@@ -101,15 +102,19 @@ Interface* InterfaceConstructor(int numBoxesW, Game *game)
 		strcpy(this->text[i], text[i]);
 
 	// Create horizontal interface
-	for(i = 0; i < numBoxesW; i++){
+	i = 0;
+	list_for_each_entry(tmp, &game->listCharacters, list){
 		box = TextboxConstructor(names[i], (SCREEN_WIDTH/numBoxesW) * i, SCREEN_HEIGHT-((SCREEN_HEIGHT/HEIGHT_COEF)+12), 
-										   (SCREEN_WIDTH/numBoxesW)-1, SCREEN_HEIGHT/HEIGHT_COEF, this->text, 6, NULL, NULL);
+										   (SCREEN_WIDTH/numBoxesW)-1, SCREEN_HEIGHT/HEIGHT_COEF, tmp->text, 6, NULL, NULL);
 		list_add_tail(&box->list, &this->listBoxesW);
+		i++;
+		if(i == 8)
+			break;
 	}
 
 	// Create image textbox
 	box = TextboxConstructor("image", (SCREEN_WIDTH/numBoxesW) * 7, SCREEN_HEIGHT-(2*(SCREEN_HEIGHT/HEIGHT_COEF)+22), 
-									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, "data/viktor135.png", NULL);
+									   (SCREEN_WIDTH/numBoxesW)-5, (SCREEN_HEIGHT/HEIGHT_COEF), NULL, 0, game->actualCharacter->avatar, NULL);
 	list_add_tail(&box->list, &this->listBoxesW);
 
 	// Root menu functions
@@ -181,12 +186,12 @@ void InterfaceDestructor(Interface *this)
 	free(this);
 }
 
-void InterfaceDraw(Interface *this, SDL_Surface *screen)
+void InterfaceDraw(Interface *this, SDL_Surface *screen, SDL_Surface *image, Game *game)
 {
 	Textbox* tmp;
 
 	list_for_each_entry(tmp, &this->listBoxesW, list){
-		TextboxDraw(tmp, screen);
+		TextboxDraw(tmp, screen, image, game);
 	}
 
 }

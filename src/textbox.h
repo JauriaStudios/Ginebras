@@ -23,6 +23,8 @@
 #include "list.h"
 #include "gameUtilities.h"
 #include "menu.h"
+#include "game.h"
+#include "characters.h"
 
 /**********************************************************
  *** STRUCTS
@@ -32,10 +34,12 @@ typedef struct Textbox{
 	char *name;
 	
 	SDL_Surface *background;
+	SDL_Surface *refreshBackground;
 	SDL_Surface *bgTileset;
 	SDL_Surface *image;
 
 	SDL_Rect rcDestText, rcDestTile, rcSrcTile, rcDestWindow ;
+	SDL_Rect rcSrcImg, rcDestImg;
 	
 	SDL_Color textColor, textHigh;
 	
@@ -60,11 +64,11 @@ typedef struct Textbox{
 /**********************************************************
  *** METHODS
  **********************************************************/
-extern Textbox* TextboxConstructor(char *name, int x, int y, int w, int h, char **text, int rows, char *image, Menu *menu);
+extern Textbox* TextboxConstructor(char *name, int x, int y, int w, int h, char **text, int rows, SDL_Surface *image, Menu *menu);
 extern void TextboxDestructor(Textbox *textbox);
 extern void TextboxCreateWindow(Textbox * textbox);
 extern void TextboxUpdate(Textbox *textbox, int scrollX, int scrollY);
-extern int TextboxDraw(Textbox *textbox, SDL_Surface *screen);
+extern int TextboxDraw(Textbox *textbox, SDL_Surface *screen, SDL_Surface *image, Game *game);
 
 
 #endif
